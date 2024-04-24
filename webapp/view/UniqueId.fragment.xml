@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<Dialog type="Standard" title="Unique Id" contentWidth="400px" id="iduniq">
+		<content>
+			<Table id="UniqSlctList" mode="SingleSelectMaster" growing="true" growingDirection="Downwards" growingScrollToLoad="true"
+                     items="{path: '/results'}" selectionChange="handleSelection2">
+				<headerToolbar>
+					<Toolbar>
+						<ToolbarSpacer/>
+						<SearchField id="UniqSearch"  liveChange="handleSearch"  placeholder="Unique Id"/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column>
+						<Text text="Unique Id"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier title="{UNIQUE_ID}" text="{UNIQUEID_DESC}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+		<endButton>
+			<Button type='Reject' text="{i18n>close}" press="handleClose2"></Button>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>
