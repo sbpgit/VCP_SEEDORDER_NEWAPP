@@ -20,13 +20,16 @@
             <ux:ObjectPageDynamicHeaderTitle>
                 <ux:expandedHeading>
                     <HBox>
+                     <HBox>
+                        <!-- <Label id="idVariantName" required="false" text="" class="Text"/>
+                        <ToggleButton id="idDropDown" icon="sap-icon://slim-arrow-down" press="onDropDownPress"/>                   -->
                         <Title
                             text="{i18n>title}"
                             class="boldText"
                             titleAlignment="Center"
                             wrapping="true"
                         />
-                        <!-- <Button class="hdrBtnMarginHdr" type="Emphasized" icon="sap-icon://sys-help" press="onNavPress" tooltip="Help Document" id="nav2" /> -->
+                         </HBox>
                     </HBox>
                 </ux:expandedHeading>
                 <ux:snappedHeading>

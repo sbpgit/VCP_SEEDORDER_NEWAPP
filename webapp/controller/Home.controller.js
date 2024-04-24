@@ -38,6 +38,8 @@ sap.ui.define([
                 that.oAlgoListModel = new JSONModel();
                 that.emptyModel = new JSONModel();
                 that.emptyModel1 = new JSONModel();
+                that.viewDetails = new JSONModel();
+                that.viewDetails.setSizeLimit(5000);
                 that.partModel.setSizeLimit(1000);
                 that.locModel.setSizeLimit(1000);
                 that.prodModel1.setSizeLimit(1000);
@@ -99,6 +101,27 @@ sap.ui.define([
                     );
                     this.getView().addDependent(this._valueHelpDialogUniqueId);
                 }
+                if (!this._nameFragment) {
+                    this._nameFragment = sap.ui.xmlfragment(
+                        "vcp.vcpseedordercreationnew.view.NameVariant",
+                        this
+                    );
+                    this.getView().addDependent(this._nameFragment);
+                }
+                if (!this._popOver) {
+                    this._popOver = sap.ui.xmlfragment(
+                        "vcp.vcpseedordercreationnew.view.PopOver",
+                        this
+                    );
+                    this.getView().addDependent(this._popOver);
+                }
+                if (!this._manageVariant) {
+                    this._manageVariant = sap.ui.xmlfragment(
+                        "vcp.vcpseedordercreationnew.view.VariantNames",
+                        this
+                    );
+                    this.getView().addDependent(this._manageVariant);
+                }
             },
             getUser: function () {
                 var vUser;
@@ -111,6 +134,7 @@ sap.ui.define([
             },
             onAfterRendering: function () {
                 that.selectedChars = [];
+                sap.ui.core.BusyIndicator.show()
                 var dateSel = that.byId("idDateRange");
                 $("#" + dateSel.sId + " input").prop("disabled", true);
                 this.getOwnerComponent().getModel("BModel").read("/getProducts", {
@@ -118,16 +142,14 @@ sap.ui.define([
                     success: function (oData) {
                         that.prodModel1.setData({ prodDetails: oData.results });
                         sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
+                        sap.ui.core.BusyIndicator.hide()
                     },
                     error: function () {
                         sap.ui.core.BusyIndicator.hide();
                         MessageToast.show("Failed to get configurable products");
                     },
                 });
-                var wizard = this.getView().byId("CreateProductWizard");
-                // Hide the Finish button using jQuery
-                var $finishButton = jQuery(wizard.$().find(".sapMWizardFinishButton"));
-                $finishButton.hide();
+                // that.getVariantsData();
             },
             /**
              * on Press of value helps on filters and fragments
@@ -168,6 +190,7 @@ sap.ui.define([
              * @param {} oEvent 
              */
             handleProdSelection: function (oEvent) {
+                sap.ui.core.BusyIndicator.show()
                 var selectedProdItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("prodInput").setValue(selectedProdItem);
                 this.getOwnerComponent().getModel("BModel").read("/getFactoryLoc", {
@@ -182,6 +205,7 @@ sap.ui.define([
                         that.locModel.setData({ locDetails: oData.results });
                         sap.ui.getCore().byId("LocationList").setModel(that.locModel);
                         sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
+                        sap.ui.core.BusyIndicator.hide()
                     },
                     error: function () {
                         sap.ui.core.BusyIndicator.hide();
@@ -194,6 +218,7 @@ sap.ui.define([
              * @param {} oEvent 
              */
             handleLocSelection: function (oEvent) {
+                sap.ui.core.BusyIndicator.show()
                 var selectedLocItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("idloc").setValue(selectedLocItem);
                 this.getOwnerComponent().getModel("BModel").read("/getCustgroup", {
@@ -201,6 +226,7 @@ sap.ui.define([
                         that.custModel.setData({ custDetails: oData.results });
                         sap.ui.getCore().byId("custGrpList").setModel(that.custModel);
                         sap.ui.getCore().byId("LocationList").getBinding("items").filter([]);
+                        sap.ui.core.BusyIndicator.hide()
                     },
                     error: function () {
                         sap.ui.core.BusyIndicator.hide();
@@ -320,6 +346,7 @@ sap.ui.define([
              * On Press of Go on header fitler
              */
             onGetData: function () {
+                sap.ui.core.BusyIndicator.show()
                 that.partProdItems = [];
                 var prodItem = that.byId("prodInput").getValue();
                 var locItem = that.byId("idloc").getValue();
@@ -360,6 +387,7 @@ sap.ui.define([
                             that.loadArray1 = that.removeDuplicates(oData.results, "CHAR_NAME");
                             that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                             sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
+                            sap.ui.core.BusyIndicator.hide()
                         },
                         error: function () {
                             sap.ui.core.BusyIndicator.hide();
@@ -369,6 +397,7 @@ sap.ui.define([
 
                 }
                 else {
+                    sap.ui.core.BusyIndicator.hide()
                     MessageToast.show("Please select Configurable Product/ Location/ Date Range/ Customer Group");
                 }
             },
@@ -377,6 +406,7 @@ sap.ui.define([
              * @param {On Selection of partial product in step 1 wizard } oEvent 
              */
             handlePartSelection: function (oEvent) {
+                sap.ui.core.BusyIndicator.show()
                 that.charsProd = [];
                 sap.ui.core.BusyIndicator.show()
                 var selectedPartial = oEvent.getParameters().selectedItem.getTitle();
@@ -405,13 +435,16 @@ sap.ui.define([
                                 if (selectedPartial !== mainProduct) {
                                     that.byId("idCharTable").setMode("MultiSelect");
                                     that.byId("idCharTable").selectAll(true);
+                                    sap.ui.core.BusyIndicator.hide()
                                 }
                                 else {
+                                    sap.ui.core.BusyIndicator.hide()
                                     that.byId("idCharTable").setMode("None");
                                 }
                                 sap.ui.core.BusyIndicator.hide();
                             }
                             else {
+                                sap.ui.core.BusyIndicator.hide()
                                 MessageToast.show("No data available for selected partial product");
                                 that.newClassModel.setData({ items1: [] });
                                 that.byId("idCharTable").setModel(that.newClassModel);
@@ -426,6 +459,7 @@ sap.ui.define([
                         },
                     });
                 } else {
+                    sap.ui.core.BusyIndicator.hide()
                     MessageToast.show("Please select product");
                 }
 
@@ -583,51 +617,11 @@ sap.ui.define([
             * On press of generate seed order in home view 
             * */
             onGenSeedOrder: function () {
-                // sap.ui.core.BusyIndicator.show();
-                // that._valueHelpDialogSeedOrder.setTitle("Create Order");
-                // sap.ui.getCore().byId("idProduct").setValue(that.byId("prodInput").getValue());
-                // sap.ui.getCore().byId("idLocation").setValue(that.byId("idloc").getValue());
-                // sap.ui.getCore().byId("idCust").setValue(that.byId("idCustGrp").getValue());
-                // that.getOwnerComponent().getModel("BModel").read("/getUniqueHeader", {
-                //     filters: [
-
-                //         new Filter(
-                //             "PRODUCT_ID",
-                //             FilterOperator.EQ,
-                //             that.byId("prodInput").getValue()
-                //         ),
-                //         new Filter(
-                //             "UID_TYPE",
-                //             FilterOperator.EQ,
-                //             'U'
-                //         )
-                //     ],
-                //     success: function (oData) {
-                //         sap.ui.core.BusyIndicator.hide();
-
-                //         oData.results.forEach(function (row) {
-                //             row.UNIQUE_ID = row.UNIQUE_ID.toString();
-                //             if (row.EX_IDENTIFICATION !== ' ' && row.EX_IDENTIFICATION !== null && row.EX_IDENTIFICATION !== undefined) {
-                //                 row.UNIQUEID_DESC = row.EX_IDENTIFICATION + ":" + row.UNIQUE_DESC;
-                //             } else {
-                //                 row.UNIQUEID_DESC = row.UNIQUE_DESC;
-                //             }
-
-                //         }, that);
-                //         that.uniqModel.setData(oData);
-                //         sap.ui.getCore().byId("UniqSlctList").setModel(that.uniqModel);
-                //     },
-                //     error: function (oData, error) {
-                //         sap.ui.core.BusyIndicator.hide();
-                //         MessageToast.show("error");
-                //     },
-                // });
-                // that._valueHelpDialogSeedOrder.open();
                 if (!this.oApproveDialog) {
                     this.oApproveDialog = new Dialog({
                         type: DialogType.Message,
                         title: "Confirm",
-                        content: new Text({ text: "Do you want to generate seed order?" }),
+                        content: new Text({ text: "Do you want to generate Seed Orders?" }),
                         beginButton: new Button({
                             type: ButtonType.Emphasized,
                             text: "Yes",
@@ -662,67 +656,6 @@ sap.ui.define([
                 }
             },
             /**
-            * On press of save in generate seed order fragment
-            * */
-            onSaveOrder: function () {
-                var sLoc = sap.ui.getCore().byId("idLocation").getValue(),
-                    sProd = sap.ui.getCore().byId("idProduct").getValue(),
-                    sCust = sap.ui.getCore().byId("idCust").getValue(),
-                    sUniq = parseInt(sap.ui.getCore().byId("idUniq").getValue()),
-                    squan = parseInt(sap.ui.getCore().byId("idQuantity").getValue()),
-                    sDate = sap.ui.getCore().byId("idDate").getValue();
-                // sSeedOrder = sap.ui.getCore().byId("idseedord").getValue();
-                var oEntry = {
-                    SEEDDATA: [],
-                },
-                    vRuleslist,
-                    seedOrder;
-                var oFlag = that.oGModel.getProperty("/OrderFlag");
-
-                if (oFlag === "C") {
-                    seedOrder = "0";
-                } else if (oFlag === "E") {
-                    seedOrder = sSeedOrder;
-                }
-                vRuleslist = {
-                    SEED_ORDER: seedOrder,
-                    LOCATION_ID: sLoc,
-                    PRODUCT_ID: sProd,
-                    CUSTOMER_GROUP: sCust,
-                    UNIQUE_ID: sUniq,
-                    ORD_QTY: squan,
-                    MAT_AVAILDATE: sDate,
-                };
-                oEntry.SEEDDATA.push(vRuleslist);
-                if (squan && sDate !== "" && sUniq) {
-                    if (sap.ui.getCore().byId("idQuantity").getValueState() !== "Error") {
-                        // that.seedOrderCreateFn(oFlag, oEntry);
-                        that.getOwnerComponent().getModel("BModel").callFunction("/maintainSeedOrder", {
-                            method: "GET",
-                            urlParameters: {
-                                FLAG: oFlag,
-                                SEEDDATA: JSON.stringify(oEntry.SEEDDATA)
-                            },
-                            success: function (oData) {
-                                sap.ui.core.BusyIndicator.hide();
-                                let vMsg = oData.maintainSeedOrder;
-                                sap.m.MessageToast.show("Seed Order created");
-                                that.onCancelOrder();
-                                that.onGetData();
-                            },
-                            error: function (error) {
-                                sap.ui.core.BusyIndicator.hide();
-                                sap.m.MessageToast.show("Error creating a Seed Order ");
-                            },
-                        });
-                    } else {
-                        sap.m.MessageToast.show("Decimals are not allowed");
-                    }
-                } else {
-                    sap.m.MessageToast.show("Please fill all fields");
-                }
-            },
-            /**
             * On press of cancel in generate seed order fragment 
             * */
             onCancelOrder: function () {
@@ -740,7 +673,7 @@ sap.ui.define([
             * On press of Save in Step 2 on wizard 
             * */
             onCharSave: function () {
-                // sap.ui.core.BusyIndicator.show();
+                sap.ui.core.BusyIndicator.show();
                 var objectData = {}, objectArray = [];
                 var vBoxItems = that.byId("idVBox").getItems();
                 for (var i = 0; i < vBoxItems.length; i++) {
@@ -771,6 +704,7 @@ sap.ui.define([
                         // that.byId("charList").removeSelections();
                         sap.m.MessageToast.show("Created Successfully");
                         that.byId("idGenSeedOrder").setEnabled(true);
+                        sap.ui.core.BusyIndicator.hide()
                         // that.onCharCanel();
                     },
                     error: function (error) {
@@ -810,6 +744,7 @@ sap.ui.define([
              * On press of save in Step 1 in wizard 
              * */
             onCharsLoad: function () {
+                sap.ui.core.BusyIndicator.show()
                 var charItems = {}, charArray = [];
                 var table = that.byId("idCharTable");
                 var tabMode = table.getMode();
@@ -849,6 +784,7 @@ sap.ui.define([
 
                 }
                 else {
+                    sap.ui.core.BusyIndicator.hide()
                     MessageToast.show("No characteristics selected. Please select atleast one characteristic");
                 }
             },
@@ -937,6 +873,7 @@ sap.ui.define([
                 that.byId("idCharTable").getBinding("items").filter(oFilters);
             },
             generateSeedOrder: function () {
+                sap.ui.core.BusyIndicator.show()
                 var productConfig = that.byId("prodInput").getValue();
                 var demandLocation = that.byId("idloc").getValue();
                 var customerGroup = that.byId("idCustGrp").getValue();
@@ -963,8 +900,10 @@ sap.ui.define([
                         console.log(response);
                         MessageToast.show("Seed Orders created successfully");
                         that.byId("idGenSeedOrder").setEnabled(false);
+                        sap.ui.core.BusyIndicator.hide()
                     },
                     error: function (xhr, status, error) {
+                        sap.ui.core.BusyIndicator.hide()
                         // Handle errors here
                         console.error('Error:', error);
                         MessageToast.show("Error while creating Seed Orders")
@@ -985,9 +924,82 @@ sap.ui.define([
                 // Concatenate the components in yyyy-MM-dd format
                 return `${year}-${month}-${day}`;
             },
-            stepActive: function () {
+            getVariantsData:function(){
+                var aData = [];
+                var dData = [];
+                var details = {};
+                var defaultDetails = [];
+                var uniqueName = [];
+                that.variantLength=0;
+                var variantUser = this.getUser();
+                that.oGModel.setProperty("/UserId", variantUser);
+                //Calling variant header data
+                this.getOwnerComponent().getModel("BModel").read("/getVariantHeader", {
+                    success: function (oData) {
+                        if(oData.results.length>0){
+                        that.variantLength = oData.results.length-1;
+                        for (var i = 0; i < oData.results.length; i++) {
+                            if (oData.results[i].DEFAULT === "Y"
+                                && oData.results[i].APPLICATION_NAME === "Seed Order Creation") {
+                                dData.push(oData.results[i]);
+                            }
+                        }
+                        if (dData.length > 0) {
+                            that.oGModel.setProperty("/defaultVariant", dData);
+                        }
+                        else {
+                            that.oGModel.setProperty("/defaultVariant", "");
+                        }
+                    }
+                    },
+                    error: function (oData, error) {
+                        MessageToast.show("error while loading variant details");
+                    },
+                });
 
+                //calling variant main data
+                this.getOwnerComponent().getModel("BModel").read("/getVariant", {
+                    filters: [ new Filter("USER",FilterOperator.EQ,variantUser)],
+                    success: function (oData) {
+                        var IDlength = oData.results.length;
+                        if (IDlength === 0) {
+                            that.oGModel.setProperty("/Id",that.variantLength);
+                            that.oGModel.setProperty("/variantDetails", "");
+                            that.oGModel.setProperty("/fromFunction", "X");
+                            uniqueName.unshift({
+                                "VARIANTNAME": "Standard",
+                                "VARIANTID": "0",
+                                "DEFAULT": "Y"
+                            })
+                            that.oGModel.setProperty("/viewNames", uniqueName);
+                            that.oGModel.setProperty("/defaultDetails", "");
+                            that.viewDetails.setData({
+                                items1: uniqueName
+                            });
+                            that.varianNames = uniqueName;
+                            sap.ui.getCore().byId("idMatList").setModel(that.viewDetails);
+                            sap.ui.getCore().byId("idMatList").removeSelections(true);
+                            sap.ui.getCore().byId("varNameList").setModel(that.viewDetails);
+
+                            Default = "Standard";
+                            if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
+                                var newVariant = that.oGModel.getProperty("/newVariant");
+                                that.handleSelectPress(newVariant[0].VARIANTNAME);
+                                that.oGModel.setProperty("/newVaraintFlag", "");
+                            }
+                            else {
+                                that.handleSelectPress(Default);
+                            }
+                        }
+                        else{
+                            that.oGModel.setProperty("/Id", that.variantLength);
+                        }
+
+                    },
+                    error: function (oData, error) {
+                        MessageToast.show("error while loading variant details");
+                    },
+                });
             }
-
         });
     });
