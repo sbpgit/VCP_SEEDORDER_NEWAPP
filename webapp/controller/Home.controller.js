@@ -205,6 +205,24 @@ sap.ui.define([
                         that.locModel.setData({ locDetails: oData.results });
                         sap.ui.getCore().byId("LocationList").setModel(that.locModel);
                         sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
+                        if(that.oGModel.getProperty("/resetFlag") !=="X"){
+                        that.byId("idloc").setValue();
+                        that.byId("idDateRange").setValue();
+                        that.byId("idCustGrp").setValue();
+                        that.byId("idCharSearch").setVisible(false);
+                        that.emptyModel.setData([]);
+                        that.byId("idCharTable").setModel(that.emptyModel);
+                        that.byId("idCharTable").setVisible(false);
+                        that.emptyModel1.setData({ setPanel: [] });
+                        that.byId("idVBox").setModel(that.emptyModel1);
+                        that.byId("idVBox").removeAllItems();
+                        that.emptyModel1.setData({ setCharacteristics: [] });
+                        sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel1);
+                        that.byId("idpartInput").setValue();
+                        that.byId("idCharName").removeAllTokens();
+                        that.byId("CreateProductWizard").setVisible(false);
+                        that.byId("idGenSeedOrder").setEnabled(false);
+                        }
                         sap.ui.core.BusyIndicator.hide()
                     },
                     error: function () {
@@ -226,6 +244,7 @@ sap.ui.define([
                         that.custModel.setData({ custDetails: oData.results });
                         sap.ui.getCore().byId("custGrpList").setModel(that.custModel);
                         sap.ui.getCore().byId("LocationList").getBinding("items").filter([]);
+                       
                         sap.ui.core.BusyIndicator.hide()
                     },
                     error: function () {
@@ -238,6 +257,7 @@ sap.ui.define([
              * On Press of reset button on header filters
              */
             onResetDate: function () {
+                that.oGModel.setProperty("/resetFlag","X");
                 that.byId("prodInput").setValue();
                 that.byId("idloc").setValue();
                 that.byId("idCustGrp").setValue();
@@ -254,6 +274,7 @@ sap.ui.define([
                 that.byId("idpartInput").setValue();
                 that.byId("idCharName").removeAllTokens();
                 that.byId("CreateProductWizard").setVisible(false);
+                // that.byId("CreateProductWizard").destroySteps();
                 that.byId("idGenSeedOrder").setEnabled(false);
 
             },
@@ -885,7 +906,7 @@ sap.ui.define([
                 toDate = that.convertDateFormat(toDate);
 
                 $.ajax({
-                    url: '/v2/catalog/generateSeedOrders',
+                    url: '/catalog/generateSeedOrders',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({
@@ -900,6 +921,7 @@ sap.ui.define([
                         console.log(response);
                         MessageToast.show("Seed Orders created successfully");
                         that.byId("idGenSeedOrder").setEnabled(false);
+                        that.onResetDate();
                         sap.ui.core.BusyIndicator.hide()
                     },
                     error: function (xhr, status, error) {
@@ -924,33 +946,33 @@ sap.ui.define([
                 // Concatenate the components in yyyy-MM-dd format
                 return `${year}-${month}-${day}`;
             },
-            getVariantsData:function(){
+            getVariantsData: function () {
                 var aData = [];
                 var dData = [];
                 var details = {};
                 var defaultDetails = [];
                 var uniqueName = [];
-                that.variantLength=0;
+                that.variantLength = 0;
                 var variantUser = this.getUser();
                 that.oGModel.setProperty("/UserId", variantUser);
                 //Calling variant header data
                 this.getOwnerComponent().getModel("BModel").read("/getVariantHeader", {
                     success: function (oData) {
-                        if(oData.results.length>0){
-                        that.variantLength = oData.results.length-1;
-                        for (var i = 0; i < oData.results.length; i++) {
-                            if (oData.results[i].DEFAULT === "Y"
-                                && oData.results[i].APPLICATION_NAME === "Seed Order Creation") {
-                                dData.push(oData.results[i]);
+                        if (oData.results.length > 0) {
+                            that.variantLength = oData.results.length - 1;
+                            for (var i = 0; i < oData.results.length; i++) {
+                                if (oData.results[i].DEFAULT === "Y"
+                                    && oData.results[i].APPLICATION_NAME === "Seed Order Creation") {
+                                    dData.push(oData.results[i]);
+                                }
+                            }
+                            if (dData.length > 0) {
+                                that.oGModel.setProperty("/defaultVariant", dData);
+                            }
+                            else {
+                                that.oGModel.setProperty("/defaultVariant", "");
                             }
                         }
-                        if (dData.length > 0) {
-                            that.oGModel.setProperty("/defaultVariant", dData);
-                        }
-                        else {
-                            that.oGModel.setProperty("/defaultVariant", "");
-                        }
-                    }
                     },
                     error: function (oData, error) {
                         MessageToast.show("error while loading variant details");
@@ -959,11 +981,11 @@ sap.ui.define([
 
                 //calling variant main data
                 this.getOwnerComponent().getModel("BModel").read("/getVariant", {
-                    filters: [ new Filter("USER",FilterOperator.EQ,variantUser)],
+                    filters: [new Filter("USER", FilterOperator.EQ, variantUser)],
                     success: function (oData) {
                         var IDlength = oData.results.length;
                         if (IDlength === 0) {
-                            that.oGModel.setProperty("/Id",that.variantLength);
+                            that.oGModel.setProperty("/Id", that.variantLength);
                             that.oGModel.setProperty("/variantDetails", "");
                             that.oGModel.setProperty("/fromFunction", "X");
                             uniqueName.unshift({
@@ -991,8 +1013,32 @@ sap.ui.define([
                                 that.handleSelectPress(Default);
                             }
                         }
-                        else{
+                        else {
                             that.oGModel.setProperty("/Id", that.variantLength);
+                            that.oGModel.setProperty("/variantDetails", oData.results);
+                            var filteredData = oData.results.filter(a => a.APPLICATION_NAME === "Seed Order Creation");
+                            aData = filteredData;
+                            if (aData.length > 0) {
+                                uniqueName = aData.filter((obj, pos, arr) => {
+                                    return (
+                                        arr.map((mapObj) => mapObj.VARIANTNAME).indexOf(obj.VARIANTNAME) == pos
+                                    );
+                                });
+                                that.oGModel.setProperty("/saveBtn", "");
+                                for (var k = 0; k < uniqueName.length; k++) {
+                                    if (uniqueName[k].DEFAULT === "Y") {
+                                        var Default = uniqueName[k].VARIANTNAME;
+                                        details = {
+                                            "VARIANTNAME": uniqueName[k].VARIANTNAME,
+                                            "VARIANTID": uniqueName[k].VARIANTID,
+                                            "USER": uniqueName[k].USER,
+                                            "DEFAULT": "N"
+                                        };
+                                        defaultDetails.push(details);
+                                        details = {};
+                                    }
+                                }
+                            }
                         }
 
                     },
