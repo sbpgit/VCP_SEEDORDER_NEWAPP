@@ -1,6 +1,6 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-	<SelectDialog id="partProdSlct" title="Partial Products" rememberSelections="false" search="handleSearch" liveChange="handleSearch"
-		confirm="handlePartSelection" cancel="handleClose" multiSelect="false"  contentWidth="320px" items="{/partDetails}" 
+	<SelectDialog id="partProdSlct" title="Partial Products" rememberSelections="true" search="handleSearch" liveChange="handleSearch"
+		confirm="handlePartSelection" cancel="handleClose" multiSelect="true"  contentWidth="320px" items="{/partDetails}" 
         selectionChange="handleProdChange" growing="false">
 		<StandardListItem title="{PRODUCT_ID}" description="{PROD_DESC}" type="Active"/>
 	</SelectDialog>

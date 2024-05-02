@@ -179,7 +179,7 @@
                                             text="Partial Product "
                                             required="true"
                                         />
-                                        <Input
+                                        <m:MultiInput
                                             id="idpartInput"
                                             width="400px"
                                             placeholder="Partial Products"
@@ -199,7 +199,7 @@
                                             placeholder="Class/Char Name, Char Value" visible="true"
                                         />
                                     </Toolbar>
-                                      <Table id="idCharTable" items="{path: '/items1'}" visible="false" sticky="ColumnHeaders" growingThreshold="1000" growingScrollToLoad="true" growing="true"  selectionChange="onTableItemsSelect" >
+                                      <Table id="idCharTable" items="{path: '/items1'}" visible="false" sticky="ColumnHeaders" growingThreshold="1000" growingScrollToLoad="true" growing="true"  selectionChange="onTableItemsSelect" mode="MultiSelect">
                     <columns>
                     <Column id="_IDGenColumn11" hAlign="Center" vAlign="Middle">
                         <Text id="_IDGenText11" text="Characteristic Name" />
