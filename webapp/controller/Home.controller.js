@@ -38,6 +38,7 @@ sap.ui.define([
                 that.oAlgoListModel = new JSONModel();
                 that.emptyModel = new JSONModel();
                 that.emptyModel1 = new JSONModel();
+                that.emptyModel2 = new JSONModel();
                 that.viewDetails = new JSONModel();
                 that.newClassModel = new JSONModel();
                 that.newClassModel.setSizeLimit(5000);
@@ -221,6 +222,7 @@ sap.ui.define([
                 else if (sId.includes("Uniq")) {
                     that._valueHelpDialogUniqueId.open();
                 }
+                
             },
             /**
              * On Press of confirm in COnfig Prod Fragment 
@@ -295,6 +297,14 @@ sap.ui.define([
              * On Press of reset button on header filters
              */
             onResetDate: function () {
+                var vBoxItems = that.byId("idVBox").getItems();
+                for (var i = 0; i < vBoxItems.length; i++) {
+                    var childItems = vBoxItems[i].getContent()[0].getItems();
+                    for (var k = 0; k < childItems.length - 1; k++) {
+                        if(childItems[k].getCells()[1])
+                         (childItems[k].getCells()[1].setValue() === "")
+                    }
+                }
                 that.oGModel.setProperty("/resetFlag", "X");
                 that.byId("prodInput").setValue();
                 that.byId("idloc").setValue();
@@ -314,6 +324,11 @@ sap.ui.define([
                 that.byId("CreateProductWizard").setVisible(false);
                 // that.byId("CreateProductWizard").destroySteps();
                 that.byId("idGenSeedOrder").setEnabled(false);
+                that.emptyModel2.setData({res:[]})
+                that.byId("LogList").setModel(that.emptyModel2)
+                that.byId("idIconTabBar").setVisible(false)
+                that.byId("idHBox100").setVisible(false);
+              
 
             },
             /**
@@ -573,6 +588,12 @@ sap.ui.define([
              * @param {ON Selection of Characteristics in step 2 in wizard} oEvent 
              */
             handleCharSelection: function (oEvent) {
+                that.byId("idDownLd").setVisible(true);
+                that.byId("FileUploader").setVisible(true);
+                that.byId("idIconTabBar").setVisible(false);
+                that.byId("LogList").setVisible(false)
+                that.byId("idHBox100").setVisible(true);
+
                 that.sumArray = [];
                 that.uniqueName = [];
                 that.byId("idCharName").removeAllTokens();
@@ -771,27 +792,45 @@ sap.ui.define([
             /**
             * On press of Save in Step 2 on wizard 
             * */
-            onCharSave: function () {
+            onCharSave: function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
                 var objectData = {}, objectArray = [];
-                var vBoxItems = that.byId("idVBox").getItems();
-                for (var i = 0; i < vBoxItems.length; i++) {
-                    var childItems = vBoxItems[i].getContent()[0].getItems();
-                    for (var k = 0; k < childItems.length - 1; k++) {
-                        if (childItems[k].getCells()[1].getValue() === "") {
-                            var opt_percent = "0";
-                        }
-                        else {
-                            var opt_percent = childItems[k].getCells()[1].getValue();
-                        }
+                if(oEvent.getSource().sId.includes("BulKSave")){
+                   var aTreeBoxItems =  that.byId("LogList").getModel().getData().res
+                   for(let i = 0; i< aTreeBoxItems.length; i++){
+                    var aChild = aTreeBoxItems[i].children
+                    for(let j= 0; j<aChild.length; j++){
                         objectData = {
                             PRODUCT_ID: that.byId("prodInput").getValue(),
-                            CHAR_NUM: childItems[k].getBindingContext().getObject().CHAR_NUM,
-                            CHARVAL_NUM: childItems[k].getBindingContext().getObject().CHARVAL_NUM,
-                            OPT_PERCENT: opt_percent
+                            CHAR_NUM: aChild[j].CHAR_NUM,
+                            CHARVAL_NUM: aChild[j].CHARVAL_NUM,
+                            OPT_PERCENT: aChild[j].OPT_PERCENT
                         }
                         objectArray.push(objectData);
                         objectData = {}
+                    }
+                   }
+                }
+                else{
+                    var vBoxItems = that.byId("idVBox").getItems();
+                    for (var i = 0; i < vBoxItems.length; i++) {
+                        var childItems = vBoxItems[i].getContent()[0].getItems();
+                        for (var k = 0; k < childItems.length - 1; k++) {
+                            if (childItems[k].getCells()[1].getValue() === "") {
+                                var opt_percent = "0";
+                            }
+                            else {
+                                var opt_percent = childItems[k].getCells()[1].getValue();
+                            }
+                            objectData = {
+                                PRODUCT_ID: that.byId("prodInput").getValue(),
+                                CHAR_NUM: childItems[k].getBindingContext().getObject().CHAR_NUM,
+                                CHARVAL_NUM: childItems[k].getBindingContext().getObject().CHARVAL_NUM,
+                                OPT_PERCENT: opt_percent
+                            }
+                            objectArray.push(objectData);
+                            objectData = {}
+                        }
                     }
                 }
                 this.getOwnerComponent().getModel("BModel").callFunction("/postCharOptionPercent", {
@@ -816,6 +855,15 @@ sap.ui.define([
             * On press of cancel in Step 2 on wizard 
             * */
             onCharCancel: function () {
+                var vBoxItems = that.byId("idVBox").getItems();
+                    for (var i = 0; i < vBoxItems.length; i++) {
+                        var childItems = vBoxItems[i].getContent()[0].getItems();
+                        for (var k = 0; k < childItems.length - 1; k++) {
+                            if(childItems[k].getCells()[1])
+                             (childItems[k].getCells()[1].setValue() === "")
+                                // var opt_percent = "0";
+                        }
+                    }
                 var selectedItems = sap.ui.getCore().byId("idCharSelect").getItems();
                 for (var i = 0; i < selectedItems.length; i++) {
                     selectedItems[i].setSelected(false);
@@ -826,7 +874,11 @@ sap.ui.define([
                 that.uniqueTabNames = [];
                 that.byId("idCharName").removeAllTokens();
                 that.emptyModel1.setData({ setPanel: [] });
+                that.emptyModel2.setData({res:[]})
+                that.byId("LogList").setModel(that.emptyModel2)
                 that.byId("idVBox").setModel(that.emptyModel1);
+                that.byId("idIconTabBar").setVisible(false)
+                that.byId("idHBox100").setVisible(false);
                 // that.onAfterRendering();
             },
             /**
@@ -1213,6 +1265,192 @@ sap.ui.define([
                     seen.add(key);
                     return true;
                 });
+            },
+            // DownLoad func Starts
+            onDownLoad:function(oEvent){
+                if(that.byId("idpartInput").length <= 0){
+                    MessageToast.show("Please Select Partial Products")
+                    return false
+                }
+                var aDown = []
+                var aCols, oSettings, oSheet;
+                var sFileName = "Seed Order Creation - " + new Date().getTime();
+                var oEvt = oEvent.getSource()
+                var oTableBind = that.byId("idVBox").getItems()[0].oBindingContexts.undefined.oModel.oData.setPanel
+                for(let i = 0; i<oTableBind.length; i++ ){
+                    if(oTableBind[i].CHAR_NAME !== ""){
+                        if(oTableBind[i].child.length > 0){
+                            for(let j = 0; j< oTableBind[i].child.length; j++){
+                                if(oTableBind[i].child[j].CHAR_VALUE == "Total Percentage"){
+                                }
+                                else{
+                                    aDown.push({
+                                        Characteristic_Name: oTableBind[i].CHAR_NAME,
+                                        Characteristic_Value:oTableBind[i].child[j].CHAR_VALUE,
+                                        Characteristic_Value_Desc:oTableBind[i].child[j].CHARVAL_DESC,
+                                        Option_Percentage: parseInt(0)
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+                var aCols = []
+                for(var j=0; j<Object.keys(aDown[0]).length; j++){
+                    aCols.push({
+                        property:Object.keys(aDown[0])[j]
+                    });
+                }
+               var  oSettings = {
+                            workbook: {
+                                columns: aCols
+                            },
+                            dataSource: aDown,
+                            fileName: sFileName,
+                            worker: true
+                        };
+                        var oSheet = new Spreadsheet(oSettings);
+                        oSheet.build().finally(function () {
+                            oSheet.destroy();
+                        });
+            },
+            // DownLoad Func Ends
+
+            
+            // Upload Func Starts
+            onUpload:function(){
+                // that.byId("idIconTabBar").setVisible(true)
+                var fileupload = that.getView().byId("FileUploader");
+                var file  = fileupload.oFileUpload.files[0];
+                var oExcelData = {}
+                that.filename = file.name;
+                that.filetype = file.type;
+                    var reader  = new FileReader();
+                    reader.onload = function(event){
+                        var data = event.target.result;
+                        var workbook = XLSX.read(data, {
+                            type:"binary"
+                        });
+                        workbook.SheetNames.forEach(function (sheetName) {
+                            
+                            oExcelData = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+                            var oData = oExcelData;
+                            that.Emport(oExcelData);
+                        });
+                       
+                    };  
+                    reader.readAsBinaryString(file);
+            },
+            Emport: function(array){
+                that.byId("idVBox").setVisible(false)
+                var oModel = that.getOwnerComponent().getModel("oGModel");
+                oModel.setProperty("/", array)
+                // debugger;
+                // var aValidArray= []
+                for(let i = 0; i<that.loadArray.length; i++){
+                    for(let k = 0; k<array.length; k++){
+                        if(that.loadArray[i].CHAR_NAME == array[k].Characteristic_Name && that.loadArray[i].CHAR_VALUE == array[k].Characteristic_Value && that.loadArray[i].CHARVAL_DESC == array[k].Characteristic_Value_Desc ){
+                                array[k].CHARVAL_NUM = that.loadArray[i].CHARVAL_NUM
+                                array[k].CHAR_NUM = that.loadArray[i].CHAR_NUM
+                            }
+                    }
+                }
+                console.log(array)
+                var SubResults = array;
+               var  Array1 = [];
+                var dArray = [];
+                // var Total = 100;
+                for (let i = 0; i < SubResults.length; i++) {
+                   var  index = dArray.indexOf(SubResults[i].Characteristic_Name);
+                   if(index === -1){
+                    var obj1 = {
+                        CHAR_NAME: SubResults[i].Characteristic_Name,
+                       
+                        child:false,
+                        parent:true,
+                        children:[{
+                            CHAR_VALUE:SubResults[i].Characteristic_Value,
+                            CHARVAL_DESC:SubResults[i].Characteristic_Value_Desc,
+                            CHARVAL_NUM:SubResults[i].CHARVAL_NUM,
+                            CHAR_NUM:SubResults[i].CHAR_NUM,
+                            OPT_PERCENT: parseInt(SubResults[i].Option_Percentage),
+                            child:true,
+                            parent:false,
+                        }]
+                    }
+                    dArray.push(SubResults[i].Characteristic_Name)
+                    Array1.push(obj1)
+                   } 
+                   else{
+                        var oChd = {
+                            CHAR_VALUE:SubResults[i].Characteristic_Value,
+                            CHARVAL_DESC:SubResults[i].Characteristic_Value_Desc,
+                            CHARVAL_NUM:SubResults[i].CHARVAL_NUM,
+                            CHAR_NUM:SubResults[i].CHAR_NUM,
+                            OPT_PERCENT:parseInt(SubResults[i].Option_Percentage),
+                            child:true,
+                            parent:false,
+                        }
+                        Array1[index].children.push(oChd) 
+                    }
+                   }
+                   that.aSucces = [];
+                   that.aErrorLog = [];
+                   for(let i = 0; i<Array1.length; i++){
+                    if(Array1[i].children){
+                        var iTotal = 0;
+                        for(let j = 0; j<Array1[i].children.length; j++){
+                            if(Array1[i].children[j]){
+                                iTotal += Array1[i].children[j].OPT_PERCENT
+                            }
+                        }
+                        if(iTotal == parseInt(100)){
+                            Array1[i].TotalPercentage = 100; 
+                            that.aSucces.push(Array1[i])
+                        }else{
+                            that.aErrorLog.push(Array1[i])
+                        }
+                    }
+                   }
+                   that.byId("LogList").setVisible(true)
+                   that.byId("idIconTabBar").setVisible(true)
+                   var otreemodel = that.getOwnerComponent().getModel("oGModel");
+                   otreemodel.setData({
+                       res: that.aSucces
+                   });
+                   
+                    that.byId("LogList").setModel(otreemodel).expandToLevel(1)
+                    that.byId("BulKSave").setVisible(true);
+                    that.byId("idHBox1").setVisible(false)
+                    that.byId("idHBox2").setVisible(true)
+
+            },
+            //tabSelection code starts 
+            onTabSelect:function(){
+                if(that.byId("idIconTabBar").mProperties.selectedKey == "Success"){
+                    that.byId("LogList").setVisible(true)
+                    that.byId("idIconTabBar").setVisible(true)
+                    var otreemodel = that.getOwnerComponent().getModel("oGModel");
+                    otreemodel.setData({
+                        res: that.aSucces
+                    });
+                     that.byId("LogList").setModel(otreemodel).expandToLevel(1)
+                     that.byId("BulKSave").setVisible(true);
+                     that.byId("idHBox1").setVisible(false)
+                     that.byId("idHBox2").setVisible(true)
+                }else{
+                    that.byId("LogList").setVisible(true)
+                    that.byId("idIconTabBar").setVisible(true)
+                    var otreemodel = that.getOwnerComponent().getModel("oGModel");
+                    otreemodel.setData({
+                        res: that.aErrorLog
+                    });
+                     that.byId("LogList").setModel(otreemodel).expandToLevel(1)
+                     that.byId("BulKSave").setVisible(false);
+                     that.byId("idHBox1").setVisible(false)
+                     that.byId("idHBox2").setVisible(false)
+                     
+                }
             }
         });
     });
