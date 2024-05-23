@@ -352,7 +352,7 @@
                                                                     value="{CHARVAL_INPUT}"
                                                                     enabled="true"
                                                                     liveChange="onOptEnter"
-                                                                    id=""
+                                                                   
                                                                 />
                                                             </cells>
                                                         </ColumnListItem>

@@ -1408,12 +1408,34 @@ sap.ui.define([
                             Array1[i].TotalPercentage = 100; 
                             that.aSucces.push(Array1[i])
                         }else{
+                            Array1[i].TotalPercentage = parseInt(iTotal)
                             that.aErrorLog.push(Array1[i])
                         }
                     }
                    }
+                   let iMatch = 0;
+                   let iMisMatch= 0;
+                   let op = that.uniqueName.map((e,i)=>{
+                    let temp = Array1.find(element=> element.CHAR_NAME === e.CHAR_NAME)
+                    if(temp == undefined){
+                        that.byId("idIconTabBar").setVisible(false)
+                        MessageToast.show("Please Upload as per Characteristic Name Selections")
+                        return false
+                    }
+                    // else(temp.CHAR_NAME == undefined) {
+                    //     iMisMatch++
+                    // }
+                    else{
+                        e.CHAR_NAME = temp.CHAR_NAME;
+                        iMatch++
+                    }
+                    return e;
+                  })
+                  if(iMatch == Array1.length){
+                    console.log(op)
                    that.byId("LogList").setVisible(true)
-                   that.byId("idIconTabBar").setVisible(true)
+                   that.byId("idIconTabBar").setVisible(true);
+                   that.byId("idIconTabBar").setSelectedKey("Success")
                    var otreemodel = that.getOwnerComponent().getModel("oGModel");
                    otreemodel.setData({
                        res: that.aSucces
@@ -1423,6 +1445,13 @@ sap.ui.define([
                     that.byId("BulKSave").setVisible(true);
                     that.byId("idHBox1").setVisible(false)
                     that.byId("idHBox2").setVisible(true)
+
+                  }else{
+                    that.byId("idIconTabBar").setVisible(false)
+                    MessageToast.show("Please Upload as per Characteristic Name Selections")
+                    return false
+                  }
+                  
 
             },
             //tabSelection code starts 
