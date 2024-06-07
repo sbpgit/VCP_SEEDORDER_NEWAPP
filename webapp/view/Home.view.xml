@@ -196,7 +196,7 @@
                                         <SearchField
                                             id="idCharSearch"
                                             liveChange="handleSearch1"
-                                            placeholder="Class/Char Name, Char Value" visible="true"
+                                            placeholder="Char Num/Char Value" 
                                         />
                                     </Toolbar>
                                       <Table id="idCharTable" items="{path: '/items1'}" visible="false" sticky="ColumnHeaders" growingThreshold="1000" growingScrollToLoad="true" growing="true"  selectionChange="onTableItemsSelect" mode="MultiSelect">
@@ -279,7 +279,7 @@
                                     </VBox>
                                       <HBox id="idHBox100" alignItems="End" justifyContent="End" width="100%"  visible="true">
 										<items>
-										<m:Button type="Emphasized" id="idDownLd" text="DownLoad" press="onDownLoad" visible="false" ></m:Button>
+										<m:Button type="Emphasized" id="idDownLd" text="DownLoad" press="onDownLoad"  visible="true" ></m:Button>
                                         <u:FileUploader 
                                         id="FileUploader" 
                                         fileType="XLSX,xlsx" 
@@ -289,7 +289,7 @@
                                         icon="sap-icon://arrow-top" 
                                         uploadOnChange="true" 
                                         change="onUpload"
-                                        visible="false"
+                                        visible="true"
                                         ></u:FileUploader>
 										</items>
 									
