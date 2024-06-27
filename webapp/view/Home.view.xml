@@ -166,20 +166,20 @@
                             >
                                 <WizardStep
                                     id="idUniqueChar"
-                                    title="Unqiue Characteristics"
+                                    title="Filter Characteristics"
                                     validated="true"
                                 >
-                                    <MessageStrip
+                                    <!-- <MessageStrip
                                         class="sapUiSmallMarginBottom"
                                         text="This is an optional step "
                                         showIcon="true"
-                                    />
-                                    <VBox>
-                                        <Label
+                                    /> -->
+                                    <!-- <HBox> -->
+                                        <!-- <Label
                                             text="Partial Product "
-                                            required="true"
-                                        />
-                                        <m:MultiInput
+                                            required="false"
+                                        /> -->
+                                        <!-- <m:MultiInput
                                             id="idpartInput"
                                             width="400px"
                                             placeholder="Partial Products"
@@ -187,8 +187,19 @@
                                             showValueHelp="true"
                                             valueHelpOnly="true"
                                             valueHelpRequest="handleValueHelp2"
-                                        />
-                                    </VBox>
+                                        /> -->
+                                        <m:Panel id="step2Panel" expand="false" headerText="Filter Characteristics" expandable="true">
+                                        <content>
+                                         <OverflowToolbar>
+                                         <Button id="idPartProd" text="Partial Product" press="handleValueHelp2" type="Emphasized" />
+                                          <ToolbarSpacer/>
+                                          <HBox>
+                                        <Label text="Count of Unique ID:" labelFor="idInput" class="newclass"/>
+                                        <Text id="idInput" text=""  class="inputClass"/>
+                                        <Button id="idCountBtn" text="Show UniqueID" press="onUniqueIdShow" type="Emphasized" class="buttonClass"/>
+                                        </HBox>
+                                        </OverflowToolbar>
+                                    <!-- </HBox> -->
                                     <Toolbar
                                         id="_IDGenToolbar1"
                                         visible="false"
@@ -199,7 +210,9 @@
                                             placeholder="Char Num/Char Value" 
                                         />
                                     </Toolbar>
-                                      <Table id="idCharTable" items="{path: '/items1'}" visible="false" sticky="ColumnHeaders" growingThreshold="1000" growingScrollToLoad="true" growing="true"  selectionChange="onTableItemsSelect" mode="MultiSelect">
+                                      <Table id="idCharTable" items="{path: '/items1', sorter:{path:'CHAR_NUM'}}" visible="false" sticky="ColumnHeaders" 
+                                      growingThreshold="1000"  growingScrollToLoad="true" growing="true"  
+                                      selectionChange="onTableItemsSelect" mode="MultiSelect" updateFinished="" >
                     <columns>
                     <Column id="_IDGenColumn11" hAlign="Center" vAlign="Middle">
                         <Text id="_IDGenText11" text="Characteristic Name" />
@@ -207,7 +220,7 @@
                     <Column id="_IDGenColumn22" hAlign="Center" vAlign="Middle">
                         <Text id="_IDGenText22" text="Characteristic Value"/>
                     </Column>
-                    <Column id="_IDGenColumn23" hAlign="Center" vAlign="Middle" visible="false">
+                    <Column id="_IDGenColumn23" hAlign="Center" vAlign="Middle" visible="true">
                         <Text id="_IDGenText23" text="Characteristic Value Number"/>
                     </Column>
                 </columns>
@@ -246,6 +259,9 @@
                                             </items>
                                         </SegmentedButton>
                                     </HBox>
+                                    </content>
+                                    </m:Panel>
+                                    
                                 </WizardStep>
                                 <WizardStep
                                     id="idCharOptPer"
@@ -254,11 +270,11 @@
                                     title="Characteristic Value Option Percentage"
                                     
                                 >
-                                <MessageStrip
+                                <!-- <MessageStrip
                                         class="sapUiSmallMarginBottom"
                                         text="This is a compulsory step to generate seed orders "
                                         showIcon="true"
-                                    />
+                                    /> -->
                                     <VBox>
                                         <Label
                                             text="Characteristic Name"
@@ -279,7 +295,7 @@
                                     </VBox>
                                       <HBox id="idHBox100" alignItems="End" justifyContent="End" width="100%"  visible="true">
 										<items>
-										<m:Button type="Emphasized" id="idDownLd" text="DownLoad" press="onDownLoad"  visible="true" ></m:Button>
+										<m:Button type="Emphasized" id="idDownLd" text="Download" press="onDownLoad"  visible="true" ></m:Button>
                                         <u:FileUploader 
                                         id="FileUploader" 
                                         fileType="XLSX,xlsx" 
@@ -350,7 +366,7 @@
                                                                 </VBox>
                                                                 <Input
                                                                     value="{CHARVAL_INPUT}"
-                                                                    enabled="true"
+                                                                    enabled="{ENABLED}"
                                                                     liveChange="onOptEnter"
                                                                    
                                                                 />
@@ -451,7 +467,7 @@
     <footer>
     <OverflowToolbar>
                 <ToolbarSpacer/>
-                <Button id="idGenSeedOrder" text="Generate Seed Order" enabled="false" press="onGenSeedOrder"/>
+                <Button id="idGenSeedOrder" text="Generate Seed Order" enabled="true" press="onGenSeedOrder"/>
                 <!-- <Button text="Cancel"/> -->
             </OverflowToolbar>
             </footer>

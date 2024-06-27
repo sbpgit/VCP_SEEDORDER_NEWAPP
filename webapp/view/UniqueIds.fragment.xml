@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" showFooter="true">
+<SelectDialog id="idUniqueDetails" title="Unique Id's" rememberSelections="true" search="handleSearch" liveChange="handleSearch"
+		confirm="" cancel="handleClose" multiSelect="false"  contentWidth="320px" items="{/uniqueDetails}" 
+        selectionChange="" growing="true" >
+		<StandardListItem title="{UNIQUE_ID}" description="{UNIQUE_ID}" type="Active"/>
+	</SelectDialog>                   
+</core:FragmentDefinition>
