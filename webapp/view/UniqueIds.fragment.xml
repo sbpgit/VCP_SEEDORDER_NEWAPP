@@ -1,7 +1,25 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" showFooter="true">
-<SelectDialog id="idUniqueDetails" title="Unique Id's" rememberSelections="true" search="handleSearch" liveChange="handleSearch"
+<!-- <SelectDialog id="idUniqueDetails" title="Unique Id's" rememberSelections="true" search="handleSearch" liveChange="handleSearch"
 		confirm="" cancel="handleClose" multiSelect="false"  contentWidth="320px" items="{/uniqueDetails}" 
         selectionChange="" growing="true" >
-		<StandardListItem title="{UNIQUE_ID}" description="{UNIQUE_ID}" type="Active"/>
-	</SelectDialog>                   
+		<StandardListItem title="{UNIQUE_ID}" description="{UNIQUE_DESC}" type="Active"/>
+	</SelectDialog>                    -->
+	<Dialog title="Characteristics" contentWidth="100px" titleAlignment="Center" showHeader="false">
+	<Table  id="idUniqueDetails" items="{path: '/uniqueDetails'}" rememberSelections="false"  sticky="ColumnHeaders" >
+	<headerToolbar>
+	<OverflowToolbar >
+	<SearchField id="idUniqueSearch" liveChange="handleSearch" change="handleSearch" width="auto"></SearchField></OverflowToolbar></headerToolbar>
+	 <columns>
+                        <Column hAlign="Center" >
+                                <Text text="Unique ID" />
+                            </Column>
+							</columns>
+							<ColumnListItem >
+							<cells>
+							<Link text="{UNIQUE_ID}" press="onUniqueIdPress">
+							</Link>
+							</cells>
+							</ColumnListItem>
+	</Table>
+	</Dialog>
 </core:FragmentDefinition>

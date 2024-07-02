@@ -121,7 +121,7 @@
                             text="Customer Group"
                             required="true"
                         />
-                        <Input
+                        <MultiInput
                             id="idCustGrp"
                             placeholder="Customer Group"
                             value=""
@@ -392,7 +392,7 @@
                             </m:IconTabFilter>
                             <m:IconTabSeparator/>
                             <m:IconTabFilter 
-                            text="Error Log"
+                            text="Error"
                             key="Error"
                             iconColor="Negative"
                             ></m:IconTabFilter>
@@ -467,7 +467,7 @@
     <footer>
     <OverflowToolbar>
                 <ToolbarSpacer/>
-                <Button id="idGenSeedOrder" text="Generate Seed Order" enabled="true" press="onGenSeedOrder"/>
+                <Button id="idGenSeedOrder" text="Generate Seed Order" enabled="false" press="onGenSeedOrder"/>
                 <!-- <Button text="Cancel"/> -->
             </OverflowToolbar>
             </footer>

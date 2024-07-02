@@ -30,8 +30,8 @@ xmlns:l="sap.ui.layout"
 			
 		</VBox>
 		<buttons>
-			<Button type='Ghost' text="{i18n>save}" press="onSaveOrder"></Button>
-			<Button type='Reject' text="{i18n>close}" press="onCancelOrder"></Button>
+			<Button type='Ghost' text="Save" press="onSaveOrder"></Button>
+			<Button type='Reject' text="Close" press="onCancelOrder"></Button>
 		</buttons>
 	</Dialog>
 </core:FragmentDefinition>
