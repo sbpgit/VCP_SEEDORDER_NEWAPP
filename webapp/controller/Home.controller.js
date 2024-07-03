@@ -168,7 +168,7 @@ sap.ui.define([
                     success: function (oData) {
                         that.prodModel1.setData({ prodDetails: oData.results });
                         sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
-                        // sap.ui.core.BusyIndicator.hide()
+                        sap.ui.core.BusyIndicator.hide()
                     },
                     error: function () {
                         sap.ui.core.BusyIndicator.hide();
@@ -176,21 +176,21 @@ sap.ui.define([
                     },
                 });
 
-                this.getOwnerComponent().getModel("BModel").read("/getProdClsChar", {
-                    success: function (oData) {
-                        that.allCharacterstics = [];
-                        for (let i = 0; i < oData.results.length; i++) {
-                            that.loadArray.push(oData.results[i]);
-                        }
-                        let aDistinct = that.removeDuplicate(that.loadArray, 'CHAR_NAME');
-                        that.allCharacterstics = that.loadArray;
-                        sap.ui.core.BusyIndicator.hide()
-                    },
-                    error: function () {
-                        sap.ui.core.BusyIndicator.hide()
-                        MessageToast.show("Failed to get characteristics");
-                    },
-                });
+                // this.getOwnerComponent().getModel("BModel").read("/getProdClsChar", {
+                //     success: function (oData) {
+                //         that.allCharacterstics = [];
+                //         for (let i = 0; i < oData.results.length; i++) {
+                //             that.loadArray.push(oData.results[i]);
+                //         }
+                //         let aDistinct = that.removeDuplicate(that.loadArray, 'CHAR_NAME');
+                //         that.allCharacterstics = that.loadArray;
+                //         sap.ui.core.BusyIndicator.hide()
+                //     },
+                //     error: function () {
+                //         sap.ui.core.BusyIndicator.hide()
+                //         MessageToast.show("Failed to get characteristics");
+                //     },
+                // });
 
                 // this.getOwnerComponent().getModel("BModel").read("/getLocProdChars", {
                 //     success: function (oData) {
@@ -273,7 +273,7 @@ sap.ui.define([
                             that.locModel.setData({ locDetails: [] });
                             sap.ui.getCore().byId("LocationList").setModel(that.locModel);
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
-                            MessageToast.show("No factory locations available for selected product");
+                            MessageToast.show("No locations available for selected product");
                         }
                         // if (that.oGModel.getProperty("/resetFlag") !== "X") {
                         that.byId("idloc").setValue();
@@ -595,7 +595,7 @@ sap.ui.define([
                             new Filter("PRODUCT_ID", FilterOperator.EQ, prodItem)
                         ],
                         success: function (oData) {
-                            // that.loadArray = oData.results;
+                            that.loadArray = oData.results;
                             that.loadArray1 = that.removeDuplicates(oData.results, "CHAR_NAME");
                             that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                             sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
@@ -996,7 +996,7 @@ sap.ui.define([
             /**
             * On press of Save in Step 2 on wizard 
             * */
-            onCharSave: async function (oEvent) {
+            onCharSave:  function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
                 var objectData = {}, objectArray = [], count = 0;
                 var aTreeBoxItems = that.byId("LogList").getModel().getData().res
@@ -1106,7 +1106,7 @@ sap.ui.define([
             /**
              * On press of save in Step 1 in wizard 
              * */
-            onCharsLoad: async function () {
+            onCharsLoad:  function () {
                 sap.ui.core.BusyIndicator.show()
                 var charItems = {}, charArray = [];
                 var table = that.byId("idCharTable");
@@ -1731,36 +1731,61 @@ sap.ui.define([
                 };
                 reader.readAsBinaryString(file);
             },
-            Emport: function (array) {
-                // that.byId("idVBox").setVisible(false)
+            Emport:  function (array) {
+                that.byId("idVBox").setVisible(false);
+                var selectedProduct = that.byId("prodInput").getValue();
                 var oModel = that.getOwnerComponent().getModel("oGModel");
                 oModel.setProperty("/", array)
                 var otreemodel = that.getOwnerComponent().getModel("oGModel");
                 // debugger;
                 // var aValidArray= []
-                for (let i = 0; i < that.loadArray.length; i++) {
-                    for (let k = 0; k < array.length; k++) {
-                        if (that.loadArray[i].CHAR_NAME == array[k].Characteristic_Name && that.loadArray[i].CHAR_VALUE == array[k].Characteristic_Value && that.loadArray[i].CHARVAL_DESC == array[k].Characteristic_Value_Desc) {
-                            array[k].CHARVAL_NUM = that.loadArray[i].CHARVAL_NUM
-                            array[k].CHAR_NUM = that.loadArray[i].CHAR_NUM
+                for (let i = 0; i < array.length; i++) {
+                    for (let k = 0; k < that.loadArray.length; k++) {
+                        if (that.loadArray[k].PRODUCT_ID === selectedProduct && that.loadArray[k].CHAR_NAME == array[i].Characteristic_Name && that.loadArray[k].CHAR_VALUE == array[i].Characteristic_Value) {
+                            array[i].CHARVAL_NUM = that.loadArray[k].CHARVAL_NUM
+                            array[i].CHAR_NUM = that.loadArray[k].CHAR_NUM
                         }
                     }
                 }
-                console.log(array)
+                var targetNames = array.map(item => item.Characteristic_Name);
+
+                // Filter that.loadArray1 based on targetNames
+                var filteredLoadArray1 = that.loadArray1.filter(item => targetNames.includes(item.CHAR_NAME));
+
+                var resultArray = filteredLoadArray1.map(item => ({
+                    CHAR_NAME: item.CHAR_NAME,
+                    CHARVAL_NUM: item.CHARVAL_NUM,
+                    CHAR_NUM: item.CHAR_NUM,
+                }));
+                if(resultArray.length <= 0){
+                    MessageToast.show("No Unique Characteristics for this Product ID")
+                    return false
+                }
+
+                // var Prod = that.byId("prodInput").getValue()
+                // var aProd = that.loadArray1.filter(a => a.PRODUCT_ID === Prod);
+                // if (aProd.length < 0) {
+                //     MessageToast.show("No Unique Characteristics for this Product ID")
+                //     return false
+                // }
+
+                // var aCharaUniqueIDs = await that.getUniqueCharacteristics(Prod);
+                // console.log(aCharaUniqueIDs)
+                //  console.log(array)
                 var SubResults = array;
                 var Array1 = [];
                 var dArray = [];
                 // var Total = 100;
                 var oTableBind = [];
-                for(let i = 0; i< SubResults.length; i++){
-                        oTableBind.push({
-                            CHAR_NAME: SubResults[i].Characteristic_Name,
-                            child: that.newChildArray(SubResults[i].CHAR_NUM)
-                        });
-                        oTableBind[i].child.push({
-                            CHAR_VALUE: "Total Percentage",
-                            CHARVAL_DESC: "(Sum value to be equal to 100)"
-                        });
+                for (let i = 0; i < SubResults.length; i++) {
+                    oTableBind.push({
+                        CHAR_NAME: SubResults[i].Characteristic_Name,
+                        child: that.newChildArray(SubResults[i].CHAR_NUM)
+                    });
+                    oTableBind[i].child.push({
+                        CHAR_VALUE: "Total Percentage",
+                        CHARVAL_DESC: "(Sum value to be equal to 100)"
+                    });
                 }
                 var UniWeek = {};
                 var NOC = oTableBind.filter(function (obj) {
@@ -1783,7 +1808,7 @@ sap.ui.define([
                                 CHARVAL_NUM: SubResults[i].CHARVAL_NUM,
                                 CHAR_NUM: SubResults[i].CHAR_NUM,
                                 OPT_PERCENT: (SubResults[i].Option_Percentage),
-                              
+
                                 child: true,
                                 parent: false,
                             }]
@@ -1798,7 +1823,7 @@ sap.ui.define([
                             CHARVAL_NUM: SubResults[i].CHARVAL_NUM,
                             CHAR_NUM: SubResults[i].CHAR_NUM,
                             OPT_PERCENT: (SubResults[i].Option_Percentage),
-                           
+
                             child: true,
                             parent: false,
                         }
@@ -1823,7 +1848,7 @@ sap.ui.define([
                 //                                     return false
                 //                                 }
                 //                             }
-                                           
+
                 //                         }
                 //                     }
                 //                 }
@@ -1832,12 +1857,13 @@ sap.ui.define([
                 //     }
                 // }
                 let aFinalData = [];
+                let aNonValid = [];
                 for (let i = 0; i < Array1.length; i++) {
                     let matched = false;
                     for (let y = 0; y < NOC.length; y++) {
                         if (Array1[i].CHAR_NAME === NOC[y].CHAR_NAME) {
                             matched = true;
-                            
+
                             for (let k = 0; k < Array1[i].children.length; k++) {
                                 // Check corresponding child in NOC
                                 if (NOC[y].child[k].CHARVAL_INPUT === "") {
@@ -1852,11 +1878,9 @@ sap.ui.define([
                                 } else if (NOC[y].child[k].CHARVAL_INPUT === "0") {
                                     // Condition where CHARVAL_INPUT is "0"
                                     // Array1.OPT_PERCENT should include "No Unique ID"
-                                    if (Array1[i].children[k].OPT_PERCENT.includes("No Unique ID")) {
-                                        aFinalData.push(Array1[i]);
-                                    } else {
-                                        sap.m.MessageToast.show("This file contains Unique non ID characterictics");
-                                        return false;
+                                    if (parseInt(Array1[i].children[k].OPT_PERCENT) > 0) {
+                                        Array1[i].children[k].COMMENT = "No Unique Id's available for this characteristic value"
+                                        aNonValid.push(Array1[i]);
                                     }
                                 }
                             }
@@ -1864,18 +1888,21 @@ sap.ui.define([
                         }
                     }
                     if (!matched) {
-                        sap.m.MessageToast.show("No matching CHAR_NAME found in NOC");
+                        sap.m.MessageToast.show("No matching CHAR_NAME found");
                         return false;
                     }
                 }
                 var UniWeek = {};
-                var DOC = aFinalData.filter(function (obj) {
+                var filteredDOC = aFinalData.filter(function (obj) {
                     if (!UniWeek[obj.CHAR_NAME]) {
                         UniWeek[obj.CHAR_NAME] = true;
                         return true;
                     }
                     return false;
                 });
+                var nonValidSet = new Set(aNonValid.map(item => item.CHAR_NAME));
+                var DOC = filteredDOC.filter(item => !nonValidSet.has(item.CHAR_NAME));
+
                 that.aSucces = [];
                 that.aErrorLog = [];
                 that.aValidZeros = [];
@@ -1884,25 +1911,25 @@ sap.ui.define([
                         var iTotal = 0;
                         for (let j = 0; j < DOC[i].children.length; j++) {
                             if (DOC[i].children[j]) {
-                                if((DOC[i].children[j].OPT_PERCENT).includes("No Unique ID") ){
+                                if ((DOC[i].children[j].OPT_PERCENT).includes("No Unique ID")) {
 
-                                }else{
+                                } else {
                                     iTotal += parseInt(DOC[i].children[j].OPT_PERCENT)
                                 }
-                               
+
                             }
                         }
                         if (iTotal == parseInt(100)) {
                             DOC[i].TotalPercentage = 100;
                             that.aSucces.push(DOC[i])
-                        } else if(iTotal == parseInt(0)){
+                        } else if (iTotal == parseInt(0)) {
                             that.aValidZeros.push(DOC[i])
-                         
-                        }else{
-                            if(iTotal > 100){
+
+                        } else {
+                            if (iTotal > 100) {
                                 DOC[i].COMMENT = "Quantity More than 100"
                             }
-                            else{
+                            else {
                                 DOC[i].COMMENT = "Quantity Less than 100"
                             }
                             DOC[i].TotalPercentage = parseInt(iTotal)
@@ -1910,19 +1937,31 @@ sap.ui.define([
                         }
                     }
                 }
-                if(that.aSucces.length == 0 && that.aErrorLog.length == 0 ){
+                
+                that.aErrorLog = that.aErrorLog.concat(aNonValid)
+                // let duplicates = new Set(that.aErrorLog.map(item => item.CHAR_NAME));
+                // var aTotalError = that.aErrorLog.filter(item => !duplicates.has(item.CHAR_NAME));
+                var aTotalError = [...new Set(that.aErrorLog)];
+
+                that.aErrorLog = aTotalError
+                if (that.aSucces.length == 0 && that.aErrorLog.length == 0) {
                     MessageToast.show("All the values contains 0  ")
                     that.byId("idIconTabBar").setVisible(false)
                     return false
-                }else{
+                } else {
                     if (that.byId("idCharName").getTokens().length > 0) {
                         let iMatch = 0;
-                        if (that.uniqueName.length == DOC.length) {
+                        if (that.uniqueName.length == (NOC.length)) {
+                            // var LOC = that.aSucces.push(that.aErrorLog)
+                            // merge array1 and array2
+                           const LOC = [...that.aSucces, ...that.aErrorLog, ...that.aValidZeros]
+
+
                             let op = that.uniqueName.map((e, i) => {
-                                let temp = DOC.find(element => element.CHAR_NAME === e.CHAR_NAME)
+                                let temp = NOC.find(element => element.CHAR_NAME === e.CHAR_NAME)
                                 if (temp == undefined) {
                                     that.byId("idIconTabBar").setVisible(false)
-                                    MessageToast.show("Please Upload as per Characteristic Name Selections")
+                                    MessageToast.show("Characteristic values doesn't belong to selected product. Please upload correct characteristic values")
                                     return false
                                 }
                                 else {
@@ -1931,7 +1970,7 @@ sap.ui.define([
                                 }
                                 return e;
                             })
-                            if (iMatch == DOC.length) {
+                            if (iMatch == NOC.length) {
                                 console.log(op)
                                 that.byId("LogList").setVisible(true)
                                 that.byId("idIconTabBar").setVisible(true);
@@ -1940,21 +1979,21 @@ sap.ui.define([
                                 otreemodel.setData({
                                     res: that.aSucces
                                 });
-    
+
                                 that.byId("LogList").setModel(otreemodel).expandToLevel(1)
                                 that.byId("BulKSave").setVisible(true);
                                 // that.byId("idHBox1").setVisible(false)
                                 // that.byId("idHBox2").setVisible(true)
-    
+
                             } else {
                                 that.byId("idIconTabBar").setVisible(false)
-                                MessageToast.show("Please Upload as per Characteristic Name Selections")
+                                MessageToast.show("Characteristic values doesn't belong to selected product. Please upload correct characteristic values")
                                 return false
                             }
-    
+
                         } else {
                             that.byId("idIconTabBar").setVisible(false)
-                            MessageToast.show("Please Upload as per Characteristic Name Selections")
+                            MessageToast.show("Characteristic values doesn't belong to selected product. Please upload correct characteristic values")
                             return false
                         }
                     } else {

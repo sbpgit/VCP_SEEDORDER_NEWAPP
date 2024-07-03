@@ -436,7 +436,16 @@
                     </m:VBox>                </table:template>
             </table:Column>
         </table:columns>
-        
+        <table:Column >
+            <m:Label wrapping="true" text="Comments" >
+            </m:Label>
+            <table:template>
+            <m:VBox >
+            <m:Text text="{COMMENT}" visible="{=${parent}}"></m:Text>
+            <m:Text text="{COMMENT}" visible="{=!${parent}}" />
+            </m:VBox>
+            </table:template>
+            </table:Column>
         </table:TreeTable>
         
                                     <HBox id="idHBox2" alignItems="End" justifyContent="End" width="100%" visible="false">
