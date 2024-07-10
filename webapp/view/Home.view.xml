@@ -280,7 +280,7 @@
                                             text="Characteristic Name"
                                             labelFor="idCharName"
                                             id="idLabelText"
-                                            required="true"
+                                            required="false"
                                         />
                                         <MultiInput
                                             id="idCharName"
