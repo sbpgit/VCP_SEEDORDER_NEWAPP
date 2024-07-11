@@ -1430,25 +1430,19 @@ sap.ui.define([
                         FROMDATE: fromDate,
                         TODATE: toDate
                     };
-                    if (i === customerGroup.length - 1) {
-                        var Obj = {
-                            data: data,
-                            cron: "",
-                            time: aScheduleSEDT.oneTime,
-                            active: true,
-                            startTime: that.addMinutesToDateTime(aScheduleSEDT.dsSDate, 2),
-                            endTime: that.addMinutesToDateTime(aScheduleSEDT.dsEDate, 2)
-                        }
+                    if (i === 0) {
+                        count = count;
                     }
                     else {
-                        var Obj = {
-                            data: data,
-                            cron: "",
-                            time: aScheduleSEDT.oneTime,
-                            active: true,
-                            startTime: aScheduleSEDT.dsSDate,
-                            endTime: aScheduleSEDT.dsEDate,
-                        }
+                        count = count + 2;
+                    }
+                    var Obj = {
+                        data: data,
+                        cron: "",
+                        time: aScheduleSEDT.oneTime,
+                        active: true,
+                        startTime: that.addMinutesToDateTime(aScheduleSEDT.dsSDate, count),
+                        endTime: that.addMinutesToDateTime(aScheduleSEDT.dsEDate, count)
                     }
                     newArray.push(Obj);
                 }
@@ -1462,14 +1456,7 @@ sap.ui.define([
                     startTime: aScheduleSEDT.djSdate,
                     endTime: aScheduleSEDT.djEdate,
                     createdAt: aScheduleSEDT.djSdate,
-                    // schedules: [{
-                    //     data: data,
-                    //     cron: "",
-                    //     time: aScheduleSEDT.oneTime,
-                    //     active: true,
-                    //     startTime: aScheduleSEDT.dsSDate,
-                    //     endTime: aScheduleSEDT.dsEDate,
-                    // }]
+
                     schedules: newArray
                 };
                 this.getOwnerComponent().getModel("JModel").callFunction("/addMLJob", {
