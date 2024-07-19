@@ -23,12 +23,12 @@
                      <HBox>
                         <!-- <Label id="idVariantName" required="false" text="" class="Text"/>
                         <ToggleButton id="idDropDown" icon="sap-icon://slim-arrow-down" press="onDropDownPress"/>                   -->
-                        <Title
+                        <!-- <Title
                             text="{i18n>title}"
                             class="boldText"
                             titleAlignment="Center"
                             wrapping="true"
-                        />
+                        /> -->
                          </HBox>
                     </HBox>
                 </ux:expandedHeading>
@@ -112,6 +112,7 @@
                             displayFormat="yyyy-MM-dd"
                             change="handleDateChange"
                             maxDate=""
+                            class="disabledInput"
                         />
                     </VBox>
                     <!-- <HBox> -->
@@ -385,14 +386,14 @@
                             >
                             <m:items>
                             <m:IconTabFilter 
-                             text="Success"
+                             text="Valid"
                              iconColor="Positive"
                             
                                     key="Success" >
                             </m:IconTabFilter>
                             <m:IconTabSeparator/>
                             <m:IconTabFilter 
-                            text="Error"
+                            text="In-Valid"
                             key="Error"
                             iconColor="Negative"
                             ></m:IconTabFilter>

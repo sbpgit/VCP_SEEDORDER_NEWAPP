@@ -295,7 +295,12 @@ sap.ui.define([
                         that.emptyModel2.setData({ res: [] });
                         that.byId("LogList").setModel(that.emptyModel2);
                         that.byId("idIconTabBar").setVisible(false);
-                        sap.ui.getCore().byId("custGrpList").clearSelection()
+                        sap.ui.getCore().byId("custGrpList").clearSelection();
+                        that.byId("idInput").setText();
+                        that.partModel.setData({ partDetails: [] });
+                        sap.ui.getCore().byId("partProdSlct").clearSelection();
+                        sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
+                        sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
                         // }
                         sap.ui.core.BusyIndicator.hide()
                     },
@@ -312,6 +317,7 @@ sap.ui.define([
             handleLocSelection: function (oEvent) {
                 that.selectedChars = [], that.uniqueIds = [];
                 sap.ui.core.BusyIndicator.show()
+                var sProduct = that.byId("prodInput").getValue();
                 var selectedLocItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("idloc").setValue(selectedLocItem);
                 this.getOwnerComponent().getModel("BModel").read("/getCustgroup", {
@@ -322,7 +328,7 @@ sap.ui.define([
 
                         sap.ui.core.BusyIndicator.hide()
                     },
-                    error: function () {
+                    error: function (e) {
                         sap.ui.core.BusyIndicator.hide();
                         MessageToast.show("Failed to get Customer Group");
                     }
@@ -363,6 +369,11 @@ sap.ui.define([
                 that.byId("LogList").setModel(that.emptyModel2)
                 that.byId("idIconTabBar").setVisible(false);
                 sap.ui.getCore().byId("custGrpList").clearSelection();
+                sap.ui.getCore().byId("partProdSlct").clearSelection();
+                sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
+                that.byId("idInput").setText();
+                that.partModel.setData({ partDetails: [] });
+                sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
                 // that.byId("idHBox100").setVisible(false);
             },
             /**
@@ -530,19 +541,22 @@ sap.ui.define([
                 oFilters.push(new Filter("UID_TYPE",FilterOperator.EQ,"U"));
 
                 if (prodItem && locItem && dateRange && customerGroup) {
-                    this.getOwnerComponent().getModel("BModel").read("/getUniqueItem", {
-                        filters: [oFilters],
+                    this.getOwnerComponent().getModel("BModel").callFunction("/getUniqueIds", {
+                        method: "GET",
+                        urlParameters: {
+                            PRODUCT_ID: prodItem,
+                            UID_TYPE: "U"
+                        },
                         success: function (oData) {
-                            if (oData.results.length > 0) {
+                            if (oData.getUniqueIds.length > 0) {
                                 that.totalUniqueIds = [], that.uniqueIds1 = [];
                                 that.count1 = 0;
-                                that.totalUniqueIds = oData.results;
-                                that.uniqueIds1 = that.removeDuplicates(oData.results, 'UNIQUE_ID');
+                                that.totalUniqueIds = JSON.parse(oData.getUniqueIds);
+                                that.uniqueIds1 = that.removeDuplicates(that.totalUniqueIds, 'UNIQUE_ID');
                                 that.count1 = that.uniqueIds1.length;
                                 that.byId("idInput").setText(that.count1);
                                 that.uniqueIds = that.uniqueIds1;
-                                // that.newUniqueMode.setData({uniqueDetails:that.uniqueIds1});
-                                // sap.ui.getCore().byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                
                                 sap.ui.core.BusyIndicator.hide();
                             }
                         },
@@ -566,14 +580,18 @@ sap.ui.define([
                                 }
                                 if (that.partProdItems.length > 0) {
                                     that.partModel.setData({ partDetails: that.partProdItems });
+                                    sap.ui.getCore().byId("partProdSlct").clearSelection();
                                     sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
+                                    that.byId("idPartProd").setEnabled(true);
                                 }
                                 else {
-                                    MessageToast.show("No Partial products available for selected Config Product/Location")
+                                    MessageToast.show("No Partial products available for selected Config Product/Location");
+                                    that.byId("idPartProd").setEnabled(false);
                                 }
                             }
                             else {
-                                MessageToast.show("No Partial products available for selected Config Product/Location")
+                                MessageToast.show("No Partial products available for selected Config Product/Location");
+                                that.byId("idPartProd").setEnabled(false);
                             }
                         },
                         error: function () {
@@ -679,7 +697,8 @@ sap.ui.define([
                                 }
                                 if (count === 1) {
                                     that.byId("idInput").setText('0');
-                                    MessageToast.show("No combination of Unique Id's available for selections")
+                                    MessageToast.show("No combination of Unique Id's available for selections");
+                                    that.byId("idGenSeedOrder").setEnabled(false);
                                 }
                                 else {
                                     var uniqueIds = that.getMatchingUIDs(array);
@@ -693,6 +712,26 @@ sap.ui.define([
                                     that.uniqueIds = [...new Set(that.uniqueIds)];
                                     that.byId("idInput").setText(that.uniqueIds.length);
                                     MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
+                                    if(that.byId("idVBox").getItems().length === 0){
+                                        that.byId("idGenSeedOrder").setEnabled(true);
+                                        }
+                                        else{
+                                            var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                            for(var k=0;k<oDataSet.length;k++){
+                                                var child = oDataSet[k].child;
+                                                if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                                    count++;
+                                                    break;
+                                                }
+                                            }
+                                            if(count !== 0){
+                                                that.byId("idGenSeedOrder").setEnabled(false);
+                                                MessageToast.show("Total Percentage not equal to 100 in step2");
+                                            }
+                                            else{
+                                                that.byId("idGenSeedOrder").setEnabled(true);
+                                            }
+                                        }
                                 }
                                 sap.ui.core.BusyIndicator.hide()
                             }
@@ -737,7 +776,8 @@ sap.ui.define([
                         }
                         if (count === 1) {
                             that.byId("idInput").setText('0');
-                            MessageToast.show("No combination of Unique Id's available for selections")
+                            MessageToast.show("No combination of Unique Id's available for selections");
+                            that.byId("idGenSeedOrder").setEnabled(false);
                         }
                         else {
                             var uniqueIds = that.getMatchingUIDs(array);
@@ -751,6 +791,26 @@ sap.ui.define([
                             that.uniqueIds = [...new Set(that.uniqueIds)];
                             that.byId("idInput").setText(that.uniqueIds.length);
                             MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
+                            if(that.byId("idVBox").getItems().length === 0){
+                                that.byId("idGenSeedOrder").setEnabled(true);
+                                }
+                                else{
+                                    var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                    for(var k=0;k<oDataSet.length;k++){
+                                        var child = oDataSet[k].child;
+                                        if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                            count++;
+                                            break;
+                                        }
+                                    }
+                                    if(count !== 0){
+                                        that.byId("idGenSeedOrder").setEnabled(false);
+                                        MessageToast.show("Total Percentage not equal to 100 in step2");
+                                    }
+                                    else{
+                                        that.byId("idGenSeedOrder").setEnabled(true);
+                                    }
+                                }
                         }
                     }
                     else {
@@ -896,10 +956,15 @@ sap.ui.define([
                     }
                 }
                 if (count === 0) {
-                    that.byId("idSaveBtn").setEnabled(true);
+                    if(that.byId("idInput").getText() !=="0"){
+                        that.byId("idGenSeedOrder").setEnabled(true);
+                        }
+                        else{
+                            MessageToast.show("No combination of Unique Id's available for selections in Step1");
+                        }
                 }
                 else {
-                    that.byId("idSaveBtn").setEnabled(false);
+                    that.byId("idGenSeedOrder").setEnabled(false);
                 }
                 // Use the map method to create a new array with the updated value
                 that.uniqueTabNames = that.uniqueTabNames.map(obj =>
@@ -1171,7 +1236,8 @@ sap.ui.define([
                     }
                     if (count === 1) {
                         that.byId("idInput").setText('0');
-                        MessageToast.show("No combination of Unique Id's available for selections")
+                        MessageToast.show("No combination of Unique Id's available for selections");
+                        that.byId("idGenSeedOrder").setEnabled(false);
                     }
                     else {
                         var uniqueIds = that.getMatchingUIDs(array);
@@ -1185,6 +1251,26 @@ sap.ui.define([
                         that.uniqueIds = [...new Set(that.uniqueIds)];
                         that.byId("idInput").setText(uniqueIds.length);
                         MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
+                        if(that.byId("idVBox").getItems().length === 0){
+                            that.byId("idGenSeedOrder").setEnabled(true);
+                            }
+                            else{
+                                var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                for(var k=0;k<oDataSet.length;k++){
+                                    var child = oDataSet[k].child;
+                                    if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                        count++;
+                                        break;
+                                    }
+                                }
+                                if(count !== 0){
+                                    that.byId("idGenSeedOrder").setEnabled(false);
+                                    MessageToast.show("Total Percentage not equal to 100 in step2");
+                                }
+                                else{
+                                    that.byId("idGenSeedOrder").setEnabled(true);
+                                }
+                            }
                     }
                     sap.ui.core.BusyIndicator.hide();
                 }
@@ -1219,7 +1305,8 @@ sap.ui.define([
                         }
                         if (count === 1) {
                             that.byId("idInput").setText('0');
-                            MessageToast.show("No combination of Unique Id's available for selections")
+                            MessageToast.show("No combination of Unique Id's available for selections");
+                            that.byId("idGenSeedOrder").setEnabled(false);
                         }
                         else {
                             var uniqueIds = that.getMatchingUIDs(array);
@@ -1233,6 +1320,26 @@ sap.ui.define([
                             that.uniqueIds = [...new Set(that.uniqueIds)];
                             that.byId("idInput").setText(uniqueIds.length);
                             MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
+                            if(that.byId("idVBox").getItems().length === 0){
+                            that.byId("idGenSeedOrder").setEnabled(true);
+                            }
+                            else{
+                                var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                for(var k=0;k<oDataSet.length;k++){
+                                    var child = oDataSet[k].child;
+                                    if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                        count++;
+                                        break;
+                                    }
+                                }
+                                if(count !== 0){
+                                    that.byId("idGenSeedOrder").setEnabled(false);
+                                    MessageToast.show("Total Percentage not equal to 100 in step2");
+                                }
+                                else{
+                                    that.byId("idGenSeedOrder").setEnabled(true);
+                                }
+                            }
                         }
                         sap.ui.core.BusyIndicator.hide();
                     }
@@ -1272,7 +1379,8 @@ sap.ui.define([
                                 }
                                 if (count === 1) {
                                     that.byId("idInput").setText('0');
-                                    MessageToast.show("No combination of Unique Id's available for selections")
+                                    MessageToast.show("No combination of Unique Id's available for selections");
+                                    that.byId("idGenSeedOrder").setEnabled(false);
                                 }
                                 else {
                                     var uniqueIds = that.getMatchingUIDs(array);
@@ -1286,11 +1394,54 @@ sap.ui.define([
                                     that.uniqueIds = [...new Set(that.uniqueIds)];
                                     that.byId("idInput").setText(uniqueIds.length);
                                     MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
+                                    if(that.byId("idVBox").getItems().length === 0){
+                                        that.byId("idGenSeedOrder").setEnabled(true);
+                                        }
+                                        else{
+                                            var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                            for(var k=0;k<oDataSet.length;k++){
+                                                var child = oDataSet[k].child;
+                                                if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                                    count++;
+                                                    break;
+                                                }
+                                            }
+                                            if(count !== 0){
+                                                that.byId("idGenSeedOrder").setEnabled(false);
+                                                MessageToast.show("Total Percentage not equal to 100 in step2");
+                                            }
+                                            else{
+                                                that.byId("idGenSeedOrder").setEnabled(true);
+                                            }
+                                        }
                                 }
                             }
                             else {
+                                that.uniqueIds = that.uniqueIds1;
+                                // that.newUniqueMode.setData({uniqueDetails:that.uniqueIds1});
+                                // sap.ui.getCore().byId("idUniqueDetails").setModel(that.newUniqueMode);
                                 that.byId("idInput").setText(that.count1);
                                 MessageToast.show("Total Unique ID's count " + that.count1);
+                                if(that.byId("idVBox").getItems().length === 0){
+                                    that.byId("idGenSeedOrder").setEnabled(true);
+                                    }
+                                    else{
+                                        var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                        for(var k=0;k<oDataSet.length;k++){
+                                            var child = oDataSet[k].child;
+                                            if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                                count++;
+                                                break;
+                                            }
+                                        }
+                                        if(count !== 0){
+                                            that.byId("idGenSeedOrder").setEnabled(false);
+                                            MessageToast.show("Total Percentage not equal to 100 in step2");
+                                        }
+                                        else{
+                                            that.byId("idGenSeedOrder").setEnabled(true);
+                                        }
+                                    }
                             }
                         }
                         sap.ui.core.BusyIndicator.hide();
@@ -1975,7 +2126,12 @@ sap.ui.define([
                     that.byId("idGenSeedOrder").setEnabled(false);
                 }
                 else{
+                    if(that.byId("idInput").getText() !=="0"){
                     that.byId("idGenSeedOrder").setEnabled(true);
+                    }
+                    else{
+                        MessageToast.show("No combination of Unique Id's available for selections in Step1");
+                    }
                 }
             },
             //tabSelection code starts 

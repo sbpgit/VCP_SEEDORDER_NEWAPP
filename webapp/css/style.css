@@ -73,3 +73,9 @@ button#container-vcp\.vcpseedordercreationnew---Home--FileUploader-fu_button {ma
 .buttonClass{
     padding-left:20px !important;
 }
+
+
+
+.disabledInput input.sapMInputBaseInner {
+    pointer-events: none;
+}
