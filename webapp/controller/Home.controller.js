@@ -1250,7 +1250,12 @@ sap.ui.define([
                         that.uniqueIds = arrayIds;
                         that.uniqueIds = [...new Set(that.uniqueIds)];
                         that.byId("idInput").setText(uniqueIds.length);
-                        MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
+                        if(uniqueIds.length === 0){
+                            that.byId("idGenSeedOrder").setEnabled(false);
+                            MessageToast.show("No combination of Unique Id's available for selections");
+                        }
+                        else{
+                        MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");                        
                         if(that.byId("idVBox").getItems().length === 0){
                             that.byId("idGenSeedOrder").setEnabled(true);
                             }
@@ -1271,6 +1276,10 @@ sap.ui.define([
                                     that.byId("idGenSeedOrder").setEnabled(true);
                                 }
                             }
+                            if(uniqueIds.length === 0){
+                                that.byId("idGenSeedOrder").setEnabled(false);
+                            }
+                        }
                     }
                     sap.ui.core.BusyIndicator.hide();
                 }
@@ -1319,6 +1328,11 @@ sap.ui.define([
                             that.uniqueIds = arrayIds;
                             that.uniqueIds = [...new Set(that.uniqueIds)];
                             that.byId("idInput").setText(uniqueIds.length);
+                            if(uniqueIds.length === 0){
+                                that.byId("idGenSeedOrder").setEnabled(false);
+                                MessageToast.show("No combination of Unique Id's available for selections");
+                            }
+                            else{
                             MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
                             if(that.byId("idVBox").getItems().length === 0){
                             that.byId("idGenSeedOrder").setEnabled(true);
@@ -1340,6 +1354,10 @@ sap.ui.define([
                                     that.byId("idGenSeedOrder").setEnabled(true);
                                 }
                             }
+                            if(uniqueIds.length === 0){
+                                that.byId("idGenSeedOrder").setEnabled(false);
+                            }
+                        }
                         }
                         sap.ui.core.BusyIndicator.hide();
                     }
@@ -1348,6 +1366,9 @@ sap.ui.define([
                         if (unSelectAll.length === that.allCharacterstics1.length) {
                             that.selectedChars = [], that.uniqueIds = [];
                             that.byId("idInput").setText(that.count1);
+                            if(that.count1.length !== 0){
+                                that.byId("idGenSeedOrder").setEnabled(true);
+                            }
                             MessageToast.show("Total Unique ID's count " + that.count1);
                         }
                         else {
@@ -1393,6 +1414,11 @@ sap.ui.define([
                                     that.uniqueIds = arrayIds;
                                     that.uniqueIds = [...new Set(that.uniqueIds)];
                                     that.byId("idInput").setText(uniqueIds.length);
+                                    if(uniqueIds.length === 0){
+                                        that.byId("idGenSeedOrder").setEnabled(false);
+                                        MessageToast.show("No combination of Unique Id's available for selections");
+                                    }
+                                    else{
                                     MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
                                     if(that.byId("idVBox").getItems().length === 0){
                                         that.byId("idGenSeedOrder").setEnabled(true);
@@ -1414,6 +1440,7 @@ sap.ui.define([
                                                 that.byId("idGenSeedOrder").setEnabled(true);
                                             }
                                         }
+                                    }
                                 }
                             }
                             else {
@@ -1785,7 +1812,8 @@ sap.ui.define([
             onDownLoad: function (oEvent) {
                 var aDown = []
                 var aCols, oSettings, oSheet;
-                var sFileName = "Seed Order Creation - " + new Date().getTime();
+                var sFileName = "Seed Order Creation" ;
+                // + new Date().getTime();
                 if (that.byId("idCharName").getTokens().length <= 0) {
                     var oTableBind = []
                     for (var i = 0; i < that.loadArray1.length; i++) {
@@ -2074,7 +2102,7 @@ sap.ui.define([
                                 let temp = NOC.find(element => element.CHAR_NAME === e.CHAR_NAME)
                                 if (temp == undefined) {
                                     that.byId("idIconTabBar").setVisible(false)
-                                    MessageToast.show("Characteristic values doesn't belong to selected product. Please upload correct characteristic values")
+                                    MessageToast.show("Uploaded file doesn't correspond to selected/downloaded characteristic values. Please upload correct characteristic values file")
                                     return false
                                 }
                                 else {
@@ -2100,13 +2128,13 @@ sap.ui.define([
 
                             } else {
                                 that.byId("idIconTabBar").setVisible(false)
-                                MessageToast.show("Characteristic values doesn't belong to selected product. Please upload correct characteristic values")
+                                MessageToast.show("Uploaded file doesn't correspond to selected/downloaded characteristic values. Please upload correct characteristic values file")
                                 return false
                             }
 
                         } else {
                             that.byId("idIconTabBar").setVisible(false)
-                            MessageToast.show("Characteristic values doesn't belong to selected product. Please upload correct characteristic values")
+                            MessageToast.show("Uploaded file doesn't correspond to selected/downloaded characteristic values. Please upload correct characteristic values file")
                             return false
                         }
                     } else {
