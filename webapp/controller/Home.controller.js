@@ -2182,9 +2182,6 @@ sap.ui.define([
                     });
                     that.byId("LogList").setModel(otreemodel).expandToLevel(1)
                     that.byId("BulKSave").setVisible(false);
-                    // that.byId("idHBox1").setVisible(false)
-                    // that.byId("idHBox2").setVisible(false)
-
                 }
             },
             /**On Press of UniqueID button in step1 */
