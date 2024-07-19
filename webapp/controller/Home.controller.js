@@ -1445,8 +1445,6 @@ sap.ui.define([
                             }
                             else {
                                 that.uniqueIds = that.uniqueIds1;
-                                // that.newUniqueMode.setData({uniqueDetails:that.uniqueIds1});
-                                // sap.ui.getCore().byId("idUniqueDetails").setModel(that.newUniqueMode);
                                 that.byId("idInput").setText(that.count1);
                                 MessageToast.show("Total Unique ID's count " + that.count1);
                                 if(that.byId("idVBox").getItems().length === 0){
