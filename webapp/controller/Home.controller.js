@@ -2251,7 +2251,6 @@ sap.ui.define([
                 sap.ui.getCore().byId("idCharSearch").setValue("");
                 that._valueHelpDialogUniquePrimary.destroy();
                 that._valueHelpDialogUniquePrimary = "";
-                // that.byId("idChars").removeSelections();
             }
         });
     });
