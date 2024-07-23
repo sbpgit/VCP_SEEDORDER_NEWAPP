@@ -307,6 +307,7 @@
                                         uploadOnChange="true" 
                                         change="onUpload"
                                         visible="true"
+                                        sameFilenameAllowed="true"
                                         ></u:FileUploader>
 										</items>
 									
