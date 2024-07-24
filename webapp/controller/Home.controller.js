@@ -1940,6 +1940,7 @@ sap.ui.define([
                 // };
                 // reader.readAsBinaryString(file);
                 MessageToast.show("File Import in-Process");
+                that.byId("idGenSeedOrder").setEnabled(true);
                 this.importExcel(e.getParameter("files") && e.getParameter("files")[0]);
             },
             Emport: function (array) {
@@ -2100,10 +2101,10 @@ sap.ui.define([
 
                         } else {
                             if (iTotal > 100) {
-                                DOC[i].COMMENT = "Quantity More than 100"
+                                DOC[i].COMMENT = "Option Percentage More than 100"
                             }
                             else {
-                                DOC[i].COMMENT = "Quantity Less than 100"
+                                DOC[i].COMMENT = "Option Percentage Less than 100"
                             }
                             DOC[i].TotalPercentage = parseInt(iTotal)
                             that.aErrorLog.push(DOC[i])
