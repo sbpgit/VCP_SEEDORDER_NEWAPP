@@ -2170,10 +2170,9 @@ sap.ui.define([
                             return false
                         }
                     } else {
-                        that.byId("LogList").setVisible(true)
-                        that.byId("idIconTabBar").setVisible(true)
-                        // that.byId("idHBox2").setVisible(true)
-                        that.byId("idIconTabBar").setSelectedKey("Success")
+                        that.byId("LogList").setVisible(true);
+                        that.byId("idIconTabBar").setVisible(true);
+                        that.byId("idIconTabBar").setSelectedKey("Success");
                         otreemodel.setData({
                             res: that.aSucces
                         });
