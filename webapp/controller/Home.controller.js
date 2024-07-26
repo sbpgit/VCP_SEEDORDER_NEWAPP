@@ -7,6 +7,7 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/Dialog",
     "sap/m/library",
+    "sap/ui/export/library",
     "sap/m/Button",
     "sap/m/Text",
     "sap/ui/model/Sorter",
@@ -16,12 +17,13 @@ sap.ui.define([
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller, JSONModel, Fragment, Filter, MessageToast, FilterOperator, Dialog, mobileLibrary, Button, Text, Sorter, MessageBox, Spreadsheet) {
+    function (Controller, JSONModel, Fragment, Filter, MessageToast, FilterOperator, Dialog, mobileLibrary,exportLibrary, Button, Text, Sorter, MessageBox, Spreadsheet) {
         "use strict";
         var that, oGModel;
         var ButtonType = mobileLibrary.ButtonType;
         var DialogType = mobileLibrary.DialogType;
         var aResults;
+        var EdmType = exportLibrary.EdmType;
         return Controller.extend("vcp.vcpseedordercreationnew.controller.Home", {
             onInit: function () {
                 that = this;
@@ -301,6 +303,8 @@ sap.ui.define([
                         sap.ui.getCore().byId("partProdSlct").clearSelection();
                         sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
                         sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
+                        that.newUniqueMode.setData({ uniqueDetails: []});
+                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         // }
                         sap.ui.core.BusyIndicator.hide()
                     },
@@ -375,6 +379,8 @@ sap.ui.define([
                 that.byId("idInput").setText();
                 that.partModel.setData({ partDetails: [] });
                 sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
+                that.newUniqueMode.setData({ uniqueDetails: [] });
+                that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                 // that.byId("idHBox100").setVisible(false);
             },
             /**
@@ -521,7 +527,7 @@ sap.ui.define([
                             })
                         );
                     }
-                    sap.ui.getCore().byId("idUniqueDetails").getBinding("items").filter(oFilters);
+                    that.byId("idUniqueDetails").getBinding("items").filter(oFilters);
                 }
 
             },
@@ -557,7 +563,16 @@ sap.ui.define([
                                 that.count1 = that.uniqueIds1.length;
                                 that.byId("idInput").setText(that.count1);
                                 that.uniqueIds = that.uniqueIds1;
-                                
+                                if (that.count1 !== "0") {
+                                    that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                    
+                                }
+                                else {
+                                    that.newUniqueMode.setData({ uniqueDetails: [] });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                    MessageToast.show("No Unique Id's available to show for the selection");
+                                }
                                 sap.ui.core.BusyIndicator.hide();
                             }
                         },
@@ -586,7 +601,7 @@ sap.ui.define([
                                     that.byId("idPartProd").setEnabled(true);
                                 }
                                 else {
-                                    MessageToast.show("No Partial products available for selected Config Product/Location");
+                                    // MessageToast.show("No Partial products available for selected Config Product/Location");
                                     that.byId("idPartProd").setEnabled(false);
                                 }
                             }
@@ -601,7 +616,7 @@ sap.ui.define([
                         }
                     });
                     tableData.setVisible(true);
-                    that.byId("_IDGenToolbar1").setVisible(true);
+                    // that.byId("_IDGenToolbar1").setVisible(true);
                     this.getOwnerComponent().getModel("BModel").read("/getProdClsChar", {
                         filters: [
                             new Filter("PRODUCT_ID", FilterOperator.EQ, prodItem)
@@ -1255,6 +1270,8 @@ sap.ui.define([
                     if (count === 1) {
                         that.byId("idInput").setText('0');
                         MessageToast.show("No combination of Unique Id's available for selections");
+                        that.newUniqueMode.setData({ uniqueDetails: [] });
+                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);                        
                         that.byId("idGenSeedOrder").setEnabled(false);
                     }
                     else {
@@ -1271,9 +1288,13 @@ sap.ui.define([
                         if(uniqueIds.length === 0){
                             that.byId("idGenSeedOrder").setEnabled(false);
                             MessageToast.show("No combination of Unique Id's available for selections");
+                            that.newUniqueMode.setData({ uniqueDetails: [] });
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         }
                         else{
-                        MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");                        
+                        MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's"); 
+                        that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);                       
                         if(that.byId("idVBox").getItems().length === 0){
                             that.byId("idGenSeedOrder").setEnabled(true);
                             }
@@ -1333,6 +1354,8 @@ sap.ui.define([
                         if (count === 1) {
                             that.byId("idInput").setText('0');
                             MessageToast.show("No combination of Unique Id's available for selections");
+                            that.newUniqueMode.setData({ uniqueDetails: []});
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                             that.byId("idGenSeedOrder").setEnabled(false);
                         }
                         else {
@@ -1349,9 +1372,13 @@ sap.ui.define([
                             if(uniqueIds.length === 0){
                                 that.byId("idGenSeedOrder").setEnabled(false);
                                 MessageToast.show("No combination of Unique Id's available for selections");
+                                that.newUniqueMode.setData({ uniqueDetails: [] });
+                                that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                             }
                             else{
                             MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
+                            that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                             if(that.byId("idVBox").getItems().length === 0){
                             that.byId("idGenSeedOrder").setEnabled(true);
                             }
@@ -1388,6 +1415,8 @@ sap.ui.define([
                                 that.byId("idGenSeedOrder").setEnabled(true);
                             }
                             MessageToast.show("Total Unique ID's count " + that.count1);
+                            that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         }
                         else {
                             var selectedId = oEvent.getParameters().listItem.getCells()[1].getTitle();
@@ -1419,6 +1448,8 @@ sap.ui.define([
                                 if (count === 1) {
                                     that.byId("idInput").setText('0');
                                     MessageToast.show("No combination of Unique Id's available for selections");
+                                    that.newUniqueMode.setData({ uniqueDetails: [] });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     that.byId("idGenSeedOrder").setEnabled(false);
                                 }
                                 else {
@@ -1435,9 +1466,13 @@ sap.ui.define([
                                     if(uniqueIds.length === 0){
                                         that.byId("idGenSeedOrder").setEnabled(false);
                                         MessageToast.show("No combination of Unique Id's available for selections");
+                                        that.newUniqueMode.setData({ uniqueDetails: [] });
+                                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     }
                                     else{
                                     MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
+                                    that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     if(that.byId("idVBox").getItems().length === 0){
                                         that.byId("idGenSeedOrder").setEnabled(true);
                                         }
@@ -1465,6 +1500,8 @@ sap.ui.define([
                                 that.uniqueIds = that.uniqueIds1;
                                 that.byId("idInput").setText(that.count1);
                                 MessageToast.show("Total Unique ID's count " + that.count1);
+                                that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                                that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                 if(that.byId("idVBox").getItems().length === 0){
                                     that.byId("idGenSeedOrder").setEnabled(true);
                                     }
@@ -1897,7 +1934,9 @@ sap.ui.define([
                 var aCols = []
                 for (var j = 0; j < Object.keys(aDown[0]).length; j++) {
                     aCols.push({
-                        property: Object.keys(aDown[0])[j]
+                        property: Object.keys(aDown[0])[j],
+                        type: EdmType.String,
+                        label:Object.keys(aDown[0])[j]                    
                     });
                 }
                 var oSettings = {
@@ -1918,27 +1957,6 @@ sap.ui.define([
 
             // Upload Func Starts
             onUpload: function (e) {
-                // that.byId("idIconTabBar").setVisible(true)
-                // var fileupload = that.getView().byId("FileUploader");
-                // var file = fileupload.oFileUpload.files[0];
-                // var oExcelData = {}
-                // that.filename = file.name;
-                // that.filetype = file.type;
-                // var reader = new FileReader();
-                // reader.onload = function (event) {
-                //     var data = event.target.result;
-                //     var workbook = XLSX.read(data, {
-                //         type: "binary"
-                //     });
-                //     workbook.SheetNames.forEach(function (sheetName) {
-
-                //         oExcelData = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                //         var oData = oExcelData;
-                //         that.Emport(oExcelData);
-                //     });
-
-                // };
-                // reader.readAsBinaryString(file);
                 MessageToast.show("File Import in-Process");
                 that.byId("idGenSeedOrder").setEnabled(true);
                 this.importExcel(e.getParameter("files") && e.getParameter("files")[0]);
@@ -2192,6 +2210,7 @@ sap.ui.define([
                     }
                     else{
                         MessageToast.show("No combination of Unique Id's available for selections in Step1");
+                        // that.byId("idGenSeedOrder").setEnabled(false);
                     }
                 }
             },
