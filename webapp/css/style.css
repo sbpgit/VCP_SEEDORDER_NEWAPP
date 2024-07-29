@@ -80,3 +80,6 @@ button#container-vcp\.vcpseedordercreationnew---Home--FileUploader-fu_button {ma
     pointer-events: none;
 }
 
+[data-style-class=white] {
+    background-color: white !important
+   }

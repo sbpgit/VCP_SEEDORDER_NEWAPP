@@ -12,19 +12,22 @@ sap.ui.define([
     "sap/m/Text",
     "sap/ui/model/Sorter",
     "sap/m/MessageBox",
-    'sap/ui/export/Spreadsheet'
+    'sap/ui/export/Spreadsheet',
+    "../model/formatter"
 ],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller, JSONModel, Fragment, Filter, MessageToast, FilterOperator, Dialog, mobileLibrary,exportLibrary, Button, Text, Sorter, MessageBox, Spreadsheet) {
+    function (Controller, JSONModel, Fragment, Filter, MessageToast, FilterOperator, Dialog, mobileLibrary,exportLibrary, Button, Text, Sorter, MessageBox, Spreadsheet,formatter) {
         "use strict";
         var that, oGModel;
         var ButtonType = mobileLibrary.ButtonType;
         var DialogType = mobileLibrary.DialogType;
         var aResults;
+    
         var EdmType = exportLibrary.EdmType;
         return Controller.extend("vcp.vcpseedordercreationnew.controller.Home", {
+            formatter: formatter,
             onInit: function () {
                 that = this;
                 that.oGModel = that.getOwnerComponent().getModel("oGModel");
@@ -2341,6 +2344,9 @@ sap.ui.define([
                 sap.ui.getCore().byId("idCharSearch").setValue("");
                 that._valueHelpDialogUniquePrimary.destroy();
                 that._valueHelpDialogUniquePrimary = "";
+            },
+            onPanelExpand:function(oEvent){
+                var event = oEvent;
             }
         });
     });

@@ -286,6 +286,7 @@
                                             expandable="true"
                                             expanded="false"
                                             headerText="{CHAR_NAME}"
+                                            expand="onPanelExpand"
                                         >
                                             <content>
                                                 <Table
@@ -330,7 +331,7 @@
                                                                     />
                                                                 </VBox>
                                                                 <Input
-                                                                    value="{CHARVAL_INPUT}"
+                                                                    value="{path:'CHARVAL_INPUT', formatter:'.formatter.formatStyle'}"
                                                                     enabled="{ENABLED}"
                                                                     liveChange="onOptEnter"
                                                                    
