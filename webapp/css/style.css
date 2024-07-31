@@ -1,4 +1,4 @@
-/* Enter your custom styles here */
+Enter your custom styles here
 .idVBox{
     margin-left:0em !important;
 }
@@ -83,3 +83,19 @@ button#container-vcp\.vcpseedordercreationnew---Home--FileUploader-fu_button {ma
 [data-style-class=white] {
     background-color: white !important
    }
+
+
+.whiteClass{
+    background-color: white !important
+   } 
+.panelsettings{
+    margin-top: -10px !important;
+}
+
+/* div#__panel0-content {
+    margin-top: -10px;
+}
+
+div#__panel1-content {
+    margin-top: -10px;
+} */
