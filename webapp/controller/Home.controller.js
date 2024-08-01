@@ -1466,6 +1466,7 @@ sap.ui.define([
                             CHARVAL_NUM: that.allCharacterstics1[i].CHARVAL_NUM
                         }
                         that.selectedChars.push(oEntry);
+                        that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
                     }
 
                             that.newUniqueMode.setData({ uniqueDetails: filterData });
@@ -1580,6 +1581,8 @@ sap.ui.define([
                         CHARVAL_NUM: oEvent.getParameters().listItem.getCells()[2].getText()
                      }
                             that.selectedChars.push(oEntry);
+                            that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
+
                     } else {
 
                         if(oEvent.getParameters().listItems.length > 1){
@@ -1603,6 +1606,14 @@ sap.ui.define([
                         var Charvalue = oEvent.getParameters().listItem.getCells()[1].getTitle() ;           
                              var index = that.selectedChars.findIndex(el=> el.CHAR_NUM === Charnum && el.CHAR_VALUE === Charvalue );
                              that.selectedChars.splice(index, 1);
+
+                             if(that.selectedChars.length === 0){
+                                var filterData = that.oGModel.getProperty("/distUID");
+                                that.newUniqueMode.setData({ uniqueDetails: filterData });
+                                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                        that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
+                                        unselectFlag = "X";
+                             }
                         }
 
                     }
