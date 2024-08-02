@@ -71,7 +71,7 @@
 		<l:PaneContainer resize=".onRootContainerResize">
 			<l:SplitPane requiredParentWidth="400" id="default" >
 				<l:layoutData>
-					<l:SplitterLayoutData  />
+					<l:SplitterLayoutData size="70%"  />
 				</l:layoutData>
 				<Panel showHeader="false" class="panelsettings"  height="500px">
 					<Table id="idCharTable" sticky="ColumnHeaders,HeaderToolbar" items="{path: '/items1', sorter:{path:'CHAR_NUM'}}" visible="false"  growingThreshold="1000"
@@ -80,7 +80,7 @@
 																	<OverflowToolbar >
 																		<Button id="idPartProd" text="Partial Product" press="handleValueHelp2" type="Emphasized"/>
 																		<ToolbarSpacer/>
-																		<SearchField id="idCharSearch" liveChange="handleSearch1" placeholder="Char Num/Char Value" width="auto"/>
+																		<SearchField id="idCharSearch" liveChange="handleSearch1" placeholder="Char Num/Char Value" width="600px"/>
 																	</OverflowToolbar>
 																</headerToolbar>
 																<columns>
@@ -118,7 +118,7 @@
 																	<Label text="Count of Unique ID:" labelFor="idInput" class="newclass"/>
 																	<Text id="idInput" text="" class="inputClass"/>
 																	<ToolbarSpacer/>
-																	<SearchField id="idUniqueSearch" liveChange="handleSearch" change="handleSearch" width="auto" placeholder="Unqiue Id"/>
+																	<SearchField id="idUniqueSearch" liveChange="handleSearch" change="handleSearch" width="200px" placeholder="Unqiue Id"/>
 																</OverflowToolbar>
 															</headerToolbar>
 															<columns>
@@ -225,7 +225,7 @@
 											<Panel id="_IDGenPanelNew" expandable="true" expanded="false" headerText="{CHAR_NAME}" expand="onPanelExpand">
 												<content>
 													<Table id="" items="{path: 'child'}" growingScrollToLoad="true" growingThreshold="1000" growing="true" rememberSelections="false"
-														itemPress="onhandlePress" mode="SingleSelectMaster" selectionChange="onhandlePress" sticky="ColumnHeaders">
+														itemPress="onhandlePress" mode="None" selectionChange="onhandlePress" sticky="ColumnHeaders">
 														<columns>
 															<Column hAlign="Center" vAlign="Middle">
 																<Text text="Characteristic Value"/>
@@ -236,6 +236,9 @@
 														</columns>
 														<items>
 															<ColumnListItem>
+															<customData>
+    														 <core:CustomData key="mydata" value="{CHARVAL_INPUT}" writeToDom="true"></core:CustomData>
+  															 </customData>
 																<cells>
 																	<VBox>
 																		<Text text="{CHAR_VALUE} "/>

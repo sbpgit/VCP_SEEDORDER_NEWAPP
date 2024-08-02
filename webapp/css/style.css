@@ -92,6 +92,9 @@ button#container-vcp\.vcpseedordercreationnew---Home--FileUploader-fu_button {ma
     margin-top: -10px !important;
 }
 
+tr[data-mydata="0"]{	
+    background:   rgb(241, 239, 239)!important;
+  }
 /* div#__panel0-content {
     margin-top: -10px;
 }

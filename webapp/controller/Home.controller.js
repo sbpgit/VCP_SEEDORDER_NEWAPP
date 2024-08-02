@@ -504,20 +504,20 @@ sap.ui.define([
                     sap.ui.getCore().byId("custGrpList").getBinding("items").filter(oFilters);
                 }
                 /**Search in Unique ID fragment */
-                else if (sId.includes("idUniqueDetails")) {
-                    if (sQuery !== "") {
-                        oFilters.push(
-                            new Filter({
-                                filters: [
-                                    new Filter("UNIQUE_ID", FilterOperator.EQ, sQuery),
-                                    new Filter("UNQIUE_DESC", FilterOperator.Contains, sQuery),
-                                ],
-                                and: false,
-                            })
-                        );
-                    }
-                    sap.ui.getCore().byId("idUniqueDetails").getBinding("items").filter(oFilters);
-                }
+                // else if (sId.includes("idUniqueDetails")) {
+                //     if (sQuery !== "") {
+                //         oFilters.push(
+                //             new Filter({
+                //                 filters: [
+                //                     new Filter("UNIQUE_ID", FilterOperator.EQ, sQuery),
+                //                     new Filter("UNQIUE_DESC", FilterOperator.Contains, sQuery),
+                //                 ],
+                //                 and: false,
+                //             })
+                //         );
+                //     }
+                //     sap.ui.getCore().byId("idUniqueDetails").getBinding("items").filter(oFilters);
+                // }
 
                 else if (sId.includes("idUniqueSearch")) {
                     if (sQuery !== "") {
@@ -1243,7 +1243,7 @@ sap.ui.define([
                             CHAROPTPERCENT: JSON.stringify(objectArray)
                         },
                         success: function (oData) {
-                            sap.m.MessageToast.show(oData.postCharOptionPercent);
+                            // sap.m.MessageToast.show(oData.postCharOptionPercent);
                             that.newGenSeedOrder();
                         },
                         error: function (error) {
@@ -1466,7 +1466,7 @@ sap.ui.define([
                             CHARVAL_NUM: that.allCharacterstics1[i].CHARVAL_NUM
                         }
                         that.selectedChars.push(oEntry);
-                        that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
+                        // that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
                     }
 
                             that.newUniqueMode.setData({ uniqueDetails: filterData });
@@ -1570,18 +1570,28 @@ sap.ui.define([
                     var selected = oEvent.getParameters().selected;
                     var unselectFlag = "";
                     if (selected) {
-
+                        that.selectedChars=[];
+                        var tabSelectedItems = that.byId("idCharTable").getSelectedItems();
+                        for(var k=0;k<tabSelectedItems.length;k++){
+                            var totalData = tabSelectedItems[k].getCells()[0].getBindingContext().getObject();
                    oEntry = {
                         LOCATION_ID: that.byId("idloc").getValue(),
                         PRODUCT_ID: that.byId("prodInput").getValue(),
-                        CHAR_NUM: oEvent.getParameters().listItem.getCells()[0].getText(),
-                        CHAR_DESC: oEvent.getParameters().listItem.getCells()[0].getTitle(),
-                        CHARVAL_DESC: oEvent.getParameters().listItem.getCells()[1].getText(),
-                        CHAR_VALUE: oEvent.getParameters().listItem.getCells()[1].getTitle(),
-                        CHARVAL_NUM: oEvent.getParameters().listItem.getCells()[2].getText()
+                        // CHAR_NUM: oEvent.getParameters().listItem.getCells()[0].getText(),
+                        // CHAR_DESC: oEvent.getParameters().listItem.getCells()[0].getTitle(),
+                        // CHARVAL_DESC: oEvent.getParameters().listItem.getCells()[1].getText(),
+                        // CHAR_VALUE: oEvent.getParameters().listItem.getCells()[1].getTitle(),
+                        // CHARVAL_NUM: oEvent.getParameters().listItem.getCells()[2].getText()
+                        CHAR_NUM: totalData.CHAR_NUM,
+                        CHAR_DESC: totalData.CHAR_DESC,
+                        CHARVAL_DESC: totalData.CHARVAL_DESC,
+                        CHAR_VALUE: totalData.CHAR_VALUE,
+                        CHARVAL_NUM: totalData.CHARVAL_NUM
                      }
-                            that.selectedChars.push(oEntry);
-                            that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
+                     that.selectedChars.push(oEntry);
+                    }
+                            // that.selectedChars.push(oEntry);
+                            // that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
 
                     } else {
 
@@ -1606,6 +1616,7 @@ sap.ui.define([
                         var Charvalue = oEvent.getParameters().listItem.getCells()[1].getTitle() ;           
                              var index = that.selectedChars.findIndex(el=> el.CHAR_NUM === Charnum && el.CHAR_VALUE === Charvalue );
                              that.selectedChars.splice(index, 1);
+                            //  that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
 
                              if(that.selectedChars.length === 0){
                                 var filterData = that.oGModel.getProperty("/distUID");
@@ -1618,6 +1629,7 @@ sap.ui.define([
 
                     }
                     if(unselectFlag === ""){
+                        // that.selectedChars = that.selectedChars.sort((a, b) => parseInt(a.CHAR_NUM) - parseInt(b.CHAR_NUM));
              var tableItems = that.selectedChars, object = {}, array = [];
                   var count =0; 
                   var tempData = [];
@@ -2017,19 +2029,23 @@ sap.ui.define([
                 var actionText = "/v2/catalog/generateSeedOrders";
                 var JobName = "Seed Order Generation" + dCurrDateTime;
                 sap.ui.core.BusyIndicator.show();
-                if(that.selectedChars.length>0){
-                    for (var i = 0; i < that.selectedChars.length; i++) {
-                        charItems.LOCATION_ID = demandLocation;
-                        charItems.PRODUCT_ID = productConfig;
-                        charItems.CHAR_NUM = that.selectedChars[i].CHAR_NUM;
-                        charItems.CHAR_DESC = that.selectedChars[i].CHAR_DESC;
-                        charItems.CHAR_VALUE = that.selectedChars[i].CHAR_VALUE;
-                        charItems.CHARVAL_DESC = that.selectedChars[i].CHARVAL_DESC;
-                        charItems.CHARVAL_NUM = that.selectedChars[i].CHARVAL_NUM;
-                        charArray.push(charItems);
-                        charItems = {};
+                // if(that.selectedChars.length>0){
+                    var selectedUniques = that.byId("idUniqueDetails").getModel().oData.uniqueDetails;
+                    for(var i = 0; i < selectedUniques.length; i++){
+                        charArray.push(selectedUniques[i].UNIQUE_ID);
                     }
-                }
+                    // for (var i = 0; i < that.selectedChars.length; i++) {
+                    //     charItems.LOCATION_ID = demandLocation;
+                    //     charItems.PRODUCT_ID = productConfig;
+                    //     charItems.CHAR_NUM = that.selectedChars[i].CHAR_NUM;
+                    //     charItems.CHAR_DESC = that.selectedChars[i].CHAR_DESC;
+                    //     charItems.CHAR_VALUE = that.selectedChars[i].CHAR_VALUE;
+                    //     charItems.CHARVAL_DESC = that.selectedChars[i].CHARVAL_DESC;
+                    //     charItems.CHARVAL_NUM = that.selectedChars[i].CHARVAL_NUM;
+                    //     charArray.push(charItems);
+                    //     charItems = {};
+                    // }
+                // }
                 for (var i = 0; i < customerGroup.length; i++) {
                     // Define the URL and request body
                     const data = {
@@ -2753,9 +2769,6 @@ sap.ui.define([
                 sap.ui.getCore().byId("idCharSearch").setValue("");
                 that._valueHelpDialogUniquePrimary.destroy();
                 that._valueHelpDialogUniquePrimary = "";
-            },
-            onPanelExpand:function(oEvent){
-                var event = oEvent;
             }
         });
     });
