@@ -1613,7 +1613,7 @@ sap.ui.define([
                                     }
                         } else {
                         var Charnum = oEvent.getParameters().listItem.getCells()[0].getText();
-                        var Charvalue = oEvent.getParameters().listItem.getCells()[1].getTitle() ;           
+                        var Charvalue = oEvent.getParameters().listItem.getCells()[1].getText() ;           
                              var index = that.selectedChars.findIndex(el=> el.CHAR_NUM === Charnum && el.CHAR_VALUE === Charvalue );
                              that.selectedChars.splice(index, 1);
                             //  that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
