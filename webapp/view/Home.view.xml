@@ -47,10 +47,10 @@
 							</VBox>
 							<VBox class="idVBox1">
 								<Label text=""/>
-								<HBox>
+								<HBox  class="buttonClass1">
 									<Button text="Go" type="Emphasized" press="onGetData" tooltip="Get data based on filters" class="sapUiTinyMarginEnd"/>
 									<Button text="Reset" type="Transparent" press="onResetDate" tooltip="Reset all Filters" class="sapUiTinyMarginEnd"/>
-									<Button class="sapUiSmallMarginBottom" icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document" />
+									<Button  icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document" />
 								</HBox>
 							</VBox>
 						</HBox>
@@ -128,7 +128,10 @@
 															</columns>
 															<ColumnListItem>
 																<cells>
+																<VBox>
+																<Text text="{UNIQUE_DESC}"/>
 																	<Link text="{UNIQUE_ID}" press="onUniqueIdPress"/>
+																	</VBox>
 																</cells>
 															</ColumnListItem>
 														</Table>

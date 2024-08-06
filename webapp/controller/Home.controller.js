@@ -1104,6 +1104,7 @@ sap.ui.define([
                         }
                         else{
                             MessageToast.show("No combination of Unique Id's available for selections in Step1");
+                            that.byId("idGenSeedOrder").setEnabled(false);
                         }
                 }
                 else {
@@ -1251,6 +1252,11 @@ sap.ui.define([
                             MessageToast.show("error");
                         },
                     });
+                }
+                else{
+                    that.oGModel.setProperty("/CharOptFlag",'')
+                    sap.ui.core.BusyIndicator.hide();
+                    MessageToast.show("Please Provide Option percentages for Characteristic Values in Step 2");
                 }
 
             },
@@ -2002,6 +2008,7 @@ sap.ui.define([
                 // }
 
                  if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
+                    that.oGModel.setProperty("/CharOptFlag","X");
                     that.onCharSave();
                 }
                 else {
@@ -2021,7 +2028,13 @@ sap.ui.define([
                 fromDate = that.convertDateFormat(fromDate);
                 toDate = toDate.toLocaleDateString('en-US');
                 toDate = that.convertDateFormat(toDate);
-
+                var Flag = that.oGModel.getProperty("/CharOptFlag");
+                if(Flag === undefined){
+                    var FLAG = '';
+                }
+                else{
+                    var FLAG = Flag;
+                }
                 var aScheduleSEDT = {};
                 // Get Job Schedule Start/End Date/Time
                 aScheduleSEDT = that.getScheduleSEDT();
@@ -2034,18 +2047,7 @@ sap.ui.define([
                     for(var i = 0; i < selectedUniques.length; i++){
                         charArray.push(selectedUniques[i].UNIQUE_ID);
                     }
-                    // for (var i = 0; i < that.selectedChars.length; i++) {
-                    //     charItems.LOCATION_ID = demandLocation;
-                    //     charItems.PRODUCT_ID = productConfig;
-                    //     charItems.CHAR_NUM = that.selectedChars[i].CHAR_NUM;
-                    //     charItems.CHAR_DESC = that.selectedChars[i].CHAR_DESC;
-                    //     charItems.CHAR_VALUE = that.selectedChars[i].CHAR_VALUE;
-                    //     charItems.CHARVAL_DESC = that.selectedChars[i].CHARVAL_DESC;
-                    //     charItems.CHARVAL_NUM = that.selectedChars[i].CHARVAL_NUM;
-                    //     charArray.push(charItems);
-                    //     charItems = {};
-                    // }
-                // }
+                   
                 for (var i = 0; i < customerGroup.length; i++) {
                     // Define the URL and request body
                     const data = {
@@ -2054,7 +2056,8 @@ sap.ui.define([
                         CUSTOMER_GROUP: customerGroup[i].getText(),
                         FROMDATE: fromDate,
                         TODATE: toDate,
-                        CHARDATA : JSON.stringify(charArray)
+                        CHARDATA : JSON.stringify(charArray),
+                        CHAROPTFLAG : FLAG
                     };
                     if (i === 0) {
                         count = count;
@@ -2094,6 +2097,7 @@ sap.ui.define([
                         that.byId("idGenSeedOrder").setEnabled(false);
                         sap.ui.core.BusyIndicator.hide();
                         that.onResetDate();
+                that.oGModel.setProperty("/CharOptFlag",'')
                         sap.m.MessageToast.show(oData.addMLJob + ": Job Created");
                     },
                     error: function (error) {
@@ -2385,7 +2389,8 @@ sap.ui.define([
 
             // Upload Func Starts
             onUpload: function (e) {
-                MessageToast.show("File Import in-Process");
+                // MessageToast.show("File Import in-Process");
+                sap.ui.core.BusyIndicator.show()
                 that.byId("idGenSeedOrder").setEnabled(true);
                 this.importExcel(e.getParameter("files") && e.getParameter("files")[0]);
             },
@@ -2417,6 +2422,7 @@ sap.ui.define([
                 }));
                 if (resultArray.length <= 0) {
                     MessageToast.show("Unique Characteristic values doesn't belong to this Product ID");
+                    sap.ui.core.BusyIndicator.hide()
                     return false
                 }
                 var SubResults = array;
@@ -2492,7 +2498,8 @@ sap.ui.define([
                                     if (!isNaN(parseFloat(Array1[i].children[k].OPT_PERCENT))) {
                                         aFinalData.push(Array1[i]);
                                     } else {
-                                        sap.m.MessageToast.show("Mismatched condition for CHARVAL_INPUT ''");
+                                        sap.m.MessageToast.show("Mismatched condition for CHARVAL_INPUT");
+                                        sap.ui.core.BusyIndicator.hide()
                                         return false;
                                     }
                                 } else if (NOC[y].child[k].CHARVAL_INPUT === "0") {
@@ -2509,6 +2516,7 @@ sap.ui.define([
                     }
                     if (!matched) {
                         sap.m.MessageToast.show("No matching CHAR_NAME found");
+                        sap.ui.core.BusyIndicator.hide()
                         return false;
                     }
                 }
@@ -2566,7 +2574,8 @@ sap.ui.define([
                 that.aErrorLog = aTotalError
                 if (that.aSucces.length == 0 && that.aErrorLog.length == 0) {
                     MessageToast.show("All the values contains 0  ")
-                    that.byId("idIconTabBar").setVisible(false)
+                    that.byId("idIconTabBar").setVisible(false);
+                    sap.ui.core.BusyIndicator.hide()
                     return false
                 } else {
                     if (that.byId("idCharName").getTokens().length > 0) {
@@ -2582,6 +2591,7 @@ sap.ui.define([
                                 if (temp == undefined) {
                                     that.byId("idIconTabBar").setVisible(false)
                                     MessageToast.show("Uploaded file doesn't correspond to selected/downloaded characteristic values. Please upload correct characteristic values file")
+                                    sap.ui.core.BusyIndicator.hide()
                                     return false
                                 }
                                 else {
@@ -2608,12 +2618,14 @@ sap.ui.define([
                             } else {
                                 that.byId("idIconTabBar").setVisible(false)
                                 MessageToast.show("Uploaded file doesn't correspond to selected/downloaded characteristic values. Please upload correct characteristic values file")
+                                sap.ui.core.BusyIndicator.hide()
                                 return false
                             }
 
                         } else {
                             that.byId("idIconTabBar").setVisible(false)
                             MessageToast.show("Uploaded file doesn't correspond to selected/downloaded characteristic values. Please upload correct characteristic values file")
+                            sap.ui.core.BusyIndicator.hide()
                             return false
                         }
                     } else {
@@ -2626,19 +2638,23 @@ sap.ui.define([
                         that.byId("LogList").setModel(otreemodel).expandToLevel(1)
                         that.byId("BulKSave").setVisible(true);
                         that.byId("idGenSeedOrder").setEnabled(true);
+                        sap.ui.core.BusyIndicator.hide()
                     }
                 }
                 if(that.aErrorLog.length>0){
+                    sap.ui.core.BusyIndicator.hide()
                     MessageToast.show("Uploaded file contains errors. Please re-upload a valid file");
                     that.byId("idGenSeedOrder").setEnabled(false);
                 }
                 else{
+                    sap.ui.core.BusyIndicator.hide()
                     if(that.byId("idInput").getText() !=="0"){
                     that.byId("idGenSeedOrder").setEnabled(true);
                     }
                     else{
+                        sap.ui.core.BusyIndicator.hide()
                         MessageToast.show("No combination of Unique Id's available for selections in Step1");
-                        // that.byId("idGenSeedOrder").setEnabled(false);
+                        that.byId("idGenSeedOrder").setEnabled(false);
                     }
                 }
             },
@@ -2662,7 +2678,7 @@ sap.ui.define([
                             // Here is your object for every sheet in workbook
                             excelData = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
                             if(excelData.length>0){
-                                sap.ui.core.BusyIndicator.hide();
+                                // sap.ui.core.BusyIndicator.hide();
                             that.Emport(excelData);
                             }
                             else{
