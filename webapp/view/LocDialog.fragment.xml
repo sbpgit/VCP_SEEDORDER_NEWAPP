@@ -2,7 +2,7 @@
 	<SelectDialog id="LocationList" title="Demand Location" rememberSelections="false" search="handleSearch" liveChange="handleSearch"
 		confirm="handleLocSelection" cancel="handleClose" multiSelect="false"  contentWidth="320px" items="{/locDetails}" 
         selectionChange="handleLocChange" growing="true">
-		<StandardListItem title="{LOCATION_ID}" description="{LOCATION_DESC}" type="Active"/>
+		<StandardListItem title="{DEMAND_LOC}" description="{DEMAND_DESC}" type="Active"/>
 	</SelectDialog>
 </core:FragmentDefinition>
 

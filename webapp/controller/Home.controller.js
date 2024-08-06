@@ -260,7 +260,7 @@ sap.ui.define([
                 sap.ui.core.BusyIndicator.show()
                 var selectedProdItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("prodInput").setValue(selectedProdItem);
-                this.getOwnerComponent().getModel("BModel").read("/getFactoryLoc", {
+                this.getOwnerComponent().getModel("BModel").read("/getProdDemandLoc", {
                     filters: [
                         new Filter(
                             "PRODUCT_ID",
