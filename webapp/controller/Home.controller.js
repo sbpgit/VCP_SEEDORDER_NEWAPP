@@ -538,6 +538,7 @@ sap.ui.define([
              * On Press of Go on header fitler
              */
             onGetData: function () {
+                that.newpartprodChars = [];
                 sap.ui.core.BusyIndicator.show()
                 that.partProdItems = [];
                 that.initialSelectedChars = [];
@@ -546,6 +547,11 @@ sap.ui.define([
                 var dateRange = that.byId("idDateRange").getValue();
                 var customerGroup = that.byId("idCustGrp").getTokens();
                 var tableData = that.byId("idCharTable");
+                var tableDataItems = tableData.getItems()
+                for (var k = 0; k < tableDataItems.length; k++) {
+                    tableDataItems[k].setSelected(false);
+                }
+
                 var oFilters=[];
                 oFilters.push(new Filter("PRODUCT_ID",FilterOperator.EQ,prodItem));
                 oFilters.push(new Filter("UID_TYPE",FilterOperator.EQ,"U"));
@@ -558,9 +564,9 @@ sap.ui.define([
                             UID_TYPE: "U"
                         },
                         success: function (oData) {
-                            if (oData.getUniqueIds.length > 0) {
-                                that.totalUniqueIds = [], that.uniqueIds1 = [];
-                                that.count1 = 0;
+                            that.count1 = 0;
+                            if (JSON.parse(oData.getUniqueIds.length) > 0) {
+                                that.totalUniqueIds = [], that.uniqueIds1 = [];                                
                                 that.totalUniqueIds = JSON.parse(oData.getUniqueIds);
                                 that.oGModel.setProperty("/totUID", that.totalUniqueIds);
                                 that.uniqueIds1 = that.removeDuplicates(that.totalUniqueIds, 'UNIQUE_ID');
@@ -568,7 +574,7 @@ sap.ui.define([
                                 that.byId("idInput").setText(that.count1);
                                 that.uniqueIds = that.uniqueIds1;
                                 that.oGModel.setProperty("/distUID", that.uniqueIds);
-                                if (that.count1 !== "0") {
+                                if (that.count1 !== 0) {
                                     that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
                                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     
@@ -579,6 +585,14 @@ sap.ui.define([
                                     MessageToast.show("No Unique Id's available to show for the selection");
                                 }
                                 sap.ui.core.BusyIndicator.hide();
+                            }
+                            else{
+                                that.byId("idInput").setText(that.count1);
+                                that.byId("idGenSeedOrder").setEnabled(false);
+                                that.newUniqueMode.setData({ uniqueDetails: [] });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                    MessageToast.show("No Unique Id's available to show for the selection");
+                                    sap.ui.core.BusyIndicator.hide();
                             }
                         },
                         error: function (oData, error) {
@@ -657,7 +671,7 @@ sap.ui.define([
             handlePartSelection: function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
                 var oProdFilters = [], count = 0;
-                that.newpartprodChars = [];
+                
                 var selectedPartial = oEvent.getParameters().selectedItems;
                 var locationId = that.byId("idloc").getValue();
                 var tableItemsFull = that.byId("idCharTable").getItems();
@@ -689,8 +703,8 @@ sap.ui.define([
                                 for (var k = 0; k < tableItemsFull.length; k++) {
                                     for (var s = 0; s < partProdDetails.length; s++) {
                                         if (partProdDetails[s].CHAR_NUM === tableItemsFull[k].getCells()[0].getText()
-                                            && partProdDetails[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getTitle()
-                                            && partProdDetails[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getText()
+                                            && partProdDetails[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getText()
+                                            && partProdDetails[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getTitle()
                                         ) {
                                             tableItemsFull[k].setSelected(true);
                                             that.newpartprodChars.push(partProdDetails[s]);
@@ -763,7 +777,7 @@ sap.ui.define([
                                   that.byId("idInput").setText(filterData.length);
 
                                   if(filterData.length === 0){
-                                      MessageToast.show("No combination of Unique Id's available for selections");
+                                    //   MessageToast.show("No combination of Unique Id's available for selections");
                                     that.byId("idGenSeedOrder").setEnabled(false);
                                   } else {
                                     that.byId("idGenSeedOrder").setEnabled(true);
@@ -889,11 +903,19 @@ sap.ui.define([
                     });
                 } else {
                     that.byId("idCharTable").removeSelections();
+                    that.selectedChars = that.selectedChars.filter(item2 => 
+                        !that.newpartprodChars.some(item1 => 
+                            item1.CHAR_NUM === item2.CHAR_NUM &&
+                            item1.CHARVAL_DESC === item2.CHARVAL_DESC
+                        )
+                    );
+                    that.newpartprodChars = [];
                     for (var k = 0; k < tableItemsFull.length; k++) {
+                        tableItemsFull[k].setSelected(false);
                         for (var s = 0; s < that.selectedChars.length; s++) {
                             if (that.selectedChars[s].CHAR_NUM === tableItemsFull[k].getCells()[0].getText()
-                                && that.selectedChars[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getTitle()
-                                && that.selectedChars[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getText()
+                                && that.selectedChars[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getText()
+                                && that.selectedChars[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getTitle()
                             ) {
                                 tableItemsFull[k].setSelected(true);
                             }
@@ -919,6 +941,8 @@ sap.ui.define([
                         }
                         if (count === 1) {
                             that.byId("idInput").setText('0');
+                            that.newUniqueMode.setData({ uniqueDetails: [] });
+                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                             MessageToast.show("No combination of Unique Id's available for selections");
                             that.byId("idGenSeedOrder").setEnabled(false);
                         }
@@ -933,7 +957,9 @@ sap.ui.define([
                             that.uniqueIds = arrayIds;
                             that.uniqueIds = [...new Set(that.uniqueIds)];
                             that.byId("idInput").setText(that.uniqueIds.length);
-                            MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
+                            that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                            // MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
                             if(that.byId("idVBox").getItems().length === 0){
                                 that.byId("idGenSeedOrder").setEnabled(true);
                                 }
@@ -960,7 +986,9 @@ sap.ui.define([
                         that.uniqueIds = that.uniqueIds1;
                         that.uniqueIds = [...new Set(that.uniqueIds)];
                         that.byId("idInput").setText(that.uniqueIds.length);
-                        MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
+                        that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
+                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                        // MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
                     }
                     sap.ui.core.BusyIndicator.hide()
                 }
