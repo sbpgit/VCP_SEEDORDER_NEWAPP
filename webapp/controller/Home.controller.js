@@ -18,13 +18,13 @@ sap.ui.define([
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller, JSONModel, Fragment, Filter, MessageToast, FilterOperator, Dialog, mobileLibrary,exportLibrary, Button, Text, Sorter, MessageBox, Spreadsheet,formatter) {
+    function (Controller, JSONModel, Fragment, Filter, MessageToast, FilterOperator, Dialog, mobileLibrary, exportLibrary, Button, Text, Sorter, MessageBox, Spreadsheet, formatter) {
         "use strict";
         var that, oGModel;
         var ButtonType = mobileLibrary.ButtonType;
         var DialogType = mobileLibrary.DialogType;
         var aResults;
-    
+
         var EdmType = exportLibrary.EdmType;
         return Controller.extend("vcp.vcpseedordercreationnew.controller.Home", {
             formatter: formatter,
@@ -148,6 +148,7 @@ sap.ui.define([
                     );
                     this.getView().addDependent(this._valueHelpDialogUniquePrimary);
                 }
+                // that.oGModel.setProperty("/skipOnAfter","X");
             },
             getUser: function () {
                 var vUser;
@@ -159,6 +160,7 @@ sap.ui.define([
 
             },
             onAfterRendering: function () {
+                // if(that.oGModel.getProperty("/skipOnAfter") === "X"){
                 that.oGModel.setProperty("/resetFlag", "");
                 that.selectedChars = [], that.loadArray = [],
                     that.totalChars = [], that.uniqueIds = [];
@@ -180,7 +182,7 @@ sap.ui.define([
                         MessageToast.show("Failed to get configurable products");
                     },
                 });
-
+                // }
                 // this.getOwnerComponent().getModel("BModel").read("/getProdClsChar", {
                 //     success: function (oData) {
                 //         that.allCharacterstics = [];
@@ -306,7 +308,7 @@ sap.ui.define([
                         sap.ui.getCore().byId("partProdSlct").clearSelection();
                         sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
                         sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
-                        that.newUniqueMode.setData({ uniqueDetails: []});
+                        that.newUniqueMode.setData({ uniqueDetails: [] });
                         that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         // }
                         sap.ui.core.BusyIndicator.hide()
@@ -358,7 +360,7 @@ sap.ui.define([
                 that.byId("prodInput").setValue();
                 that.byId("idloc").setValue();
                 that.byId("idCustGrp").removeAllTokens();
-                that.byId("idDateRange").setValue();
+                that.byId("idDateRange").setValue(null);
                 that.byId("idCharSearch").setVisible(false);
                 that.emptyModel.setData([]);
                 that.byId("idCharTable").setModel(that.emptyModel);
@@ -377,8 +379,10 @@ sap.ui.define([
                 that.byId("LogList").setModel(that.emptyModel2)
                 that.byId("idIconTabBar").setVisible(false);
                 sap.ui.getCore().byId("custGrpList").clearSelection();
+                if(sap.ui.getCore().byId("partProdSlct").getBinding("items")){
                 sap.ui.getCore().byId("partProdSlct").clearSelection();
                 sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
+                }
                 that.byId("idInput").setText();
                 that.partModel.setData({ partDetails: [] });
                 sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
@@ -552,9 +556,9 @@ sap.ui.define([
                     tableDataItems[k].setSelected(false);
                 }
 
-                var oFilters=[];
-                oFilters.push(new Filter("PRODUCT_ID",FilterOperator.EQ,prodItem));
-                oFilters.push(new Filter("UID_TYPE",FilterOperator.EQ,"U"));
+                var oFilters = [];
+                oFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, prodItem));
+                oFilters.push(new Filter("UID_TYPE", FilterOperator.EQ, "U"));
 
                 if (prodItem && locItem && dateRange && customerGroup) {
                     this.getOwnerComponent().getModel("BModel").callFunction("/getUniqueIds", {
@@ -565,8 +569,8 @@ sap.ui.define([
                         },
                         success: function (oData) {
                             that.count1 = 0;
-                            if (JSON.parse(oData.getUniqueIds.length) > 0) {
-                                that.totalUniqueIds = [], that.uniqueIds1 = [];                                
+                            if ((JSON.parse(oData.getUniqueIds)).length > 0) {
+                                that.totalUniqueIds = [], that.uniqueIds1 = [];
                                 that.totalUniqueIds = JSON.parse(oData.getUniqueIds);
                                 that.oGModel.setProperty("/totUID", that.totalUniqueIds);
                                 that.uniqueIds1 = that.removeDuplicates(that.totalUniqueIds, 'UNIQUE_ID');
@@ -577,7 +581,7 @@ sap.ui.define([
                                 if (that.count1 !== 0) {
                                     that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
                                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                    
+
                                 }
                                 else {
                                     that.newUniqueMode.setData({ uniqueDetails: [] });
@@ -586,13 +590,13 @@ sap.ui.define([
                                 }
                                 sap.ui.core.BusyIndicator.hide();
                             }
-                            else{
+                            else {
                                 that.byId("idInput").setText(that.count1);
                                 that.byId("idGenSeedOrder").setEnabled(false);
                                 that.newUniqueMode.setData({ uniqueDetails: [] });
-                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                    MessageToast.show("No Unique Id's available to show for the selection");
-                                    sap.ui.core.BusyIndicator.hide();
+                                that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                MessageToast.show("No Unique Id's available to show for the selection");
+                                sap.ui.core.BusyIndicator.hide();
                             }
                         },
                         error: function (oData, error) {
@@ -636,13 +640,14 @@ sap.ui.define([
                     });
                     tableData.setVisible(true);
                     // that.byId("_IDGenToolbar1").setVisible(true);
-                    this.getOwnerComponent().getModel("BModel").read("/getProdClsChar", {
-                        filters: [
-                            new Filter("PRODUCT_ID", FilterOperator.EQ, prodItem)
-                        ],
+                    this.getOwnerComponent().getModel("BModel").callFunction("/getProdClasCharVal", {
+                        method: "GET",
+                        urlParameters: {
+                            PRODUCT_ID: prodItem
+                        },
                         success: function (oData) {
-                            that.loadArray = oData.results;
-                            that.loadArray1 = that.removeDuplicates(oData.results, "CHAR_NAME");
+                            that.loadArray = JSON.parse(oData.getProdClasCharVal);
+                            that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
                             that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                             sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
                             var filteredProdData = that.loadArray.filter(a => a.PRODUCT_ID === prodItem);
@@ -671,7 +676,7 @@ sap.ui.define([
             handlePartSelection: function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
                 var oProdFilters = [], count = 0;
-                
+
                 var selectedPartial = oEvent.getParameters().selectedItems;
                 var locationId = that.byId("idloc").getValue();
                 var tableItemsFull = that.byId("idCharTable").getItems();
@@ -715,123 +720,123 @@ sap.ui.define([
                                 that.selectedChars = that.selectedChars.concat(that.newpartprodChars);
                                 that.selectedChars = that.removeCharDuplicate(that.selectedChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
                                 var tableItems = that.selectedChars, object = {}, array = [];
-                                var count =0; 
+                                var count = 0;
                                 var tempData = [];
                                 var UID = that.oGModel.getProperty("/totUID");
-                                  for (var i = 0; i < tableItems.length; i++) {
-              
-                                      if(tableItems.length === 1 || tableItems.length-1 === i){
-                                          if(count === 1){
-                                              tempData.push(tableItems[i]);
-                                              count = 0;
-                                          } else {
-                                              tempData.push(tableItems[i]);
-                                              count = 0;
-                                          }
-              
-                                      } else {
-                                      if(tableItems[i].CHAR_NUM === tableItems[i+1].CHAR_NUM){
-                                          tempData.push(tableItems[i]);
-                                          // i++;
-                                          count = 1;
-                                      } else {
-                                          count = 0;
-                                          tempData.push(tableItems[i]);
-                                      }
-                                  }
-              
-                                  if(count === 0){
-                                      // tempData.push(tableItems[i]);
-                                      var data = [];
-                                      if(array.length === 0){
-                                          tempData.forEach(ele => {
-                                              var char = UID.filter(el=> el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                              data = data.concat(char);
-                                          });
-                                          // Extract the 'id' values from array1
-                                          var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                                          // Filter array2 to include only items with 'id' present in array1
-                                          array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                                          count =0;
-                                          tempData = [];
-                                      } else {
-                                          tempData.forEach(ele => {
-                                              var char = array.filter(el=> el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                              data = data.concat(char);
-                                              
-                                          });
-              
-                                          // Extract the 'id' values from array1
-                                          var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                                          // Filter array2 to include only items with 'id' present in array1
-                                          array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                                          count =0;
-                                          tempData = [];
-                                      }
-              
-                                  }
-                                  var filterData = that.removeDuplicates(array, 'UNIQUE_ID');
-              
-                                  that.newUniqueMode.setData({ uniqueDetails: filterData });
-                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                  that.byId("idInput").setText(filterData.length);
+                                for (var i = 0; i < tableItems.length; i++) {
 
-                                  if(filterData.length === 0){
-                                    //   MessageToast.show("No combination of Unique Id's available for selections");
-                                    that.byId("idGenSeedOrder").setEnabled(false);
-                                  } else {
-                                    that.byId("idGenSeedOrder").setEnabled(true);
-                                  }
-                              }
-                                  if(that.byId("idVBox").getItems().length === 0 && filterData.length > 0){
+                                    if (tableItems.length === 1 || tableItems.length - 1 === i) {
+                                        if (count === 1) {
+                                            tempData.push(tableItems[i]);
+                                            count = 0;
+                                        } else {
+                                            tempData.push(tableItems[i]);
+                                            count = 0;
+                                        }
+
+                                    } else {
+                                        if (tableItems[i].CHAR_NUM === tableItems[i + 1].CHAR_NUM) {
+                                            tempData.push(tableItems[i]);
+                                            // i++;
+                                            count = 1;
+                                        } else {
+                                            count = 0;
+                                            tempData.push(tableItems[i]);
+                                        }
+                                    }
+
+                                    if (count === 0) {
+                                        // tempData.push(tableItems[i]);
+                                        var data = [];
+                                        if (array.length === 0) {
+                                            tempData.forEach(ele => {
+                                                var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                                data = data.concat(char);
+                                            });
+                                            // Extract the 'id' values from array1
+                                            var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                                            // Filter array2 to include only items with 'id' present in array1
+                                            array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                                            count = 0;
+                                            tempData = [];
+                                        } else {
+                                            tempData.forEach(ele => {
+                                                var char = array.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                                data = data.concat(char);
+
+                                            });
+
+                                            // Extract the 'id' values from array1
+                                            var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                                            // Filter array2 to include only items with 'id' present in array1
+                                            array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                                            count = 0;
+                                            tempData = [];
+                                        }
+
+                                    }
+                                    var filterData = that.removeDuplicates(array, 'UNIQUE_ID');
+
+                                    that.newUniqueMode.setData({ uniqueDetails: filterData });
+                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                    that.byId("idInput").setText(filterData.length);
+
+                                    if (filterData.length === 0) {
+                                        //   MessageToast.show("No combination of Unique Id's available for selections");
+                                        that.byId("idGenSeedOrder").setEnabled(false);
+                                    } else {
                                         that.byId("idGenSeedOrder").setEnabled(true);
-                                        } else if(filterData.length === 0){
-                                            that.byId("idGenSeedOrder").setEnabled(false);
-                                        }
-                                        else{
-                                            var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                    }
+                                }
+                                if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
+                                    that.byId("idGenSeedOrder").setEnabled(true);
+                                } else if (filterData.length === 0) {
+                                    that.byId("idGenSeedOrder").setEnabled(false);
+                                }
+                                else {
+                                    var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
 
-                                                var idBox = that.byId("idVBox").getItems();
-                                                var hideButton = "";
-                                                for(var k=0;k<idBox.length;k++){
-                                                var content =  idBox[k].getContent()[0].getItems();
-                                                var countfull = content[content.length - 1].getCells()[1].getValue();
+                                    var idBox = that.byId("idVBox").getItems();
+                                    var hideButton = "";
+                                    for (var k = 0; k < idBox.length; k++) {
+                                        var content = idBox[k].getContent()[0].getItems();
+                                        var countfull = content[content.length - 1].getCells()[1].getValue();
 
-                                                if(parseInt(countfull) !== 100){
-                                                        hideButton = "X";
-                                                        break;
-                                                }
-                                                }
-                                                // for(var k=0;k<oDataSet.length;k++){
-                                                //     var child = oDataSet[k].child;
-                                                //     if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                                                //         count++;
-                                                //         break;
-                                                //     }
-                                                // }
-                                                if(hideButton === "X"){
-                                                    that.byId("idGenSeedOrder").setEnabled(false);
-                                                    MessageToast.show("Total Percentage not equal to 100 in step2");
-                                                }
-                                                else{
-                                                    that.byId("idGenSeedOrder").setEnabled(true);
-                                                }
-                                            // var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-                                            // for(var k=0;k<oDataSet.length;k++){
-                                            //     var child = oDataSet[k].child;
-                                            //     if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                                            //         count++;
-                                            //         break;
-                                            //     }
-                                            // }
-                                            // if(count !== 0){
-                                            //     that.byId("idGenSeedOrder").setEnabled(false);
-                                            //     MessageToast.show("Total Percentage not equal to 100 in step2");
-                                            // }
-                                            // else{
-                                            //     that.byId("idGenSeedOrder").setEnabled(true);
-                                            // }
+                                        if (parseInt(countfull) !== 100) {
+                                            hideButton = "X";
+                                            break;
                                         }
+                                    }
+                                    // for(var k=0;k<oDataSet.length;k++){
+                                    //     var child = oDataSet[k].child;
+                                    //     if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                    //         count++;
+                                    //         break;
+                                    //     }
+                                    // }
+                                    if (hideButton === "X") {
+                                        that.byId("idGenSeedOrder").setEnabled(false);
+                                        MessageToast.show("Total Percentage not equal to 100 in step2");
+                                    }
+                                    else {
+                                        that.byId("idGenSeedOrder").setEnabled(true);
+                                    }
+                                    // var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
+                                    // for(var k=0;k<oDataSet.length;k++){
+                                    //     var child = oDataSet[k].child;
+                                    //     if(child[child.length-1].CHARVAL_INPUT !== "100"){
+                                    //         count++;
+                                    //         break;
+                                    //     }
+                                    // }
+                                    // if(count !== 0){
+                                    //     that.byId("idGenSeedOrder").setEnabled(false);
+                                    //     MessageToast.show("Total Percentage not equal to 100 in step2");
+                                    // }
+                                    // else{
+                                    //     that.byId("idGenSeedOrder").setEnabled(true);
+                                    // }
+                                }
 
 
 
@@ -903,8 +908,8 @@ sap.ui.define([
                     });
                 } else {
                     that.byId("idCharTable").removeSelections();
-                    that.selectedChars = that.selectedChars.filter(item2 => 
-                        !that.newpartprodChars.some(item1 => 
+                    that.selectedChars = that.selectedChars.filter(item2 =>
+                        !that.newpartprodChars.some(item1 =>
                             item1.CHAR_NUM === item2.CHAR_NUM &&
                             item1.CHARVAL_DESC === item2.CHARVAL_DESC
                         )
@@ -942,7 +947,7 @@ sap.ui.define([
                         if (count === 1) {
                             that.byId("idInput").setText('0');
                             that.newUniqueMode.setData({ uniqueDetails: [] });
-                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                             MessageToast.show("No combination of Unique Id's available for selections");
                             that.byId("idGenSeedOrder").setEnabled(false);
                         }
@@ -958,28 +963,28 @@ sap.ui.define([
                             that.uniqueIds = [...new Set(that.uniqueIds)];
                             that.byId("idInput").setText(that.uniqueIds.length);
                             that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                             // MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
-                            if(that.byId("idVBox").getItems().length === 0){
+                            if (that.byId("idVBox").getItems().length === 0) {
                                 that.byId("idGenSeedOrder").setEnabled(true);
-                                }
-                                else{
-                                    var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-                                    for(var k=0;k<oDataSet.length;k++){
-                                        var child = oDataSet[k].child;
-                                        if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                                            count++;
-                                            break;
-                                        }
-                                    }
-                                    if(count !== 0){
-                                        that.byId("idGenSeedOrder").setEnabled(false);
-                                        MessageToast.show("Total Percentage not equal to 100 in step2");
-                                    }
-                                    else{
-                                        that.byId("idGenSeedOrder").setEnabled(true);
+                            }
+                            else {
+                                var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
+                                for (var k = 0; k < oDataSet.length; k++) {
+                                    var child = oDataSet[k].child;
+                                    if (child[child.length - 1].CHARVAL_INPUT !== "100") {
+                                        count++;
+                                        break;
                                     }
                                 }
+                                if (count !== 0) {
+                                    that.byId("idGenSeedOrder").setEnabled(false);
+                                    MessageToast.show("Total Percentage not equal to 100 in step2");
+                                }
+                                else {
+                                    that.byId("idGenSeedOrder").setEnabled(true);
+                                }
+                            }
                         }
                     }
                     else {
@@ -987,7 +992,7 @@ sap.ui.define([
                         that.uniqueIds = [...new Set(that.uniqueIds)];
                         that.byId("idInput").setText(that.uniqueIds.length);
                         that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                                  that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         // MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
                     }
                     sap.ui.core.BusyIndicator.hide()
@@ -1006,7 +1011,8 @@ sap.ui.define([
                 that.byId("idIconTabBar").setVisible(false);
                 that.byId("LogList").setVisible(false)
                 that.byId("idHBox100").setVisible(true);
-
+                that.emptyModel2.setData({ res: [] });
+                that.byId("LogList").setModel(that.emptyModel2);
                 that.sumArray = [];
                 that.uniqueName = [];
                 that.byId("idCharName").removeAllTokens();
@@ -1075,7 +1081,9 @@ sap.ui.define([
 
                 for (var s = 0; s < tableItems.length; s++) {
                     var childItems = tableItems[s].getContent()[0].getItems();
-                    if (childItems[childItems.length - 1].getCells()[1].getValue() !== "100") {
+                    if (childItems[childItems.length - 1].getCells()[1].getValue() !== "100" 
+                    && childItems[childItems.length - 1].getCells()[1].getValue() !== "0" && 
+                    childItems[childItems.length - 1].getCells()[1].getValue() !== "") {
                         count1++;
                         break;
                     }
@@ -1114,26 +1122,32 @@ sap.ui.define([
                 if (+this._totalValue === 100) {
                     tableItems[tableItems.length - 1].getCells()[1].setValueState("Success");
                     tableItems[tableItems.length - 1].getCells()[1].setValueStateText("Sum equal to 100")
-                } else {
+                }
+                else if (+this._totalValue === 0) {
+                    tableItems[tableItems.length - 1].getCells()[1].setValueState("None");
+                }  
+                
+                else {
                     tableItems[tableItems.length - 1].getCells()[1].setValueState("Error");
                     tableItems[tableItems.length - 1].getCells()[1].setValueStateText("Sum not equal to 100")
                 }
                 var boxModel = that.byId("idVBox").getItems();
                 for (var s = 0; s < boxModel.length; s++) {
                     var childItems = boxModel[s].getContent()[0].getItems();
-                    if (childItems[childItems.length - 1].getCells()[1].getValue() !== "100") {
+                    if (childItems[childItems.length - 1].getCells()[1].getValue() !== "100" 
+                    && childItems[childItems.length - 1].getCells()[1].getValue() !== "0" &&  childItems[childItems.length - 1].getCells()[1].getValue() !== "") {
                         count++;
                         break;
                     }
                 }
                 if (count === 0) {
-                    if(that.byId("idInput").getText() !=="0"){
+                    if (that.byId("idInput").getText() !== "0") {
                         that.byId("idGenSeedOrder").setEnabled(true);
-                        }
-                        else{
-                            MessageToast.show("No combination of Unique Id's available for selections in Step1");
-                            that.byId("idGenSeedOrder").setEnabled(false);
-                        }
+                    }
+                    else {
+                        MessageToast.show("No combination of Unique Id's available for selections in Step1");
+                        that.byId("idGenSeedOrder").setEnabled(false);
+                    }
                 }
                 else {
                     that.byId("idGenSeedOrder").setEnabled(false);
@@ -1239,8 +1253,7 @@ sap.ui.define([
                     var vBoxItems = that.byId("idVBox").getItems();
                     for (var i = 0; i < vBoxItems.length; i++) {
                         var childItems = vBoxItems[i].getContent()[0].getItems();
-                        if (childItems[childItems.length - 1].getCells()[1].getValue() !== "" &&
-                            childItems[childItems.length - 1].getCells()[1].getValue() === "100") {
+                        if (childItems[childItems.length - 1].getCells()[1].getValue() === "100") {
                             for (var k = 0; k < childItems.length - 1; k++) {
                                 if (childItems[k].getCells()[1].getValue() === "") {
                                     var opt_percent = "0";
@@ -1258,10 +1271,10 @@ sap.ui.define([
                                 objectData = {}
                             }
                         }
-                        else {
-                            count = 1;
-                            break;
-                        }
+                        // else {
+                        //     count = 1;
+                        //     break;
+                        // }
                     }
 
                 }
@@ -1281,8 +1294,8 @@ sap.ui.define([
                         },
                     });
                 }
-                else{
-                    that.oGModel.setProperty("/CharOptFlag",'')
+                else {
+                    that.oGModel.setProperty("/CharOptFlag", '')
                     sap.ui.core.BusyIndicator.hide();
                     MessageToast.show("Please Provide Option percentages for Characteristic Values in Step 2");
                 }
@@ -1335,59 +1348,36 @@ sap.ui.define([
                 var tabMode = table.getMode();
                 var selectedLocation = that.byId("idloc").getValue();
                 var selectedProduct = that.byId("prodInput").getValue();
-                if(that.selectedChars.length>0){
-                for (var i = 0; i < that.selectedChars.length; i++) {
-                    charItems.LOCATION_ID = selectedLocation;
-                    charItems.PRODUCT_ID = selectedProduct;
-                    charItems.CHAR_NUM = that.selectedChars[i].CHAR_NUM;
-                    charItems.CHAR_DESC = that.selectedChars[i].CHAR_DESC;
-                    charItems.CHAR_VALUE = that.selectedChars[i].CHAR_VALUE;
-                    charItems.CHARVAL_DESC = that.selectedChars[i].CHARVAL_DESC;
-                    charItems.CHARVAL_NUM = that.selectedChars[i].CHARVAL_NUM;
-                    charArray.push(charItems);
-                    charItems = {};
+                if (that.selectedChars.length > 0) {
+                    for (var i = 0; i < that.selectedChars.length; i++) {
+                        charItems.LOCATION_ID = selectedLocation;
+                        charItems.PRODUCT_ID = selectedProduct;
+                        charItems.CHAR_NUM = that.selectedChars[i].CHAR_NUM;
+                        charItems.CHAR_DESC = that.selectedChars[i].CHAR_DESC;
+                        charItems.CHAR_VALUE = that.selectedChars[i].CHAR_VALUE;
+                        charItems.CHARVAL_DESC = that.selectedChars[i].CHARVAL_DESC;
+                        charItems.CHARVAL_NUM = that.selectedChars[i].CHARVAL_NUM;
+                        charArray.push(charItems);
+                        charItems = {};
+                    }
                 }
-            }
-            else{
-                var charAllData = that.removeCharDuplicate(that.totalUniqueIds,["CHAR_VALUE","CHAR_NUM"]);
-                for (var i = 0; i < charAllData.length; i++) {
-                    charItems.LOCATION_ID = selectedLocation;
-                    charItems.PRODUCT_ID = selectedProduct;
-                    charItems.CHAR_NUM = charAllData[i].CHAR_NUM;
-                    charItems.CHAR_DESC = charAllData[i].CHAR_DESC;
-                    charItems.CHAR_VALUE = charAllData[i].CHAR_VALUE;
-                    charItems.CHARVAL_DESC = charAllData[i].CHARVAL_DESC;
-                    charItems.CHARVAL_NUM = charAllData[i].CHARVAL_NUM;
-                    charArray.push(charItems);
-                    charItems = {};
-                }
+                else {
+                    var charAllData = that.removeCharDuplicate(that.totalUniqueIds, ["CHAR_VALUE", "CHAR_NUM"]);
+                    for (var i = 0; i < charAllData.length; i++) {
+                        charItems.LOCATION_ID = selectedLocation;
+                        charItems.PRODUCT_ID = selectedProduct;
+                        charItems.CHAR_NUM = charAllData[i].CHAR_NUM;
+                        charItems.CHAR_DESC = charAllData[i].CHAR_DESC;
+                        charItems.CHAR_VALUE = charAllData[i].CHAR_VALUE;
+                        charItems.CHARVAL_DESC = charAllData[i].CHARVAL_DESC;
+                        charItems.CHARVAL_NUM = charAllData[i].CHARVAL_NUM;
+                        charArray.push(charItems);
+                        charItems = {};
+                    }
 
-            }
+                }
                 var flag = "X";
                 var stringData = JSON.stringify(charArray);
-
-                // this.getOwnerComponent().getModel("BModel").callFunction("/getLOCPRODCHAR", {
-                //     method: "GET",
-                //     urlParameters: {
-                //         FLAG: flag,
-                //         LOCPRODCHAR: stringData
-                //     },
-                //     success: function (oData) {
-                //         that.selectedChars = [], that.uniqueIds = [];
-                //         var aTreeBoxItems = that.byId("LogList").getModel().getData().res
-                //         var vBoxItems = that.byId("idVBox").getItems();
-                //         if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
-                //             that.onCharSave();
-                //         }
-                //         else {
-                //             that.newGenSeedOrder();
-                //         }
-                //     },
-                //     error: function (error) {
-                //         sap.ui.core.BusyIndicator.hide();
-                //         MessageToast.show("error");
-                //     },
-                // });
             },
             /**
              * 
@@ -1399,97 +1389,11 @@ sap.ui.define([
                 that.allCharacterstics1 = that.charsProd;
                 var UID = that.oGModel.getProperty("/totUID");
                 sap.ui.core.BusyIndicator.show();
-                // if (oEvent.getParameter("selectAll")) {
-                //     that.selectedChars = [], that.uniqueIds = [];
-                //     for (var i = 0; i < that.allCharacterstics1.length; i++) {
-                //         oEntry = {
-                //             LOCATION_ID: that.byId("idloc").getValue(),
-                //             PRODUCT_ID: that.byId("prodInput").getValue(),
-                //             CHAR_NUM: that.allCharacterstics1[i].CHAR_NUM,
-                //             CHAR_DESC: that.allCharacterstics1[i].CHAR_DESC,
-                //             CHARVAL_DESC: that.allCharacterstics1[i].CHARVAL_DESC,
-                //             CHAR_VALUE: that.allCharacterstics1[i].CHAR_VALUE,
-                //             CHARVAL_NUM: that.allCharacterstics1[i].CHARVAL_NUM
-                //         }
-                //         that.selectedChars.push(oEntry);
-                //     }
-                //     var tableItems = that.selectedChars, object = {}, array = [];
-                //     for (var i = 0; i < tableItems.length; i++) {
-                //         var array3 = [];
-                //         object = { CHAR_VALUE: tableItems[i].CHAR_VALUE, CHAR_NUM: tableItems[i].CHAR_NUM };
-                //         var filteredArray = that.removeDuplicate(that.totalUniqueIds.filter(a => a.CHAR_VALUE === object.CHAR_VALUE && a.CHAR_NUM === object.CHAR_NUM), 'UNIQUE_ID');
-                //         if (filteredArray.length > 0) {
-                //             filteredArray.forEach(function (oItem) {
-                //                 array3.push(oItem.UNIQUE_ID)
-                //             })
-                //             // array.push(array3);
-                //             array = array.concat(array3);
-                //         }
-                //         else {
-                //             count = 1;
-                //             break;
-                //         }
-                //     }
-                //     if (count === 1) {
-                //         that.byId("idInput").setText('0');
-                //         MessageToast.show("No combination of Unique Id's available for selections");
-                //         that.newUniqueMode.setData({ uniqueDetails: [] });
-                //         that.byId("idUniqueDetails").setModel(that.newUniqueMode);                        
-                //         that.byId("idGenSeedOrder").setEnabled(false);
-                //     }
-                //     else {
-                //         var uniqueIds = that.getMatchingUIDs(array);
-                //         var arrayIds = [];
-                //         for (var i = 0; i < uniqueIds.length; i++) {
-                //             var object = {};
-                //             object = { UNIQUE_ID: uniqueIds[i] };
-                //             arrayIds.push(object);
-                //         }
-                //         that.uniqueIds = arrayIds;
-                //         that.uniqueIds = [...new Set(that.uniqueIds)];
-                //         that.byId("idInput").setText(uniqueIds.length);
-                //         if(uniqueIds.length === 0){
-                //             that.byId("idGenSeedOrder").setEnabled(false);
-                //             MessageToast.show("No combination of Unique Id's available for selections");
-                //             that.newUniqueMode.setData({ uniqueDetails: [] });
-                //             that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //         }
-                //         else{
-                //         MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's"); 
-                //         that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                //                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);                       
-                //         if(that.byId("idVBox").getItems().length === 0){
-                //             that.byId("idGenSeedOrder").setEnabled(true);
-                //             }
-                //             else{
-                //                 var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-                //                 for(var k=0;k<oDataSet.length;k++){
-                //                     var child = oDataSet[k].child;
-                //                     if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                //                         count++;
-                //                         break;
-                //                     }
-                //                 }
-                //                 if(count !== 0){
-                //                     that.byId("idGenSeedOrder").setEnabled(false);
-                //                     MessageToast.show("Total Percentage not equal to 100 in step2");
-                //                 }
-                //                 else{
-                //                     that.byId("idGenSeedOrder").setEnabled(true);
-                //                 }
-                //             }
-                //             if(uniqueIds.length === 0){
-                //                 that.byId("idGenSeedOrder").setEnabled(false);
-                //             }
-                //         }
-                //     }
-                //     sap.ui.core.BusyIndicator.hide();
-                // }
                 if (oEvent.getParameter("selectAll")) {
                     that.selectedChars = [], that.uniqueIds = [];
 
                     var filterData = that.oGModel.getProperty("/distUID");
-                         for (var i = 0; i < that.allCharacterstics1.length; i++) {
+                    for (var i = 0; i < that.allCharacterstics1.length; i++) {
                         oEntry = {
                             LOCATION_ID: that.byId("idloc").getValue(),
                             PRODUCT_ID: that.byId("prodInput").getValue(),
@@ -1503,501 +1407,172 @@ sap.ui.define([
                         // that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
                     }
 
-                            that.newUniqueMode.setData({ uniqueDetails: filterData });
-                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                    that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
-                                    unselectFlag = "X";
+                    that.newUniqueMode.setData({ uniqueDetails: filterData });
+                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                    that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
+                    unselectFlag = "X";
 
-                                    if(that.oGModel.getProperty("/distUID").length === 0){
-                                        MessageToast.show("No combination of Unique Id's available for selections");
-                                      that.byId("idGenSeedOrder").setEnabled(false);
-                                    } else {
-                                      that.byId("idGenSeedOrder").setEnabled(true);
-                                    }
-                //     for (var i = 0; i < that.allCharacterstics1.length; i++) {
-                //         oEntry = {
-                //             LOCATION_ID: that.byId("idloc").getValue(),
-                //             PRODUCT_ID: that.byId("prodInput").getValue(),
-                //             CHAR_NUM: that.allCharacterstics1[i].CHAR_NUM,
-                //             CHAR_DESC: that.allCharacterstics1[i].CHAR_DESC,
-                //             CHARVAL_DESC: that.allCharacterstics1[i].CHARVAL_DESC,
-                //             CHAR_VALUE: that.allCharacterstics1[i].CHAR_VALUE,
-                //             CHARVAL_NUM: that.allCharacterstics1[i].CHARVAL_NUM
-                //         }
-                //         that.selectedChars.push(oEntry);
-                //     }
-
-                //     var tableItems = that.selectedChars, object = {}, array = [];
-                //   var count =0; 
-                //   var tempData = [];
-                //     for (var i = 0; i < tableItems.length; i++) {
-
-                //         if(tableItems.length === 1 || tableItems.length-1 === i){
-
-                //             if(count === 1){
-                //                 tempData.push(tableItems[i]);
-                //                 count = 0;
-                //             } else {
-                //                 tempData.push(tableItems[i]);
-                //                 count = 0;
-                //             }
-
-                //         } else {
-                //         if(tableItems[i].CHAR_NUM === tableItems[i+1].CHAR_NUM){
-                //             tempData.push(tableItems[i]);
-                //             // i++;
-                //             count = 1;
-                //         } else {
-                //             count = 0;
-                //             tempData.push(tableItems[i]);
-                //         }
-                //     }
-
-                //     if(count === 0){
-                //         // tempData.push(tableItems[i]);
-                //         var data = [];
-                //         if(array.length === 0){
-                //             tempData.forEach(ele => {
-                //                 var char = UID.filter(el=> el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                //                 data = data.concat(char);
-                //             });
-                //             // Extract the 'id' values from array1
-                //             var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                //             // Filter array2 to include only items with 'id' present in array1
-                //             array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                //             count =0;
-                //             tempData = [];
-                //         } else {
-                //             tempData.forEach(ele => {
-                //                 var char = array.filter(el=> el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                //                 data = data.concat(char);
-                                
-                //             });
-
-                //             // Extract the 'id' values from array1
-                //             var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                //             // Filter array2 to include only items with 'id' present in array1
-                //             array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                //             count =0;
-                //             tempData = [];
-                //         }
-
-                //     }
-                //     var filterData = that.removeDuplicates(array, 'UNIQUE_ID');
-
-                //     that.newUniqueMode.setData({ uniqueDetails: filterData });
-                //     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //     that.byId("idInput").setText(filterData.length);
-
-                //     if(filterData.length === 0){
-                //         MessageToast.show("No combination of Unique Id's available for selections");
-                //       that.byId("idGenSeedOrder").setEnabled(false);
-                //     } else {
-                //       that.byId("idGenSeedOrder").setEnabled(true);
-                //     }
-                // }
-
-
+                    if (that.oGModel.getProperty("/distUID").length === 0) {
+                        MessageToast.show("No combination of Unique Id's available for selections");
+                        that.byId("idGenSeedOrder").setEnabled(false);
+                    } else {
+                        that.byId("idGenSeedOrder").setEnabled(true);
+                    }
                 }
                 else {
-                    
+
                     var selected = oEvent.getParameters().selected;
                     var unselectFlag = "";
                     if (selected) {
-                        that.selectedChars=[];
+                        that.selectedChars = [];
                         var tabSelectedItems = that.byId("idCharTable").getSelectedItems();
-                        for(var k=0;k<tabSelectedItems.length;k++){
+                        for (var k = 0; k < tabSelectedItems.length; k++) {
                             var totalData = tabSelectedItems[k].getCells()[0].getBindingContext().getObject();
-                   oEntry = {
-                        LOCATION_ID: that.byId("idloc").getValue(),
-                        PRODUCT_ID: that.byId("prodInput").getValue(),
-                        // CHAR_NUM: oEvent.getParameters().listItem.getCells()[0].getText(),
-                        // CHAR_DESC: oEvent.getParameters().listItem.getCells()[0].getTitle(),
-                        // CHARVAL_DESC: oEvent.getParameters().listItem.getCells()[1].getText(),
-                        // CHAR_VALUE: oEvent.getParameters().listItem.getCells()[1].getTitle(),
-                        // CHARVAL_NUM: oEvent.getParameters().listItem.getCells()[2].getText()
-                        CHAR_NUM: totalData.CHAR_NUM,
-                        CHAR_DESC: totalData.CHAR_DESC,
-                        CHARVAL_DESC: totalData.CHARVAL_DESC,
-                        CHAR_VALUE: totalData.CHAR_VALUE,
-                        CHARVAL_NUM: totalData.CHARVAL_NUM
-                     }
-                     that.selectedChars.push(oEntry);
-                    }
-                            // that.selectedChars.push(oEntry);
-                            // that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
-
+                            oEntry = {
+                                LOCATION_ID: that.byId("idloc").getValue(),
+                                PRODUCT_ID: that.byId("prodInput").getValue(),
+                                CHAR_NUM: totalData.CHAR_NUM,
+                                CHAR_DESC: totalData.CHAR_DESC,
+                                CHARVAL_DESC: totalData.CHARVAL_DESC,
+                                CHAR_VALUE: totalData.CHAR_VALUE,
+                                CHARVAL_NUM: totalData.CHARVAL_NUM
+                            }
+                            that.selectedChars.push(oEntry);
+                        }
                     } else {
 
-                        if(oEvent.getParameters().listItems.length > 1){
+                        if (oEvent.getParameters().listItems.length > 1) {
                             that.selectedChars = [];
-
                             var filterData = that.oGModel.getProperty("/distUID");
-
                             that.newUniqueMode.setData({ uniqueDetails: filterData });
-                                    that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                    that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
-                                    unselectFlag = "X";
-
-                                    if(that.oGModel.getProperty("/distUID").length === 0){
-                                        MessageToast.show("No combination of Unique Id's available for selections");
-                                      that.byId("idGenSeedOrder").setEnabled(false);
-                                    } else {
-                                      that.byId("idGenSeedOrder").setEnabled(true);
-                                    }
+                            that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                            that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
+                            unselectFlag = "X";
+                            if (that.oGModel.getProperty("/distUID").length === 0) {
+                                MessageToast.show("No combination of Unique Id's available for selections");
+                                that.byId("idGenSeedOrder").setEnabled(false);
+                            } else {
+                                that.byId("idGenSeedOrder").setEnabled(true);
+                            }
                         } else {
-                        var Charnum = oEvent.getParameters().listItem.getCells()[0].getText();
-                        var Charvalue = oEvent.getParameters().listItem.getCells()[1].getText() ;           
-                             var index = that.selectedChars.findIndex(el=> el.CHAR_NUM === Charnum && el.CHAR_VALUE === Charvalue );
-                             that.selectedChars.splice(index, 1);
-                            //  that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
-
-                             if(that.selectedChars.length === 0){
+                            var Charnum = oEvent.getParameters().listItem.getCells()[0].getText();
+                            var Charvalue = oEvent.getParameters().listItem.getCells()[1].getText();
+                            var index = that.selectedChars.findIndex(el => el.CHAR_NUM === Charnum && el.CHAR_VALUE === Charvalue);
+                            that.selectedChars.splice(index, 1);
+                            if (that.selectedChars.length === 0) {
                                 var filterData = that.oGModel.getProperty("/distUID");
                                 that.newUniqueMode.setData({ uniqueDetails: filterData });
-                                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                        that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
-                                        unselectFlag = "X";
-                             }
+                                that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
+                                unselectFlag = "X";
+                            }
                         }
 
                     }
-                    if(unselectFlag === ""){
-                        // that.selectedChars = that.selectedChars.sort((a, b) => parseInt(a.CHAR_NUM) - parseInt(b.CHAR_NUM));
-             var tableItems = that.selectedChars, object = {}, array = [];
-                  var count =0; 
-                  var tempData = [];
-                    for (var i = 0; i < tableItems.length; i++) {
-
-                        if(tableItems.length === 1 || tableItems.length-1 === i){
-
-                            if(count === 1){
-                                tempData.push(tableItems[i]);
-                                count = 0;
+                    if (unselectFlag === "") {
+                        var tableItems = that.selectedChars, object = {}, array = [];
+                        var count = 0;
+                        var tempData = [];
+                        for (var i = 0; i < tableItems.length; i++) {
+                            if (tableItems.length === 1 || tableItems.length - 1 === i) {
+                                if (count === 1) {
+                                    tempData.push(tableItems[i]);
+                                    count = 0;
+                                } else {
+                                    tempData.push(tableItems[i]);
+                                    count = 0;
+                                }
                             } else {
-                                tempData.push(tableItems[i]);
-                                count = 0;
+                                if (tableItems[i].CHAR_NUM === tableItems[i + 1].CHAR_NUM) {
+                                    tempData.push(tableItems[i]);
+                                    // i++;
+                                    count = 1;
+                                } else {
+                                    count = 0;
+                                    tempData.push(tableItems[i]);
+                                }
                             }
 
-                        } else {
-                        if(tableItems[i].CHAR_NUM === tableItems[i+1].CHAR_NUM){
-                            tempData.push(tableItems[i]);
-                            // i++;
-                            count = 1;
-                        } else {
-                            count = 0;
-                            tempData.push(tableItems[i]);
+                            if (count === 0) {
+                                var data = [];
+                                if (array.length === 0) {
+                                    tempData.forEach(ele => {
+                                        var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                        data = data.concat(char);
+                                    });
+                                    // Extract the 'id' values from array1
+                                    var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                                    // Filter array2 to include only items with 'id' present in array1
+                                    array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                                    count = 0;
+                                    tempData = [];
+                                } else {
+                                    tempData.forEach(ele => {
+                                        var char = array.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                        data = data.concat(char);
+
+                                    });
+
+                                    // Extract the 'id' values from array1
+                                    var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                                    // Filter array2 to include only items with 'id' present in array1
+                                    array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                                    count = 0;
+                                    tempData = [];
+                                }
+                            }
                         }
-                    }
-
-                    // if(unselectFlag === ""){
-                    if(count === 0){
-                        // tempData.push(tableItems[i]);
-                        var data = [];
-                        if(array.length === 0){
-                            tempData.forEach(ele => {
-                                var char = UID.filter(el=> el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                data = data.concat(char);
-                            });
-                            // Extract the 'id' values from array1
-                            var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                            // Filter array2 to include only items with 'id' present in array1
-                            array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                            count =0;
-                            tempData = [];
-                        } else {
-                            tempData.forEach(ele => {
-                                var char = array.filter(el=> el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                data = data.concat(char);
-                                
-                            });
-
-                            // Extract the 'id' values from array1
-                            var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                            // Filter array2 to include only items with 'id' present in array1
-                            array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                            count =0;
-                            tempData = [];
-                        }
-
-                       
-
-                    }
-
-                    // }
-                    
-                }
-                var filterData = that.removeDuplicates(array, 'UNIQUE_ID');
-
-                that.newUniqueMode.setData({ uniqueDetails: filterData });
-                that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                that.byId("idInput").setText(filterData.length);
-
-                if(filterData.length === 0){
-                    MessageToast.show("No combination of Unique Id's available for selections");
-                  that.byId("idGenSeedOrder").setEnabled(false);
-                } else {
-                  that.byId("idGenSeedOrder").setEnabled(true);
-                }
-            }
-                
-                    // sap.ui.core.BusyIndicator.hide();
-                }
-                sap.ui.core.BusyIndicator.hide();
-                var hideButton = "";
-                if(that.byId("idVBox").getItems().length === 0 && filterData.length > 0){
-                    that.byId("idGenSeedOrder").setEnabled(true);
-                    }  else if(filterData.length === 0){
-                        that.byId("idGenSeedOrder").setEnabled(false);
-                    }
-                    else{
-                        var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-
-                        var idBox = that.byId("idVBox").getItems();
-
-                        for(var k=0;k<idBox.length;k++){
-                           var content =  idBox[k].getContent()[0].getItems();
-                           var countfull = content[content.length - 1].getCells()[1].getValue();
-
-                           if(parseInt(countfull) !== 100){
-                                hideButton = "X";
-                                break;
-                           }
-                        }
-                        // for(var k=0;k<oDataSet.length;k++){
-                        //     var child = oDataSet[k].child;
-                        //     if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                        //         count++;
-                        //         break;
-                        //     }
-                        // }
-                        if(hideButton === "X"){
+                        var filterData = that.removeDuplicates(array, 'UNIQUE_ID');
+                        that.newUniqueMode.setData({ uniqueDetails: filterData });
+                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                        that.byId("idInput").setText(filterData.length);
+                        if (filterData.length === 0) {
+                            MessageToast.show("No combination of Unique Id's available for selections");
                             that.byId("idGenSeedOrder").setEnabled(false);
-                            MessageToast.show("Total Percentage not equal to 100 in step2");
-                        }
-                        else{
+                        } else {
                             that.byId("idGenSeedOrder").setEnabled(true);
                         }
                     }
-                // else {
-                //     var selected = oEvent.getParameters().selected;
-                //     if (selected) {
-                //         oEntry = {
-                //             LOCATION_ID: that.byId("idloc").getValue(),
-                //             PRODUCT_ID: that.byId("prodInput").getValue(),
-                //             CHAR_NUM: oEvent.getParameters().listItem.getCells()[0].getText(),
-                //             CHAR_DESC: oEvent.getParameters().listItem.getCells()[0].getTitle(),
-                //             CHARVAL_DESC: oEvent.getParameters().listItem.getCells()[1].getText(),
-                //             CHAR_VALUE: oEvent.getParameters().listItem.getCells()[1].getTitle(),
-                //             CHARVAL_NUM: oEvent.getParameters().listItem.getCells()[2].getText()
-                //         }
-                //         that.selectedChars.push(oEntry);
-                //         var tableItems = that.selectedChars, object = {}, array = [];
-                //         for (var i = 0; i < tableItems.length; i++) {
-                //             var array3 = [];
-                //             object = { CHAR_VALUE: tableItems[i].CHAR_VALUE, CHAR_NUM: tableItems[i].CHAR_NUM };
-                //             var filteredArray = that.removeDuplicate(that.totalUniqueIds.filter(a => a.CHAR_VALUE === object.CHAR_VALUE && a.CHAR_NUM === object.CHAR_NUM), 'UNIQUE_ID');
-                //             if (filteredArray.length > 0) {
-                //                 filteredArray.forEach(function (oItem) {
-                //                     array3.push(oItem.UNIQUE_ID)
-                //                 })
-                //                 // array.push(array3);
-                //                 array = array.concat(array3);
-                //             }
-                //             else {
-                //                 count = 1;
-                //                 break;
-                //             }
-                //         }
-                //         if (count === 1) {
-                //             that.byId("idInput").setText('0');
-                //             MessageToast.show("No combination of Unique Id's available for selections");
-                //             that.newUniqueMode.setData({ uniqueDetails: []});
-                //             that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //             that.byId("idGenSeedOrder").setEnabled(false);
-                //         }
-                //         else {
-                //             var uniqueIds = that.getMatchingUIDs(array);
-                //             var arrayIds = [];
-                //             for (var i = 0; i < uniqueIds.length; i++) {
-                //                 var object = {};
-                //                 object = { UNIQUE_ID: uniqueIds[i] };
-                //                 arrayIds.push(object);
-                //             }
-                //             that.uniqueIds = arrayIds;
-                //             that.uniqueIds = [...new Set(that.uniqueIds)];
-                //             that.byId("idInput").setText(uniqueIds.length);
-                //             if(uniqueIds.length === 0){
-                //                 that.byId("idGenSeedOrder").setEnabled(false);
-                //                 MessageToast.show("No combination of Unique Id's available for selections");
-                //                 that.newUniqueMode.setData({ uniqueDetails: [] });
-                //                 that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //             }
-                //             else{
-                //             MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
-                //             that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                //             that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //             if(that.byId("idVBox").getItems().length === 0){
-                //             that.byId("idGenSeedOrder").setEnabled(true);
-                //             }
-                //             else{
-                //                 var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-                //                 for(var k=0;k<oDataSet.length;k++){
-                //                     var child = oDataSet[k].child;
-                //                     if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                //                         count++;
-                //                         break;
-                //                     }
-                //                 }
-                //                 if(count !== 0){
-                //                     that.byId("idGenSeedOrder").setEnabled(false);
-                //                     MessageToast.show("Total Percentage not equal to 100 in step2");
-                //                 }
-                //                 else{
-                //                     that.byId("idGenSeedOrder").setEnabled(true);
-                //                 }
-                //             }
-                //             if(uniqueIds.length === 0){
-                //                 that.byId("idGenSeedOrder").setEnabled(false);
-                //             }
-                //         }
-                //         }
-                //         sap.ui.core.BusyIndicator.hide();
-                //     }
-                //     else {
-                //         var unSelectAll = oEvent.getParameters().listItems;
-                //         if (unSelectAll.length === that.allCharacterstics1.length) {
-                //             that.selectedChars = [], that.uniqueIds = [];
-                //             that.byId("idInput").setText(that.count1);
-                //             if(that.count1.length !== 0){
-                //                 that.byId("idGenSeedOrder").setEnabled(true);
-                //             }
-                //             MessageToast.show("Total Unique ID's count " + that.count1);
-                //             that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                //             that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //         }
-                //         else {
-                //             var selectedId = oEvent.getParameters().listItem.getCells()[1].getTitle();
-                //             var selectedCharDesc = oEvent.getParameters().listItem.getCells()[1].getText();
-                //             that.selectedChars = removeElementById(that.selectedChars, selectedId, selectedCharDesc);
-                //             function removeElementById(array, idToRemove, charToRemove) {
-                //                 return array.filter(function (obj) {
-                //                     return obj.CHAR_VALUE !== idToRemove
-                //                         || obj.CHARVAL_DESC !== charToRemove;
-                //                 });
-                //             }
-                //             var tableItems = that.selectedChars, object = {}, array = [];
-                //             if (tableItems.length > 0) {
-                //                 for (var i = 0; i < tableItems.length; i++) {
-                //                     var array3 = [];
-                //                     object = { CHAR_VALUE: tableItems[i].CHAR_VALUE, CHAR_NUM: tableItems[i].CHAR_NUM };
-                //                     var filteredArray = that.removeDuplicate(that.totalUniqueIds.filter(a => a.CHAR_VALUE === object.CHAR_VALUE && a.CHAR_NUM === object.CHAR_NUM), 'UNIQUE_ID');
-                //                     if (filteredArray.length > 0) {
-                //                         filteredArray.forEach(function (oItem) {
-                //                             array3.push(oItem.UNIQUE_ID)
-                //                         })
-                //                         // array.push(array3);
-                //                         array = array.concat(array3);
-                //                     }
-                //                     else {
-                //                         count = 1;
-                //                         break;
-                //                     }
-                //                 }
-                //                 if (count === 1) {
-                //                     that.byId("idInput").setText('0');
-                //                     MessageToast.show("No combination of Unique Id's available for selections");
-                //                     that.newUniqueMode.setData({ uniqueDetails: [] });
-                //                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //                     that.byId("idGenSeedOrder").setEnabled(false);
-                //                 }
-                //                 else {
-                //                     var uniqueIds = that.getMatchingUIDs(array);
-                //                     var arrayIds = [];
-                //                     for (var i = 0; i < uniqueIds.length; i++) {
-                //                         var object = {};
-                //                         object = { UNIQUE_ID: uniqueIds[i] };
-                //                         arrayIds.push(object);
-                //                     }
-                //                     that.uniqueIds = arrayIds;
-                //                     that.uniqueIds = [...new Set(that.uniqueIds)];
-                //                     that.byId("idInput").setText(uniqueIds.length);
-                //                     if(uniqueIds.length === 0){
-                //                         that.byId("idGenSeedOrder").setEnabled(false);
-                //                         MessageToast.show("No combination of Unique Id's available for selections");
-                //                         that.newUniqueMode.setData({ uniqueDetails: [] });
-                //                         that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //                     }
-                //                     else{
-                //                     MessageToast.show("Selection(s) have " + uniqueIds.length + " combination unique id's");
-                //                     that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                //                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //                     if(that.byId("idVBox").getItems().length === 0){
-                //                         that.byId("idGenSeedOrder").setEnabled(true);
-                //                         }
-                //                         else{
-                //                             var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-                //                             for(var k=0;k<oDataSet.length;k++){
-                //                                 var child = oDataSet[k].child;
-                //                                 if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                //                                     count++;
-                //                                     break;
-                //                                 }
-                //                             }
-                //                             if(count !== 0){
-                //                                 that.byId("idGenSeedOrder").setEnabled(false);
-                //                                 MessageToast.show("Total Percentage not equal to 100 in step2");
-                //                             }
-                //                             else{
-                //                                 that.byId("idGenSeedOrder").setEnabled(true);
-                //                             }
-                //                         }
-                //                     }
-                //                 }
-                //             }
-                //             else {
-                //                 that.uniqueIds = that.uniqueIds1;
-                //                 that.byId("idInput").setText(that.count1);
-                //                 MessageToast.show("Total Unique ID's count " + that.count1);
-                //                 that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
-                //                 that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                //                 if(that.byId("idVBox").getItems().length === 0){
-                //                     that.byId("idGenSeedOrder").setEnabled(true);
-                //                     }
-                //                     else{
-                //                         var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count=0;
-                //                         for(var k=0;k<oDataSet.length;k++){
-                //                             var child = oDataSet[k].child;
-                //                             if(child[child.length-1].CHARVAL_INPUT !== "100"){
-                //                                 count++;
-                //                                 break;
-                //                             }
-                //                         }
-                //                         if(count !== 0){
-                //                             that.byId("idGenSeedOrder").setEnabled(false);
-                //                             MessageToast.show("Total Percentage not equal to 100 in step2");
-                //                         }
-                //                         else{
-                //                             that.byId("idGenSeedOrder").setEnabled(true);
-                //                         }
-                //                     }
-                //             }
-                //         }
-                //         sap.ui.core.BusyIndicator.hide();
-                //     }
-                // }
+                }
+                sap.ui.core.BusyIndicator.hide();
+                var hideButton = "";
+                if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
+                    that.byId("idGenSeedOrder").setEnabled(true);
+                } else if (filterData.length === 0) {
+                    that.byId("idGenSeedOrder").setEnabled(false);
+                }
+                else {
+                    var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
+
+                    var idBox = that.byId("idVBox").getItems();
+
+                    for (var k = 0; k < idBox.length; k++) {
+                        var content = idBox[k].getContent()[0].getItems();
+                        var countfull = content[content.length - 1].getCells()[1].getValue();
+
+                        if (parseInt(countfull) !== 100) {
+                            hideButton = "X";
+                            break;
+                        }
+                    }
+                    if (hideButton === "X") {
+                        that.byId("idGenSeedOrder").setEnabled(false);
+                        MessageToast.show("Total Percentage not equal to 100 in step2");
+                    }
+                    else {
+                        that.byId("idGenSeedOrder").setEnabled(true);
+                    }
+                }
             },
             /**For getting combination of unique ids */
             getMatchingUIDs: function (arrays) {
                 if (arrays.length === 0) return [];
                 // Initialize with the first array's elements
                 let commonElements = new Set(arrays);
-
                 // Intersect the common elements with each array in arrays
                 // for (let i = 1; i < arrays.length; i++) {
                 //     commonElements = new Set(arrays[i].filter(item => commonElements.has(item)));
                 // }
-
                 return Array.from(commonElements);
             },
             /**
@@ -2031,12 +1606,8 @@ sap.ui.define([
                 var tableSelected = that.byId("idCharTable").getSelectedItems();
                 var aTreeBoxItems = that.byId("LogList").getModel().getData().res
                 var vBoxItems = that.byId("idVBox").getItems();
-                // if (tableSelected.length > 0) {
-                    // that.onCharsLoad();
-                // }
-
-                 if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
-                    that.oGModel.setProperty("/CharOptFlag","X");
+                if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
+                    that.oGModel.setProperty("/CharOptFlag", "X");
                     that.onCharSave();
                 }
                 else {
@@ -2045,7 +1616,7 @@ sap.ui.define([
 
             },
             newGenSeedOrder: function () {
-                var count = 0, newArray = [], charItems={},charArray=[];
+                var count = 0, newArray = [], charItems = {}, charArray = [];
                 that.messageArray = [];
                 var productConfig = that.byId("prodInput").getValue();
                 var demandLocation = that.byId("idloc").getValue();
@@ -2057,10 +1628,10 @@ sap.ui.define([
                 toDate = toDate.toLocaleDateString('en-US');
                 toDate = that.convertDateFormat(toDate);
                 var Flag = that.oGModel.getProperty("/CharOptFlag");
-                if(Flag === undefined){
+                if (Flag === undefined) {
                     var FLAG = '';
                 }
-                else{
+                else {
                     var FLAG = Flag;
                 }
                 var aScheduleSEDT = {};
@@ -2071,11 +1642,11 @@ sap.ui.define([
                 var JobName = "Seed Order Generation" + dCurrDateTime;
                 sap.ui.core.BusyIndicator.show();
                 // if(that.selectedChars.length>0){
-                    var selectedUniques = that.byId("idUniqueDetails").getModel().oData.uniqueDetails;
-                    for(var i = 0; i < selectedUniques.length; i++){
-                        charArray.push(selectedUniques[i].UNIQUE_ID);
-                    }
-                   
+                var selectedUniques = that.byId("idUniqueDetails").getModel().oData.uniqueDetails;
+                for (var i = 0; i < selectedUniques.length; i++) {
+                    charArray.push(selectedUniques[i].UNIQUE_ID);
+                }
+
                 for (var i = 0; i < customerGroup.length; i++) {
                     // Define the URL and request body
                     const data = {
@@ -2084,8 +1655,8 @@ sap.ui.define([
                         CUSTOMER_GROUP: customerGroup[i].getText(),
                         FROMDATE: fromDate,
                         TODATE: toDate,
-                        CHARDATA : JSON.stringify(charArray),
-                        CHAROPTFLAG : FLAG
+                        CHARDATA: JSON.stringify(charArray),
+                        CHAROPTFLAG: FLAG
                     };
                     if (i === 0) {
                         count = count;
@@ -2125,7 +1696,7 @@ sap.ui.define([
                         that.byId("idGenSeedOrder").setEnabled(false);
                         sap.ui.core.BusyIndicator.hide();
                         that.onResetDate();
-                that.oGModel.setProperty("/CharOptFlag",'')
+                        that.oGModel.setProperty("/CharOptFlag", '')
                         sap.m.MessageToast.show(oData.addMLJob + ": Job Created");
                     },
                     error: function (error) {
@@ -2138,16 +1709,12 @@ sap.ui.define([
             addMinutesToDateTime: function (dateTimeString, minutesToAdd) {
                 // Split the datetime string into its components
                 const [datePart, timePart, offset] = dateTimeString.split(" ");
-
                 // Create a combined string that JavaScript Date can parse
                 const dateTime = `${datePart}T${timePart}:00${offset}`;
-
                 // Create a Date object
                 const date = new Date(dateTime);
-
                 // Add the specified minutes
                 date.setMinutes(date.getMinutes() + minutesToAdd);
-
                 // Format the updated Date object back to the original format
                 const updatedDatePart = date.toISOString().slice(0, 10);
                 const updatedTimePart = date.toISOString().slice(11, 16);
@@ -2339,7 +1906,7 @@ sap.ui.define([
             onDownLoad: function (oEvent) {
                 var aDown = []
                 var aCols, oSettings, oSheet;
-                var sFileName = "Seed Order Creation" ;
+                var sFileName = "Seed Order Creation";
                 // + new Date().getTime();
                 if (that.byId("idCharName").getTokens().length <= 0) {
                     var oTableBind = []
@@ -2355,8 +1922,6 @@ sap.ui.define([
                         });
 
                     }
-
-
                 }
                 else {
                     var oTableBind = that.byId("idVBox").getItems()[0].oBindingContexts.undefined.oModel.oData.setPanel
@@ -2396,7 +1961,7 @@ sap.ui.define([
                     aCols.push({
                         property: Object.keys(aDown[0])[j],
                         type: EdmType.String,
-                        label:Object.keys(aDown[0])[j]                    
+                        label: Object.keys(aDown[0])[j]
                     });
                 }
                 var oSettings = {
@@ -2417,7 +1982,6 @@ sap.ui.define([
 
             // Upload Func Starts
             onUpload: function (e) {
-                // MessageToast.show("File Import in-Process");
                 sap.ui.core.BusyIndicator.show()
                 that.byId("idGenSeedOrder").setEnabled(true);
                 this.importExcel(e.getParameter("files") && e.getParameter("files")[0]);
@@ -2430,19 +1994,29 @@ sap.ui.define([
                 var otreemodel = that.getOwnerComponent().getModel("oGModel");
                 // debugger;
                 // var aValidArray= []
-                for (let i = 0; i < array.length; i++) {
-                    for (let k = 0; k < that.loadArray.length; k++) {
-                        if (that.loadArray[k].PRODUCT_ID === selectedProduct && that.loadArray[k].CHAR_NAME == array[i].Characteristic_Name && that.loadArray[k].CHAR_VALUE == array[i].Characteristic_Value) {
-                            array[i].CHARVAL_NUM = that.loadArray[k].CHARVAL_NUM
-                            array[i].CHAR_NUM = that.loadArray[k].CHAR_NUM
+                if (array.every(item => item.hasOwnProperty('Characteristic_Value')
+                    && item.hasOwnProperty('Characteristic_Name')
+                    && item.hasOwnProperty('Characteristic_Value_Desc'))) {
+                    for (let i = 0; i < array.length; i++) {
+                        // if(array[i].some(item => item.hasOwnProperty('Characteristic_value'))){
+                        for (let k = 0; k < that.loadArray.length; k++) {
+                            if (that.loadArray[k].PRODUCT_ID === selectedProduct
+                                && that.loadArray[k].CHAR_NAME == array[i].Characteristic_Name
+                                && that.loadArray[k].CHAR_VALUE == array[i].Characteristic_Value) {
+                                array[i].CHARVAL_NUM = that.loadArray[k].CHARVAL_NUM
+                                array[i].CHAR_NUM = that.loadArray[k].CHAR_NUM
+                            }
+                            // }
                         }
                     }
                 }
+                else {
+                    sap.ui.core.BusyIndicator.hide();
+                    return setTimeout(function () { MessageToast.show("Uploaded file contains null values in Characteristic_Name or Characteristic_Value or Characteristic_Value_Desc. Please reupload again") }, 1000);
+                }
                 var targetNames = array.map(item => item.Characteristic_Name);
-
                 // Filter that.loadArray1 based on targetNames
                 var filteredLoadArray1 = that.loadArray1.filter(item => targetNames.includes(item.CHAR_NAME));
-
                 var resultArray = filteredLoadArray1.map(item => ({
                     CHAR_NAME: item.CHAR_NAME,
                     CHARVAL_NUM: item.CHARVAL_NUM,
@@ -2468,6 +2042,7 @@ sap.ui.define([
                     });
                 }
                 var UniWeek = {};
+                //NOC is removed Duplicates of oTableBind
                 var NOC = oTableBind.filter(function (obj) {
                     if (!UniWeek[obj.CHAR_NAME]) {
                         UniWeek[obj.CHAR_NAME] = true;
@@ -2523,10 +2098,18 @@ sap.ui.define([
                                 if (NOC[y].child[k].CHARVAL_INPUT === "") {
                                     // Condition where CHARVAL_INPUT is ""
                                     // Array1.OPT_PERCENT should be a number
-                                    if (!isNaN(parseFloat(Array1[i].children[k].OPT_PERCENT))) {
+                                    if (!isNaN(parseFloat(Array1[i].children[k].OPT_PERCENT)) && !isNaN(parseFloat(Array1[i].children[k].OPT_PERCENT)>0)) {
                                         aFinalData.push(Array1[i]);
-                                    } else {
-                                        sap.m.MessageToast.show("Mismatched condition for CHARVAL_INPUT");
+                                    }
+                                    else if(Array1[i].children[k].OPT_PERCENT==="0"){
+                                        aFinalData.push(Array1[i]);
+                                    }
+                                    else if (Array1[i].children[k].OPT_PERCENT === undefined) {
+                                        Array1[i].children[k].OPT_PERCENT = '0';
+                                        aFinalData.push(Array1[i]);
+                                    }
+                                    else {
+                                        sap.m.MessageToast.show("Uploaded file contains invalid values in Option_Percentage column.");
                                         sap.ui.core.BusyIndicator.hide()
                                         return false;
                                     }
@@ -2538,6 +2121,7 @@ sap.ui.define([
                                         aNonValid.push(Array1[i]);
                                     }
                                 }
+
                             }
                             break;
                         }
@@ -2669,24 +2253,24 @@ sap.ui.define([
                         sap.ui.core.BusyIndicator.hide()
                     }
                 }
-                if(that.aErrorLog.length>0){
+                if (that.aErrorLog.length > 0) {
                     sap.ui.core.BusyIndicator.hide()
                     MessageToast.show("Uploaded file contains errors. Please re-upload a valid file");
                     that.byId("idGenSeedOrder").setEnabled(false);
                 }
-                else{
+                else {
                     sap.ui.core.BusyIndicator.hide()
-                    if(that.byId("idInput").getText() !=="0"){
-                    that.byId("idGenSeedOrder").setEnabled(true);
+                    if (that.byId("idInput").getText() !== "0") {
+                        that.byId("idGenSeedOrder").setEnabled(true);
                     }
-                    else{
+                    else {
                         sap.ui.core.BusyIndicator.hide()
                         MessageToast.show("No combination of Unique Id's available for selections in Step1");
                         that.byId("idGenSeedOrder").setEnabled(false);
                     }
                 }
             },
-            importExcel:function(file){
+            importExcel: function (file) {
                 if (file.type.endsWith("spreadsheetml.sheet") == false) {
                     return MessageToast.show("Please upload only files of type XLSX");
                 }
@@ -2705,11 +2289,10 @@ sap.ui.define([
                         workbook.SheetNames.forEach(function (sheetName) {
                             // Here is your object for every sheet in workbook
                             excelData = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                            if(excelData.length>0){
-                                // sap.ui.core.BusyIndicator.hide();
-                            that.Emport(excelData);
+                            if (excelData.length > 0) {
+                                that.Emport(excelData);
                             }
-                            else{
+                            else {
                                 sap.ui.core.BusyIndicator.hide();
                                 return MessageToast.show("Wrong file uploaded")
                             }
@@ -2721,7 +2304,7 @@ sap.ui.define([
 
                     };
                     reader.readAsBinaryString(file);
-                   
+
                 }
 
             },
