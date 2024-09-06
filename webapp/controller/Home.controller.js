@@ -560,7 +560,7 @@ sap.ui.define([
                 oFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, prodItem));
                 oFilters.push(new Filter("UID_TYPE", FilterOperator.EQ, "U"));
 
-                if (prodItem && locItem && dateRange && customerGroup) {
+                if (prodItem && locItem && dateRange && customerGroup.length>0) {
                     this.getOwnerComponent().getModel("BModel").callFunction("/getUniqueIds", {
                         method: "GET",
                         urlParameters: {
