@@ -272,7 +272,7 @@ sap.ui.define([
                     ],
                     success: function (oData) {
                         if (oData.results.length > 0) {
-                            var finalItems = that.removeDuplicates(oData.results,"DEMAND_LOC")
+                            var finalItems = that.removeDuplicates(oData.results,"DEMAND_LOC");
                             that.locModel.setData({ locDetails: finalItems });
                             sap.ui.getCore().byId("LocationList").setModel(that.locModel);
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
