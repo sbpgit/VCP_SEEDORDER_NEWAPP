@@ -262,17 +262,18 @@ sap.ui.define([
                 sap.ui.core.BusyIndicator.show()
                 var selectedProdItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("prodInput").setValue(selectedProdItem);
-                this.getOwnerComponent().getModel("BModel").read("/getProdDemandLoc", {
+                this.getOwnerComponent().getModel("BModel").read("/getfactorylocdesc", {
                     filters: [
                         new Filter(
-                            "PRODUCT_ID",
+                            "REF_PRODID",
                             FilterOperator.EQ,
                             selectedProdItem
                         ),
                     ],
                     success: function (oData) {
                         if (oData.results.length > 0) {
-                            that.locModel.setData({ locDetails: oData.results });
+                            var finalItems = that.removeDuplicates(oData.results,"DEMAND_LOC")
+                            that.locModel.setData({ locDetails: finalItems });
                             sap.ui.getCore().byId("LocationList").setModel(that.locModel);
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
                         }
