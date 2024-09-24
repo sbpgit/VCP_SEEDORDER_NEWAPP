@@ -225,7 +225,12 @@
 										</HBox>
 										<!-- <m:Button text="Download" type="Emphasized" textDirection="LTR"></m:Button> -->
 										<VBox items="{path:'/setPanel'}" id="idVBox" visible="false">
-											<Panel id="_IDGenPanelNew" expandable="true" expanded="false" headerText="{CHAR_NAME}" expand="onPanelExpand">
+											<Panel id="_IDGenPanelNew" expandable="true" expanded="false" expand="onPanelExpand" headerText="{CHAR_NAME}-{LENGTH}">
+											<!-- <headerToolbar>
+												<OverflowToolbar>
+													<m:ObjectIdentifier title="{CHAR_NAME}-{LENGTH}"/>
+												</OverflowToolbar>
+											</headerToolbar> -->
 												<content>
 													<Table id="" items="{path: 'child'}" growingScrollToLoad="true" growingThreshold="1000" growing="true" rememberSelections="false"
 														itemPress="onhandlePress" mode="None" selectionChange="onhandlePress" sticky="ColumnHeaders">
@@ -240,7 +245,7 @@
 														<items>
 															<ColumnListItem>
 															<customData>
-    														 <core:CustomData key="mydata" value="{CHARVAL_INPUT}" writeToDom="true"></core:CustomData>
+    														 <core:CustomData key="mydata" value="{CHARVAL_INPUT}" writeToDom="true" ></core:CustomData>
   															 </customData>
 																<cells>
 																	<VBox>

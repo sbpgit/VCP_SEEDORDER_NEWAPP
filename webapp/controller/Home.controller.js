@@ -215,9 +215,22 @@ sap.ui.define([
                 // that.getVariantsData();
             },
             /**Removing duplicates */
-            removeDuplicate(array, key) {
-                var check = new Set();
-                return array.filter(obj => !check.has(obj[key]) && check.add(obj[key]));
+            removeDuplicate(array, key1, key2) {
+                const seen = new Set();
+  
+                return array.filter(item => {
+                  // Create a unique combination string based on the two properties
+                  const key = `${item[key1]}|${item[key2]}`;
+                  
+                  // Check if the combination is already in the Set
+                  if (seen.has(key)) {
+                    return false; // Skip if combination is a duplicate
+                  }
+                  
+                  // Add the combination to the Set and include the item in the result
+                  seen.add(key);
+                  return true;
+                });
             },
             /**
              * on Press of value helps on filters and fragments
@@ -238,6 +251,15 @@ sap.ui.define([
                 }
                 else if (sId.includes("Cust")) {
                     if (that.byId("prodInput").getValue() && that.byId("idloc").getValue()) {
+                        var tokens = that.byId("idCustGrp").getTokens();
+                        var items = sap.ui.getCore().byId("custGrpList").getItems();
+                        for (var i = 0; i < tokens.length; i++) {
+                            for (var k = 0; k < items.length; k++) {
+                                if (tokens[i].getKey() === items[k].getCells()[0].getText()) {
+                                    items[k].setSelected(true);
+                                }
+                            }
+                        }
                         that._valueHelpDialogCustomer.open();
                     } else {
                         MessageToast.show("Select Configurable Product/Demand Location");
@@ -247,6 +269,15 @@ sap.ui.define([
                     that._valueHelpDialogPart.open();
                 }
                 else if (sId.includes("Char")) {
+                    var tokens = that.byId("idCharName").getTokens();
+                        var items = sap.ui.getCore().byId("idCharSelect").getItems();
+                        for (var i = 0; i < tokens.length; i++) {
+                            for (var k = 0; k < items.length; k++) {
+                                if (tokens[i].getKey() === items[k].getCells()[0].getText()) {
+                                    items[k].setSelected(true);
+                                }
+                            }
+                        }
                     that._valueHelpDialogCharacter.open();
                 }
                 else if (sId.includes("Uniq")) {
@@ -303,7 +334,9 @@ sap.ui.define([
                         that.emptyModel2.setData({ res: [] });
                         that.byId("LogList").setModel(that.emptyModel2);
                         that.byId("idIconTabBar").setVisible(false);
-                        sap.ui.getCore().byId("custGrpList").clearSelection();
+                       if(sap.ui.getCore().byId("custGrpList").getBinding("items")){
+                        sap.ui.getCore().byId("custGrpList").getBinding("items").filter([]);
+                       }
                         that.byId("idInput").setText();
                         that.partModel.setData({ partDetails: [] });
                         sap.ui.getCore().byId("partProdSlct").clearSelection();
@@ -379,7 +412,9 @@ sap.ui.define([
                 that.emptyModel2.setData({ res: [] })
                 that.byId("LogList").setModel(that.emptyModel2)
                 that.byId("idIconTabBar").setVisible(false);
-                sap.ui.getCore().byId("custGrpList").clearSelection();
+                if(sap.ui.getCore().byId("custGrpList").getBinding("items")){
+                    sap.ui.getCore().byId("custGrpList").getBinding("items").filter([]);
+                   }
                 if(sap.ui.getCore().byId("partProdSlct").getBinding("items")){
                 sap.ui.getCore().byId("partProdSlct").clearSelection();
                 sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
@@ -589,6 +624,14 @@ sap.ui.define([
                                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     MessageToast.show("No Unique Id's available to show for the selection");
                                 }
+                                that.loadArray =  that.totalUniqueIds;
+                                that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
+                                that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
+                                sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
+                                var filteredProdData =that.removeDuplicate(that.loadArray, "CHAR_NAME","CHAR_VALUE");
+                                that.charsProd = filteredProdData;
+                                that.newClassModel.setData({ items1: filteredProdData });
+                                tableData.setModel(that.newClassModel);
                                 sap.ui.core.BusyIndicator.hide();
                             }
                             else {
@@ -641,27 +684,6 @@ sap.ui.define([
                     });
                     tableData.setVisible(true);
                     // that.byId("_IDGenToolbar1").setVisible(true);
-                    this.getOwnerComponent().getModel("BModel").callFunction("/getProdClasCharVal", {
-                        method: "GET",
-                        urlParameters: {
-                            PRODUCT_ID: prodItem
-                        },
-                        success: function (oData) {
-                            that.loadArray = JSON.parse(oData.getProdClasCharVal);
-                            that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
-                            that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
-                            sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
-                            var filteredProdData = that.loadArray.filter(a => a.PRODUCT_ID === prodItem);
-                            that.charsProd = filteredProdData;
-                            that.newClassModel.setData({ items1: filteredProdData });
-                            tableData.setModel(that.newClassModel);
-                            sap.ui.core.BusyIndicator.hide()
-                        },
-                        error: function () {
-                            sap.ui.core.BusyIndicator.hide();
-                            MessageToast.show("Failed to get Characteristics");
-                        }
-                    });
                     that.byId("idCharSearch").setVisible(true);
                     that.byId("idGenSeedOrder").setEnabled(true);
                 }
@@ -932,7 +954,7 @@ sap.ui.define([
                         for (var i = 0; i < tableItems.length; i++) {
                             var array3 = [];
                             object = { CHAR_VALUE: tableItems[i].CHAR_VALUE, CHAR_NUM: tableItems[i].CHAR_NUM };
-                            var filteredArray = that.removeDuplicate(that.totalUniqueIds.filter(a => a.CHAR_VALUE === object.CHAR_VALUE && a.CHAR_NUM === object.CHAR_NUM), 'UNIQUE_ID');
+                            var filteredArray = that.removeDuplicates(that.totalUniqueIds.filter(a => a.CHAR_VALUE === object.CHAR_VALUE && a.CHAR_NUM === object.CHAR_NUM), 'UNIQUE_ID');
                             if (filteredArray.length > 0) {
                                 filteredArray.forEach(function (oItem) {
                                     array3.push(oItem.UNIQUE_ID)
@@ -1017,13 +1039,13 @@ sap.ui.define([
                 that.sumArray = [];
                 that.uniqueName = [];
                 that.byId("idCharName").removeAllTokens();
-                var selectedItem = oEvent.getParameters().selectedItems;
+                var selectedItem = oEvent.getParameter("selectedContexts");
                 that.charNum = that.byId("idCharName");
                 selectedItem.forEach(function (oItem) {
                     that.charNum.addToken(
                         new sap.m.Token({
-                            key: oItem.getTitle(),
-                            text: oItem.getTitle(),
+                            key: oItem.getModel().getProperty(oItem.sPath).CHAR_NAME,
+                            text: oItem.getModel().getProperty(oItem.sPath).CHAR_NAME,
                             editable: false
                         })
                     );
@@ -1032,14 +1054,24 @@ sap.ui.define([
                 for (var i = 0; i < selectedItem.length; i++) {
                     that.uniqueName.push({
                         PRODUCT_ID: that.byId("prodInput").getValue(),
-                        CHAR_NAME: selectedItem[i].getTitle(),
-                        child: that.newChildArray(selectedItem[i].getBindingContext().getObject().CHAR_NUM)
+                        CHAR_NAME: selectedItem[i].getObject().CHAR_NAME,
+                        child: that.newChildArray(selectedItem[i].getObject().CHAR_NUM)
                     });
+                    var length = that.uniqueName[i].child.length;
+                    that.uniqueName[i].LENGTH = length;
                     that.uniqueName[i].child.push({
                         CHAR_VALUE: "Total Percentage",
                         FLAG: false,
-                        CHARVAL_DESC: "(Sum value to be equal to 100)"
+                        CHARVAL_DESC: "(Sum value to be equal to 100)",
+                        CHARVAL_INPUT:''
                     });
+                    
+                }               
+                for(var i=0;i<that.uniqueName.length;i++){
+                    if(that.uniqueName[i].LENGTH === 1){
+                        that.uniqueName[i].child[0].CHARVAL_INPUT = "100";
+                        that.uniqueName[i].child[1].CHARVAL_INPUT = "100";
+                    }
                 }
                 that.uniqueTabNames = that.uniqueName;
                 that.oAlgoListModel.setData({ setPanel: [] });
@@ -1164,12 +1196,12 @@ sap.ui.define([
             * */
             handleCustSelection: function (oEvent) {
                 that.byId("idCustGrp").removeAllTokens();
-                var selectedCustomer = oEvent.getParameters().selectedItems;
+                var selectedCustomer = oEvent.getParameter("selectedContexts");
                 selectedCustomer.forEach(function (oItem) {
                     that.byId("idCustGrp").addToken(
                         new sap.m.Token({
-                            key: oItem.getDescription(),
-                            text: oItem.getTitle(),
+                            key: oItem.getModel().getProperty(oItem.sPath).CUSTOMER_GROUP,
+                            text: oItem.getModel().getProperty(oItem.sPath).CUSTOMER_DESC,
                             editable: false
                         })
                     );
@@ -1412,7 +1444,7 @@ sap.ui.define([
                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                     that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
                     unselectFlag = "X";
-
+                    sap.ui.core.BusyIndicator.hide();
                     if (that.oGModel.getProperty("/distUID").length === 0) {
                         MessageToast.show("No combination of Unique Id's available for selections");
                         that.byId("idGenSeedOrder").setEnabled(false);
@@ -1653,7 +1685,7 @@ sap.ui.define([
                     const data = {
                         LOCATION_ID: demandLocation,
                         PRODUCT_ID: productConfig,
-                        CUSTOMER_GROUP: customerGroup[i].getText(),
+                        CUSTOMER_GROUP: customerGroup[i].getKey(),
                         FROMDATE: fromDate,
                         TODATE: toDate,
                         CHARDATA: JSON.stringify(charArray),
@@ -1917,11 +1949,20 @@ sap.ui.define([
                             CHAR_NAME: that.loadArray1[i].CHAR_NAME,
                             child: that.newChildArray(that.loadArray1[i].CHAR_NUM)
                         });
+                        var length = oTableBind[i].child.length;
+                        oTableBind[i].LENGTH = length;
                         oTableBind[i].child.push({
                             CHAR_VALUE: "Total Percentage",
-                            CHARVAL_DESC: "(Sum value to be equal to 100)"
+                            CHARVAL_DESC: "(Sum value to be equal to 100)",
+                            CHARVALUE_INPUT: ''
                         });
 
+                    }
+                    for(var i=0;i<oTableBind.length;i++){
+                        if(oTableBind[i].LENGTH === 1){
+                            oTableBind[i].child[0].CHARVAL_INPUT = "100";
+                            oTableBind[i].child[1].CHARVAL_INPUT = "100";
+                        }
                     }
                 }
                 else {
@@ -1942,7 +1983,16 @@ sap.ui.define([
                                             Option_Percentage: parseInt(0),
                                             Comment: ""
                                         })
-                                    } else {
+                                    } 
+                                    else if(oTableBind[i].child[j].CHARVAL_INPUT == "100") {
+                                        aDown.push({
+                                            Characteristic_Name: oTableBind[i].CHAR_NAME,
+                                            Characteristic_Value: oTableBind[i].child[j].CHAR_VALUE,
+                                            Characteristic_Value_Desc: oTableBind[i].child[j].CHARVAL_DESC,
+                                            Option_Percentage: parseInt(100),
+                                            Comment: ""
+                                        })
+                                    }else {
                                         aDown.push({
                                             Characteristic_Name: oTableBind[i].CHAR_NAME,
                                             Characteristic_Value: oTableBind[i].child[j].CHAR_VALUE,
@@ -2397,6 +2447,27 @@ sap.ui.define([
                 sap.ui.getCore().byId("idCharSearch").setValue("");
                 that._valueHelpDialogUniquePrimary.destroy();
                 that._valueHelpDialogUniquePrimary = "";
-            }
+            },
+            /**On press of panel expand in step-2 */
+        //     onPanelExpand:function(oEvent){
+        //         if(oEvent.getParameters().expand){
+        //         var selectedItemLength = oEvent.getSource().getBindingContext().getObject().LENGTH;
+        //         var selectedItem = oEvent.getSource().getBindingContext().getObject().CHAR_NAME;
+        //         if(selectedItemLength === 1){
+        //             var oData = oEvent.getSource().getModel().oData.setPanel;
+        //             for(var i=0;i<oData.length;i++){
+        //                 if(selectedItem === oData[i].CHAR_NAME){
+        //                     oData[i].child[0].CHARVAL_INPUT = "100";
+        //                     break;
+        //                 }
+        //             }
+        //             that.oAlgoListModel.setData({ setPanel: [] });
+        //         that.oAlgoListModel.setData({ setPanel:oData });
+        //         that.byId("idVBox").setModel(that.oAlgoListModel);
+        //         that.byId("_IDGenPanelNew").setExpanded(true);
+        //         // that.byId("idVBox").getModel().refresh(true)
+        //         }
+        //     }
+        // }
         });
     });
