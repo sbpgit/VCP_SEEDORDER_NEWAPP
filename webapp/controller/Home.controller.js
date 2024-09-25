@@ -312,7 +312,7 @@ sap.ui.define([
                             that.locModel.setData({ locDetails: [] });
                             sap.ui.getCore().byId("LocationList").setModel(that.locModel);
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
-                            MessageToast.show("No locations available for selected product");
+                            MessageToast.show("No demand locations available for selected product");
                         }
                         // if (that.oGModel.getProperty("/resetFlag") !== "X") {
                         that.byId("idloc").setValue();
@@ -2412,6 +2412,7 @@ sap.ui.define([
                         that.newTotalCharValues[j].CHARVAL_INPUT = '0';
                     }
                 }
+                that.newTotalCharValues.sort((a, b) => a.CHAR_VALUE.localeCompare(b.CHAR_VALUE, undefined, { numeric: true }));
                 return that.newTotalCharValues;
             },
             /**On Press of Unique Id's in UniqueID fragment */
