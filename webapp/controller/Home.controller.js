@@ -173,6 +173,8 @@ sap.ui.define([
                 this.getOwnerComponent().getModel("BModel").read("/getProducts", {
                     method: "GET",
                     success: function (oData) {
+                        that.newProds=[],
+                        that.newProds=oData.results;
                         that.prodModel1.setData({ prodDetails: oData.results });
                         sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
                         sap.ui.core.BusyIndicator.hide()
@@ -182,37 +184,6 @@ sap.ui.define([
                         MessageToast.show("Failed to get configurable products");
                     },
                 });
-                // }
-                // this.getOwnerComponent().getModel("BModel").read("/getProdClsChar", {
-                //     success: function (oData) {
-                //         that.allCharacterstics = [];
-                //         for (let i = 0; i < oData.results.length; i++) {
-                //             that.loadArray.push(oData.results[i]);
-                //         }
-                //         let aDistinct = that.removeDuplicate(that.loadArray, 'CHAR_NAME');
-                //         that.allCharacterstics = that.loadArray;
-                //         sap.ui.core.BusyIndicator.hide()
-                //     },
-                //     error: function () {
-                //         sap.ui.core.BusyIndicator.hide()
-                //         MessageToast.show("Failed to get characteristics");
-                //     },
-                // });
-
-                // this.getOwnerComponent().getModel("BModel").read("/getLocProdChars", {
-                //     success: function (oData) {
-                //         if (oData.results.length > 0) {
-                //             that.totalChars = oData.results;
-                //             sap.ui.core.BusyIndicator.hide();
-                //         }
-                //     },
-                //     error: function (oData, error) {
-                //         sap.ui.core.BusyIndicator.hide();
-                //         MessageToast.show("error");
-                //     },
-                // });
-
-                // that.getVariantsData();
             },
             /**Removing duplicates */
             removeDuplicate(array, key1, key2) {
@@ -306,11 +277,15 @@ sap.ui.define([
                             var finalItems = that.removeDuplicates(oData.results,"DEMAND_LOC");
                             that.locModel.setData({ locDetails: finalItems });
                             sap.ui.getCore().byId("LocationList").setModel(that.locModel);
+                            that.prodModel1.setData({ prodDetails: that.newProds });
+                            sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
                         }
                         else {
                             that.locModel.setData({ locDetails: [] });
                             sap.ui.getCore().byId("LocationList").setModel(that.locModel);
+                            that.prodModel1.setData({ prodDetails: that.newProds });
+                            sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
                             MessageToast.show("No demand locations available for selected product");
                         }
@@ -468,18 +443,33 @@ sap.ui.define([
                     sap.ui.getCore().byId("custGrpList").getBinding("items").filter(oFilters);
                     // Product
                 } else if (sId.includes("prod")) {
-                    if (sQuery !== "") {
-                        oFilters.push(
-                            new Filter({
-                                filters: [
-                                    new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery),
-                                    new Filter("PROD_DESC", FilterOperator.Contains, sQuery),
-                                ],
-                                and: false,
-                            })
-                        );
-                    }
-                    sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter(oFilters);
+                    // if (sQuery !== "") {
+                    //     oFilters.push(
+                    //         new Filter({
+                    //             filters: [
+                    //                 new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery),
+                    //                 new Filter("PROD_DESC", FilterOperator.Contains, sQuery),
+                    //             ],
+                    //             and: false,
+                    //         })
+                    //     );
+                    // }
+                    // sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter(oFilters);
+                    oFilters.push(new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery))
+                    sap.ui.core.BusyIndicator.show()
+                    this.getOwnerComponent().getModel("BModel").read("/getProducts", {
+                        method: "GET",
+                        filters:oFilters,
+                        success: function (oData) {
+                            that.prodModel1.setData({ prodDetails: oData.results });
+                            sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
+                            sap.ui.core.BusyIndicator.hide()
+                        },
+                        error: function () {
+                            sap.ui.core.BusyIndicator.hide();
+                            MessageToast.show("Failed to get configurable products");
+                        },
+                    });
                 }
                 //Partial Product
                 else if (sId.includes("partProd")) {
@@ -495,6 +485,7 @@ sap.ui.define([
                         );
                     }
                     sap.ui.getCore().byId("partProdSlct").getBinding("items").filter(oFilters);
+                    
                 }
                 else if (sId.includes("idCharSearch")) {
                     if (sQuery !== "") {
@@ -1244,6 +1235,13 @@ sap.ui.define([
                     sap.ui.getCore().byId("idUniqueDetails").getBinding("items").filter([]);
                 }
                 that._UniqueIDs.close();
+            },
+            /**
+            * On press of cancel in cofig Product
+            * */
+            handleClose: function (oEvent) {
+                that.prodModel1.setData({ prodDetails: that.newProds });
+                sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
             },
             /**
             * On press of cancel in generate seed order fragment 
