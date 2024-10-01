@@ -314,7 +314,6 @@ sap.ui.define([
                             sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
                             MessageToast.show("No demand locations available for selected product");
                         }
-                        // if (that.oGModel.getProperty("/resetFlag") !== "X") {
                         that.byId("idloc").setValue();
                         that.byId("idDateRange").setValue();
                         that.byId("idCustGrp").removeAllTokens();
