@@ -664,7 +664,6 @@ sap.ui.define([
                                     that.byId("idPartProd").setEnabled(true);
                                 }
                                 else {
-                                    // MessageToast.show("No Partial products available for selected Config Product/Location");
                                     that.byId("idPartProd").setEnabled(false);
                                 }
                             }
