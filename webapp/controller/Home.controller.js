@@ -416,10 +416,10 @@ sap.ui.define([
                         oFilters.push(
                             new Filter({
                                 filters: [
-                                    new Filter("LOCATION_ID", FilterOperator.Contains, sQuery),
-                                    new Filter("LOCATION_DESC", FilterOperator.Contains, sQuery),
-                                    new Filter("CHAR_VALUE", FilterOperator.Contains, sQuery),
-                                    new Filter("CHARVAL_DESC", FilterOperator.Contains, sQuery)
+                                    new Filter("DEMAND_LOC", FilterOperator.Contains, sQuery),
+                                    new Filter("DEMAND_DESC", FilterOperator.Contains, sQuery),
+                                    // new Filter("CHAR_VALUE", FilterOperator.Contains, sQuery),
+                                    // new Filter("CHARVAL_DESC", FilterOperator.Contains, sQuery)
                                 ],
                                 and: false,
                             })
@@ -653,9 +653,9 @@ sap.ui.define([
                         success: function (oData) {
                             if (oData.results.length > 0) {
                                 for (var i = 0; i < oData.results.length; i++) {
-                                    if (prodItem !== oData.results[i].PRODUCT_ID) {
+                                    // if (prodItem !== oData.results[i].PRODUCT_ID) {
                                         that.partProdItems.push(oData.results[i])
-                                    }
+                                    // }
                                 }
                                 if (that.partProdItems.length > 0) {
                                     that.partModel.setData({ partDetails: that.partProdItems });
@@ -792,6 +792,7 @@ sap.ui.define([
                                         //     }
 
                                         }
+                                    }
                                         tempData.forEach(ele => {
                                             var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
                                             data = data.concat(char);
@@ -805,7 +806,12 @@ sap.ui.define([
                                         var uniqueIdSets = data.map(set => set.map(item => item.UNIQUE_ID));
 
                                         // Step 2: Find common UNIQUE_IDs across all sets
-                                        var repeatedIdsInAllSets = uniqueIdSets.reduce((a, b) => a.filter(c => b.includes(c)));
+                                        // var repeatedIdsInAllSets = uniqueIdSets.reduce((a, b) => a.filter(c => b.includes(c)));
+                                        var repeatedIdsInAllSets = uniqueIdSets.reduce((common, currentSet) => {
+                                            return common.filter(item =>
+                                              currentSet.some(element => element === item)
+                                            );
+                                          });
 
                                         // Step 3: Filter objects with those common UNIQUE_IDs
                                         var repeatedObjectsInAllSets = data.flat().filter(
@@ -828,7 +834,7 @@ sap.ui.define([
                                         } else {
                                             that.byId("idGenSeedOrder").setEnabled(true);
                                         }
-                                    }
+                                   
                                     if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
                                         that.byId("idGenSeedOrder").setEnabled(true);
                                     } else if (filterData.length === 0) {
