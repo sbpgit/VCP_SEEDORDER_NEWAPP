@@ -678,7 +678,6 @@ sap.ui.define([
                         }
                     });
                     tableData.setVisible(true);
-                    // that.byId("_IDGenToolbar1").setVisible(true);
                     that.byId("idCharSearch").setVisible(true);
                     that.byId("idGenSeedOrder").setEnabled(true);
                 }
