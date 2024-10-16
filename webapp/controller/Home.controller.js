@@ -715,10 +715,11 @@ sap.ui.define([
                         oProdFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, selectedPartial[i].getTitle()));
                     }
                     oProdFilters.push(new Filter("LOCATION_ID", FilterOperator.EQ, locationId));
+                    that.byId("idCharTable").removeSelections();
                     this.getOwnerComponent().getModel("BModel").read("/getPartialChar", {
                         filters: [oProdFilters],
                         success: function (oData) {
-                            if (oData.results.length > 0) {
+                            if (oData.results.length > 0) {                                
                                 var partProdDetails = oData.results;
                                 sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
                                 for (var k = 0; k < tableItemsFull.length; k++) {
