@@ -52,11 +52,11 @@ sap.ui.define([
                 that.newUniqueMode.setSizeLimit(5000);
                 that.newClassModel.setSizeLimit(5000);
                 that.viewDetails.setSizeLimit(5000);
-                that.partModel.setSizeLimit(1000);
-                that.locModel.setSizeLimit(1000);
-                that.prodModel1.setSizeLimit(1000);
+                // that.partModel.setSizeLimit(1000);
+                // that.locModel.setSizeLimit(1000);
+                // that.prodModel1.setSizeLimit(1000);
                 that.uniqModel.setSizeLimit(1000);
-                that.custModel.setSizeLimit(1000);
+                // that.custModel.setSizeLimit(1000);
                 that.variantModel.setSizeLimit(5000);
                 that.viewDetails.setSizeLimit(5000);
                 that.oErrorModel.setSizeLimit(1200);
