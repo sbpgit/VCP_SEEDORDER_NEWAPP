@@ -148,6 +148,19 @@ sap.ui.define([
                     );
                     this.getView().addDependent(this._valueHelpDialogUniquePrimary);
                 }
+                sap.ui.core.BusyIndicator.show();
+                that.getOwnerComponent().getModel("BModel").read("/getUserPreferences", {    
+                    filters: [
+                        new Filter( "PARAMETER", FilterOperator.EQ, "MAX_RECORDS")
+                    ],                    
+                    success: function (oData) {
+                        that.oGModel.setProperty("/MaxCount", oData.results[0].PARAMETER_VALUE);
+                        that.getAllProds()
+                    },
+                    error: function (oData, error) {
+                       console.log(error)
+                    },
+                });
                 // that.oGModel.setProperty("/skipOnAfter","X");
             },
             getUser: function () {
@@ -157,10 +170,11 @@ sap.ui.define([
                     vUser = (email) ? email : "";
                 }
                 return vUser;
-
             },
             onAfterRendering: function () {
                 // if(that.oGModel.getProperty("/skipOnAfter") === "X"){
+                that.skip = 0
+                that.allData = []
                 that.oGModel.setProperty("/resetFlag", "");
                 that.selectedChars = [], that.loadArray = [],
                     that.totalChars = [], that.uniqueIds = [];
@@ -170,20 +184,21 @@ sap.ui.define([
                 $("#" + dateSel.sId + " input").prop("disabled", true);
                 dateSel.setMaxDate(new Date());
                 that.byId("idInput").addStyleClass("inputClass");
-                this.getOwnerComponent().getModel("BModel").read("/getProducts", {
-                    method: "GET",
-                    success: function (oData) {
-                        that.newProds = [],
-                            that.newProds = oData.results;
-                        that.prodModel1.setData({ prodDetails: oData.results });
-                        sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
-                        sap.ui.core.BusyIndicator.hide()
-                    },
-                    error: function () {
-                        sap.ui.core.BusyIndicator.hide();
-                        MessageToast.show("Failed to get configurable products");
-                    },
-                });
+                // that.getAllProds()
+                // this.getOwnerComponent().getModel("BModel").read("/getProducts",{
+                //     method: "GET",
+                //     success: function (oData){
+                //         that.newProds = [],
+                //             that.newProds = oData.results;
+                //         that.prodModel1.setData({ prodDetails: oData.results });
+                //         sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
+                //         sap.ui.core.BusyIndicator.hide()
+                //     },
+                //     error: function () {
+                //         sap.ui.core.BusyIndicator.hide();
+                //         MessageToast.show("Failed to get configurable products");
+                //     },
+                // });
             },
             /**Removing duplicates */
             removeDuplicate(array, key1, key2) {
@@ -264,31 +279,19 @@ sap.ui.define([
                 sap.ui.core.BusyIndicator.show()
                 var selectedProdItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("prodInput").setValue(selectedProdItem);
-                this.getOwnerComponent().getModel("BModel").read("/getfactorylocdesc", {
-                    filters: [
-                        new Filter(
-                            "REF_PRODID",
-                            FilterOperator.EQ,
-                            selectedProdItem
-                        ),
-                    ],
-                    success: function (oData) {
-                        if (oData.results.length > 0) {
-                            var finalItems = that.removeDuplicates(oData.results, "DEMAND_LOC");
-                            that.locModel.setData({ locDetails: finalItems });
-                            sap.ui.getCore().byId("LocationList").setModel(that.locModel);
-                            that.prodModel1.setData({ prodDetails: that.newProds });
-                            sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
-                            sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
-                        }
-                        else {
-                            that.locModel.setData({ locDetails: [] });
-                            sap.ui.getCore().byId("LocationList").setModel(that.locModel);
-                            that.prodModel1.setData({ prodDetails: that.newProds });
-                            sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
-                            sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
-                            MessageToast.show("No demand locations available for selected product");
-                        }
+                that.getAllLocProd()
+
+                // this.getOwnerComponent().getModel("BModel").read("/getfactorylocdesc", {
+                //     filters: [
+                //         new Filter(
+                //             "REF_PRODID",
+                //             FilterOperator.EQ,
+                //             selectedProdItem
+                //         ),
+                //     ],
+                    // success: function (oData) {
+              
+                     
                         that.byId("idloc").setValue();
                         that.byId("idDateRange").setValue();
                         that.byId("idCustGrp").removeAllTokens();
@@ -320,12 +323,12 @@ sap.ui.define([
                         that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         // }
                         sap.ui.core.BusyIndicator.hide()
-                    },
-                    error: function () {
-                        sap.ui.core.BusyIndicator.hide();
-                        MessageToast.show("Failed to get Demand Locations");
-                    },
-                });
+                    // },
+                    // error: function () {
+                    //     sap.ui.core.BusyIndicator.hide();
+                    //     MessageToast.show("Failed to get Demand Locations");
+                    // },
+                // });
             },
             /**
              * On Press of confirm in Demand Location Fragment 
@@ -337,19 +340,22 @@ sap.ui.define([
                 var sProduct = that.byId("prodInput").getValue();
                 var selectedLocItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("idloc").setValue(selectedLocItem);
-                this.getOwnerComponent().getModel("BModel").read("/getCustgroup", {
-                    success: function (oData) {
-                        that.custModel.setData({ custDetails: oData.results });
-                        sap.ui.getCore().byId("custGrpList").setModel(that.custModel);
-                        sap.ui.getCore().byId("LocationList").getBinding("items").filter([]);
 
-                        sap.ui.core.BusyIndicator.hide()
-                    },
-                    error: function (e) {
-                        sap.ui.core.BusyIndicator.hide();
-                        MessageToast.show("Failed to get Customer Group");
-                    }
-                });
+                //adding skip and top for Custgroup
+                that.getAllCustGrp()
+                // this.getOwnerComponent().getModel("BModel").read("/getCustgroup", {
+                //     success: function (oData) {
+                //         that.custModel.setData({ custDetails: oData.results });
+                //         sap.ui.getCore().byId("custGrpList").setModel(that.custModel);
+                //         sap.ui.getCore().byId("LocationList").getBinding("items").filter([]);
+
+                //         sap.ui.core.BusyIndicator.hide()
+                //     },
+                //     error: function (e) {
+                //         sap.ui.core.BusyIndicator.hide();
+                //         MessageToast.show("Failed to get Customer Group");
+                //     }
+                // });
             },
             /**
              * On Press of reset button on header filters
@@ -645,38 +651,41 @@ sap.ui.define([
                         },
                     });
                     that.byId("CreateProductWizard").setVisible(true);
-                    this.getOwnerComponent().getModel("BModel").read("/genPartialProd", {
-                        filters: [
-                            new Filter("REF_PRODID", FilterOperator.EQ, prodItem),
-                            new Filter("LOCATION_ID", FilterOperator.EQ, locItem)
-                        ],
-                        success: function (oData) {
-                            if (oData.results.length > 0) {
-                                for (var i = 0; i < oData.results.length; i++) {
-                                    // if (prodItem !== oData.results[i].PRODUCT_ID) {
-                                        that.partProdItems.push(oData.results[i])
-                                    // }
-                                }
-                                if (that.partProdItems.length > 0) {
-                                    that.partModel.setData({ partDetails: that.partProdItems });
-                                    sap.ui.getCore().byId("partProdSlct").clearSelection();
-                                    sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
-                                    that.byId("idPartProd").setEnabled(true);
-                                }
-                                else {
-                                    that.byId("idPartProd").setEnabled(false);
-                                }
-                            }
-                            else {
-                                MessageToast.show("No Partial products available for selected Config Product/Location");
-                                that.byId("idPartProd").setEnabled(false);
-                            }
-                        },
-                        error: function () {
-                            sap.ui.core.BusyIndicator.hide();
-                            MessageToast.show("Failed to get Partial Products");
-                        }
-                    });
+
+                    //adding skip and top for genPartialProd
+                    that.getAllGenParProd()
+                    // this.getOwnerComponent().getModel("BModel").read("/genPartialProd", {
+                    //     filters: [
+                    //         new Filter("REF_PRODID", FilterOperator.EQ, prodItem),
+                    //         new Filter("LOCATION_ID", FilterOperator.EQ, locItem)
+                    //     ],
+                    //     success: function (oData) {
+                    //         if (oData.results.length > 0) {
+                    //             for (var i = 0; i < oData.results.length; i++) {
+                    //                 // if (prodItem !== oData.results[i].PRODUCT_ID) {
+                    //                     that.partProdItems.push(oData.results[i])
+                    //                 // }
+                    //             }
+                    //             if (that.partProdItems.length > 0) {
+                    //                 that.partModel.setData({ partDetails: that.partProdItems });
+                    //                 sap.ui.getCore().byId("partProdSlct").clearSelection();
+                    //                 sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
+                    //                 that.byId("idPartProd").setEnabled(true);
+                    //             }
+                    //             else {
+                    //                 that.byId("idPartProd").setEnabled(false);
+                    //             }
+                    //         }
+                    //         else {
+                    //             MessageToast.show("No Partial products available for selected Config Product/Location");
+                    //             that.byId("idPartProd").setEnabled(false);
+                    //         }
+                    //     },
+                    //     error: function () {
+                    //         sap.ui.core.BusyIndicator.hide();
+                    //         MessageToast.show("Failed to get Partial Products");
+                    //     }
+                    // });
                     tableData.setVisible(true);
                     that.byId("idCharSearch").setVisible(true);
                     that.byId("idGenSeedOrder").setEnabled(true);
@@ -2400,6 +2409,169 @@ sap.ui.define([
                 that._valueHelpDialogUniquePrimary.destroy();
                 that._valueHelpDialogUniquePrimary = "";
             },
+            getAllProds:function(){
+                var topCount = that.oGModel.getProperty("/MaxCount")
+                this.getOwnerComponent().getModel("BModel").read("/getProducts",{
+                    urlParameters: {
+                        "$skip": that.skip,
+                        "$top": topCount
+                    },
+                    success: function (oData){
+                        if (topCount == oData.results.length) {
+                            that.skip += topCount;
+                            that.allData = that.allData.concat(oData.results);
+                            that.getAllProds();
+                        } else {
+                            that.skip = 0;
+                            that.allData = that.allData.concat(oData.results);
+                            oData.results = that.allData
+                            that.allData = [];
+                            that.newProds = [],
+                            that.newProds = oData.results;
+                            that.prodModel1.setData({ prodDetails: oData.results });
+                            sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
+                            sap.ui.core.BusyIndicator.hide()
+                        }
+                    },
+                    error: function () {
+                        sap.ui.core.BusyIndicator.hide();
+                        MessageToast.show("Failed to get configurable products");
+                    },
+                });
+            },
+            getAllLocProd:function(selectedProdItem){
+                var selectedProdItem = that.byId("prodInput").getValue(selectedProdItem);
+                var topCount = that.oGModel.getProperty("/MaxCount")
+                this.getOwnerComponent().getModel("BModel").read("/getfactorylocdesc",{
+                    filters: [
+                        new Filter(
+                            "REF_PRODID",
+                            FilterOperator.EQ,
+                            selectedProdItem
+                        ),
+                    ],
+                    urlParameters: {
+                        "$skip": that.skip,
+                        "$top": topCount
+                    },
+                    success: function (oData){
+                        if (topCount == oData.results.length) {
+                            that.skip += topCount;
+                            that.allData = that.allData.concat(oData.results);
+                            that.getAllLocProd();
+                        } else {
+                            that.skip = 0;
+                            that.allData = that.allData.concat(oData.results);
+                            oData.results = that.allData
+                            that.allData = []
+                            if (oData.results.length > 0) {
+                                var finalItems = that.removeDuplicates(oData.results, "DEMAND_LOC");
+                                that.locModel.setData({ locDetails: finalItems });
+                                sap.ui.getCore().byId("LocationList").setModel(that.locModel);
+                                that.prodModel1.setData({ prodDetails: that.newProds });
+                                sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
+                                sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
+                            }
+                            else {
+                                that.locModel.setData({ locDetails: [] });
+                                sap.ui.getCore().byId("LocationList").setModel(that.locModel);
+                                that.prodModel1.setData({ prodDetails: that.newProds });
+                                sap.ui.getCore().byId("prodSlctListJS").setModel(that.prodModel1);
+                                sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter([]);
+                                MessageToast.show("No demand locations available for selected product");
+                            }
+                        }
+                    },
+                    error: function () {
+                        sap.ui.core.BusyIndicator.hide();
+                        MessageToast.show("Failed to get configurable products");
+                    },
+                });
+            },
+            getAllCustGrp:function(){
+                var topCount = that.oGModel.getProperty("/MaxCount")
+                this.getOwnerComponent().getModel("BModel").read("/getCustgroup",{
+                    urlParameters: {
+                        "$skip": that.skip,
+                        "$top": topCount
+                    },
+                    success: function (oData){
+                        if (topCount == oData.results.length) {
+                            that.skip += topCount;
+                            that.allData = that.allData.concat(oData.results);
+                            that.getAllCustGrp();
+                        } else {
+                            that.skip = 0;
+                            that.allData = that.allData.concat(oData.results);
+                            oData.results = that.allData
+                            that.allData = [];
+                        that.custModel.setData({ custDetails: oData.results });
+                        sap.ui.getCore().byId("custGrpList").setModel(that.custModel);
+                        sap.ui.getCore().byId("LocationList").getBinding("items").filter([]);
+                        sap.ui.core.BusyIndicator.hide()
+                            
+                        }
+                    },
+                    error: function () {
+                        sap.ui.core.BusyIndicator.hide();
+                        MessageToast.show("Failed to get configurable products");
+                    },
+                });
+            },
+            getAllGenParProd:function(){
+                var topCount = that.oGModel.getProperty("/MaxCount")
+                var prodItem = that.byId("prodInput").getValue();
+                var locItem = that.byId("idloc").getValue();
+                var oFilters = [];
+                oFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, prodItem));
+                oFilters.push(new Filter("UID_TYPE", FilterOperator.EQ, "U"));
+                this.getOwnerComponent().getModel("BModel").read("/genPartialProd", {
+                    filters: [
+                        new Filter("REF_PRODID", FilterOperator.EQ, prodItem),
+                        new Filter("LOCATION_ID", FilterOperator.EQ, locItem)
+                    ],
+                    urlParameters: {
+                        "$skip": that.skip,
+                        "$top": topCount
+                    },
+                    success: function (oData) {
+                        if (topCount == oData.results.length) {
+                            that.skip += topCount;
+                            that.allData = that.allData.concat(oData.results);
+                            that.getAllGenParProd();
+                        } else {
+                            that.skip = 0;
+                            that.allData = that.allData.concat(oData.results);
+                            oData.results = that.allData;
+                            that.allData = [];
+                            if (oData.results.length > 0) {
+                                for (var i = 0; i < oData.results.length; i++) {
+                                    // if (prodItem !== oData.results[i].PRODUCT_ID) {
+                                        that.partProdItems.push(oData.results[i])
+                                    // }
+                                }
+                                if (that.partProdItems.length > 0) {
+                                    that.partModel.setData({ partDetails: that.partProdItems });
+                                    sap.ui.getCore().byId("partProdSlct").clearSelection();
+                                    sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
+                                    that.byId("idPartProd").setEnabled(true);
+                                }
+                                else {
+                                    that.byId("idPartProd").setEnabled(false);
+                                }
+                            }
+                            else {
+                                MessageToast.show("No Partial products available for selected Config Product/Location");
+                                that.byId("idPartProd").setEnabled(false);
+                            }
+                        }
+                    },
+                    error: function () {
+                        sap.ui.core.BusyIndicator.hide();
+                        MessageToast.show("Failed to get Partial Products");
+                    }
+                });
+            }
             /**On press of panel expand in step-2 */
             //     onPanelExpand:function(oEvent){
             //         if(oEvent.getParameters().expand){
