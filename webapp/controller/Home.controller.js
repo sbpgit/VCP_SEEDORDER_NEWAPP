@@ -461,7 +461,7 @@ sap.ui.define([
                     //     );
                     // }
                     // sap.ui.getCore().byId("prodSlctListJS").getBinding("items").filter(oFilters);
-                    oFilters.push(new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery))
+                    oFilters.push(new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery.toUpperCase()))
                     sap.ui.core.BusyIndicator.show()
                     this.getOwnerComponent().getModel("BModel").read("/getProducts", {
                         method: "GET",
@@ -577,7 +577,7 @@ sap.ui.define([
                 that.newpartprodChars = [];
                 sap.ui.core.BusyIndicator.show()
                 that.partProdItems = [];
-                that.initialSelectedChars = [];
+                that.initialSelectedChars = [], that.selectedChars=[];
                 var prodItem = that.byId("prodInput").getValue();
                 var locItem = that.byId("idloc").getValue();
                 var dateRange = that.byId("idDateRange").getValue();
@@ -725,7 +725,7 @@ sap.ui.define([
                     }
                     oProdFilters.push(new Filter("LOCATION_ID", FilterOperator.EQ, locationId));
                     that.byId("idCharTable").removeSelections();
-
+                    that.selectedChars=[],that.newpartprodChars = [];
                     that.getAllParChar(oProdFilters,tableItemsFull);
 
 
