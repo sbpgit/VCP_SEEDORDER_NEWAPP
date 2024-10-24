@@ -725,164 +725,160 @@ sap.ui.define([
                     }
                     oProdFilters.push(new Filter("LOCATION_ID", FilterOperator.EQ, locationId));
                     that.byId("idCharTable").removeSelections();
-                    this.getOwnerComponent().getModel("BModel").read("/getPartialChar", {
-                        filters: [oProdFilters],
-                        success: function (oData) {
-                            if (oData.results.length > 0) {                                
-                                var partProdDetails = oData.results;
-                                sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
-                                for (var k = 0; k < tableItemsFull.length; k++) {
-                                    for (var s = 0; s < partProdDetails.length; s++) {
-                                        if (partProdDetails[s].CHAR_NUM === tableItemsFull[k].getCells()[0].getText()
-                                            && partProdDetails[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getText()
-                                            && partProdDetails[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getTitle()
-                                        ) {
-                                            tableItemsFull[k].setSelected(true);
-                                            that.newpartprodChars.push(partProdDetails[s]);
-                                        }
-                                    }
-                                }
-                                that.newpartprodChars = that.removeCharDuplicate(that.newpartprodChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
-                                that.selectedChars = that.selectedChars.concat(that.newpartprodChars);
-                                that.selectedChars = that.removeCharDuplicate(that.selectedChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
-                                var tableItems = that.selectedChars, object = {}, array = [];
-                                var count = 0;
-                                var tempData = [];
-                                var UID = that.oGModel.getProperty("/totUID");
-                                for (var i = 0; i < tableItems.length; i++) {
 
-                                    if (tableItems.length === 1 || tableItems.length - 1 === i) {
-                                        if (count === 1) {
-                                            tempData.push(tableItems[i]);
-                                            count = 0;
-                                        } else {
-                                            tempData.push(tableItems[i]);
-                                            count = 0;
-                                        }
+                    that.getAllParChar(oProdFilters,tableItemsFull);
 
-                                    } else {
-                                        if (tableItems[i].CHAR_NUM === tableItems[i + 1].CHAR_NUM) {
-                                            tempData.push(tableItems[i]);
-                                            // i++;
-                                            count = 1;
-                                        } else {
-                                            count = 0;
-                                            tempData.push(tableItems[i]);
-                                        }
-                                    }
 
-                                    if (count === 0) {
-                                        // tempData.push(tableItems[i]);
-                                        var data = [];
-                                        //     if (array.length === 0) {
-                                        //         tempData.forEach(ele => {
-                                        //             var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                        //             data = data.concat(char);
-                                        //         });
-                                        //         // Extract the 'id' values from array1
-                                        //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                                        //         // Filter array2 to include only items with 'id' present in array1
-                                        //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                                        //         count = 0;
-                                        //         tempData = [];
-                                        //     } else {
-                                        //         tempData.forEach(ele => {
-                                        //             var char = array.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                        //             data = data.concat(char);
+                    // this.getOwnerComponent().getModel("BModel").read("/getPartialChar", {
+                    //     filters: [oProdFilters],
+                    //     success: function (oData) {
+                    //         if (oData.results.length > 0) {                                
+                    //             var partProdDetails = oData.results;
+                    //             sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
+                    //             for (var k = 0; k < tableItemsFull.length; k++) {
+                    //                 for (var s = 0; s < partProdDetails.length; s++) {
+                    //                     if (partProdDetails[s].CHAR_NUM === tableItemsFull[k].getCells()[0].getText()
+                    //                         && partProdDetails[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getText()
+                    //                         && partProdDetails[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getTitle()
+                    //                     ) {
+                    //                         tableItemsFull[k].setSelected(true);
+                    //                         that.newpartprodChars.push(partProdDetails[s]);
+                    //                     }
+                    //                 }
+                    //             }
+                    //             that.newpartprodChars = that.removeCharDuplicate(that.newpartprodChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
+                    //             that.selectedChars = that.selectedChars.concat(that.newpartprodChars);
+                    //             that.selectedChars = that.removeCharDuplicate(that.selectedChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
+                    //             var tableItems = that.selectedChars, object = {}, array = [];
+                    //             var count = 0;
+                    //             var tempData = [];
+                    //             var UID = that.oGModel.getProperty("/totUID");
+                    //             for (var i = 0; i < tableItems.length; i++) {
+                    //                 if (tableItems.length === 1 || tableItems.length - 1 === i) {
+                    //                     if (count === 1) {
+                    //                         tempData.push(tableItems[i]);
+                    //                         count = 0;
+                    //                     } else {
+                    //                         tempData.push(tableItems[i]);
+                    //                         count = 0;
+                    //                     }
+                    //                 } else {
+                    //                     if (tableItems[i].CHAR_NUM === tableItems[i + 1].CHAR_NUM) {
+                    //                         tempData.push(tableItems[i]);
+                    //                         // i++;
+                    //                         count = 1;
+                    //                     } else {
+                    //                         count = 0;
+                    //                         tempData.push(tableItems[i]);
+                    //                     }
+                    //                 }
+                    //                 if (count === 0) {
+                    //                     // tempData.push(tableItems[i]);
+                    //                     var data = [];
+                    //                     //     if (array.length === 0) {
+                    //                     //         tempData.forEach(ele => {
+                    //                     //             var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                    //                     //             data = data.concat(char);
+                    //                     //         });
+                    //                     //         // Extract the 'id' values from array1
+                    //                     //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                    //                     //         // Filter array2 to include only items with 'id' present in array1
+                    //                     //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                    //                     //         count = 0;
+                    //                     //         tempData = [];
+                    //                     //     } else {
+                    //                     //         tempData.forEach(ele => {
+                    //                     //             var char = array.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                    //                     //             data = data.concat(char);
 
-                                        //         });
+                    //                     //         });
 
-                                        //         // Extract the 'id' values from array1
-                                        //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                                        //         // Filter array2 to include only items with 'id' present in array1
-                                        //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                                        //         count = 0;
-                                        //         tempData = [];
-                                        //     }
+                    //                     //         // Extract the 'id' values from array1
+                    //                     //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                    //                     //         // Filter array2 to include only items with 'id' present in array1
+                    //                     //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                    //                     //         count = 0;
+                    //                     //         tempData = [];
+                    //                     //     }
 
-                                        }
-                                    }
-                                        tempData.forEach(ele => {
-                                            var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                            data = data.concat(char);
-                                        });
-                                        data = data.map(item => item.UIDS);
-                                        data.forEach(ele => {
-                                            ele.sort((a, b) => a.UNIQUE_ID - b.UNIQUE_ID)
-                                        })
+                    //                     }
+                    //                 }
+                    //                     tempData.forEach(ele => {
+                    //                         var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                    //                         data = data.concat(char);
+                    //                     });
+                    //                     data = data.map(item => item.UIDS);
+                    //                     data.forEach(ele => {
+                    //                         ele.sort((a, b) => a.UNIQUE_ID - b.UNIQUE_ID)
+                    //                     })
+                    //                     // Step 1: Get arrays of UNIQUE_IDs from each set
+                    //                     var uniqueIdSets = data.map(set => set.map(item => item.UNIQUE_ID));
+                    //                     // Step 2: Find common UNIQUE_IDs across all sets
+                    //                     // var repeatedIdsInAllSets = uniqueIdSets.reduce((a, b) => a.filter(c => b.includes(c)));
+                    //                     var repeatedIdsInAllSets = uniqueIdSets.reduce((common, currentSet) => {
+                    //                         return common.filter(item =>
+                    //                           currentSet.some(element => element === item)
+                    //                         );
+                    //                       });
 
-                                        // Step 1: Get arrays of UNIQUE_IDs from each set
-                                        var uniqueIdSets = data.map(set => set.map(item => item.UNIQUE_ID));
-
-                                        // Step 2: Find common UNIQUE_IDs across all sets
-                                        // var repeatedIdsInAllSets = uniqueIdSets.reduce((a, b) => a.filter(c => b.includes(c)));
-                                        var repeatedIdsInAllSets = uniqueIdSets.reduce((common, currentSet) => {
-                                            return common.filter(item =>
-                                              currentSet.some(element => element === item)
-                                            );
-                                          });
-
-                                        // Step 3: Filter objects with those common UNIQUE_IDs
-                                        var repeatedObjectsInAllSets = data.flat().filter(
-                                            item => repeatedIdsInAllSets.includes(item.UNIQUE_ID)
-                                        );
-
-                                        // Step 4: Remove duplicates in the result
-                                        var finalRepeatedObjects = repeatedObjectsInAllSets.filter(
-                                            (item, index, array) => array.findIndex(obj => obj.UNIQUE_ID === item.UNIQUE_ID) === index
-                                        );
-                                        var filterData = that.removeDuplicates(finalRepeatedObjects, 'UNIQUE_ID');
-
-                                        that.newUniqueMode.setData({ uniqueDetails: filterData });
-                                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                                        that.byId("idInput").setText(filterData.length);
-
-                                        if (filterData.length === 0) {
-                                            //   MessageToast.show("No combination of Unique Id's available for selections");
-                                            that.byId("idGenSeedOrder").setEnabled(false);
-                                        } else {
-                                            that.byId("idGenSeedOrder").setEnabled(true);
-                                        }
+                    //                     // Step 3: Filter objects with those common UNIQUE_IDs
+                    //                     var repeatedObjectsInAllSets = data.flat().filter(
+                    //                         item => repeatedIdsInAllSets.includes(item.UNIQUE_ID)
+                    //                     );
+                    //                     // Step 4: Remove duplicates in the result
+                    //                     var finalRepeatedObjects = repeatedObjectsInAllSets.filter(
+                    //                         (item, index, array) => array.findIndex(obj => obj.UNIQUE_ID === item.UNIQUE_ID) === index
+                    //                     );
+                    //                     var filterData = that.removeDuplicates(finalRepeatedObjects, 'UNIQUE_ID');
+                    //                     that.newUniqueMode.setData({ uniqueDetails: filterData });
+                    //                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                    //                     that.byId("idInput").setText(filterData.length);
+                    //                     if (filterData.length === 0) {
+                    //                         //   MessageToast.show("No combination of Unique Id's available for selections");
+                    //                         that.byId("idGenSeedOrder").setEnabled(false);
+                    //                     } else {
+                    //                         that.byId("idGenSeedOrder").setEnabled(true);
+                    //                     }
                                    
-                                    if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
-                                        that.byId("idGenSeedOrder").setEnabled(true);
-                                    } else if (filterData.length === 0) {
-                                        that.byId("idGenSeedOrder").setEnabled(false);
-                                    }
-                                    else {
-                                        var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
+                    //                 if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
+                    //                     that.byId("idGenSeedOrder").setEnabled(true);
+                    //                 } else if (filterData.length === 0) {
+                    //                     that.byId("idGenSeedOrder").setEnabled(false);
+                    //                 }
+                    //                 else {
+                    //                     var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
+                                        
+                    //                     var idBox = that.byId("idVBox").getItems();
+                    //                     var hideButton = "";
+                    //                     for (var k = 0; k < idBox.length; k++) {
+                    //                         var content = idBox[k].getContent()[0].getItems();
+                    //                         var countfull = content[content.length - 1].getCells()[1].getValue();
 
-                                        var idBox = that.byId("idVBox").getItems();
-                                        var hideButton = "";
-                                        for (var k = 0; k < idBox.length; k++) {
-                                            var content = idBox[k].getContent()[0].getItems();
-                                            var countfull = content[content.length - 1].getCells()[1].getValue();
-
-                                            if (parseInt(countfull) !== 100) {
-                                                hideButton = "X";
-                                                break;
-                                            }
-                                        }
-                                        if (hideButton === "X") {
-                                            that.byId("idGenSeedOrder").setEnabled(false);
-                                            MessageToast.show("Total Percentage not equal to 100 in step2");
-                                        }
-                                        else {
-                                            that.byId("idGenSeedOrder").setEnabled(true);
-                                        }
-                                    }
-                                    sap.ui.core.BusyIndicator.hide()
-                                }
-                            else {
-                                sap.ui.core.BusyIndicator.hide()
-                                MessageToast.show("No data available for selected partial product");
-                            }
-                        },
-                        error: function (oData, error) {
-                            sap.ui.core.BusyIndicator.hide();
-                            MessageToast.show("error");
-                        },
-                    });
+                    //                         if (parseInt(countfull) !== 100) {
+                    //                             hideButton = "X";
+                    //                             break;
+                    //                         }
+                    //                     }
+                    //                     if (hideButton === "X") {
+                    //                         that.byId("idGenSeedOrder").setEnabled(false);
+                    //                         MessageToast.show("Total Percentage not equal to 100 in step2");
+                    //                     }
+                    //                     else {
+                    //                         that.byId("idGenSeedOrder").setEnabled(true);
+                    //                     }
+                    //                 }
+                    //                 sap.ui.core.BusyIndicator.hide()
+                    //             }
+                    //         else {
+                    //             sap.ui.core.BusyIndicator.hide()
+                    //             MessageToast.show("No data available for selected partial product");
+                    //         }
+                    //     },
+                    //     error: function (oData, error) {
+                    //         sap.ui.core.BusyIndicator.hide();
+                    //         MessageToast.show("error");
+                    //     },
+                    // });
                 } else {
                     that.byId("idCharTable").removeSelections();
                     that.selectedChars = that.selectedChars.filter(item2 =>
@@ -2571,7 +2567,175 @@ sap.ui.define([
                         MessageToast.show("Failed to get Partial Products");
                     }
                 });
+            },
+            getAllParChar:function(oProdFilters,tableItemsFull){
+                var topCount = that.oGModel.getProperty("/MaxCount")
+                this.getOwnerComponent().getModel("BModel").read("/getPartialChar", {
+                    filters: [oProdFilters],
+                    urlParameters: {
+                        "$skip": that.skip,
+                        "$top": topCount
+                    },
+                    success: function (oData) {
+                        if (topCount == oData.results.length) {
+                            that.skip += topCount;
+                            that.allData = that.allData.concat(oData.results);
+                            that.getAllParChar();
+                        } else {
+                            that.skip = 0;
+                            that.allData = that.allData.concat(oData.results);
+                            oData.results = that.allData;
+                            that.allData = [];
+                            if (oData.results.length > 0) {                                
+                                var partProdDetails = oData.results;
+                                sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
+                                for (var k = 0; k < tableItemsFull.length; k++) {
+                                    for (var s = 0; s < partProdDetails.length; s++) {
+                                        if (partProdDetails[s].CHAR_NUM === tableItemsFull[k].getCells()[0].getText()
+                                            && partProdDetails[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getText()
+                                            && partProdDetails[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getTitle()
+                                        ) {
+                                            tableItemsFull[k].setSelected(true);
+                                            that.newpartprodChars.push(partProdDetails[s]);
+                                        }
+                                    }
+                                }
+                                that.newpartprodChars = that.removeCharDuplicate(that.newpartprodChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
+                                that.selectedChars = that.selectedChars.concat(that.newpartprodChars);
+                                that.selectedChars = that.removeCharDuplicate(that.selectedChars, ['CHAR_NUM', 'CHAR_VALUE', 'CHARVALUE_DESC']);
+                                var tableItems = that.selectedChars, object = {}, array = [];
+                                var count = 0;
+                                var tempData = [];
+                                var UID = that.oGModel.getProperty("/totUID");
+                                for (var i = 0; i < tableItems.length; i++) {
+                                    if (tableItems.length === 1 || tableItems.length - 1 === i) {
+                                        if (count === 1) {
+                                            tempData.push(tableItems[i]);
+                                            count = 0;
+                                        } else {
+                                            tempData.push(tableItems[i]);
+                                            count = 0;
+                                        }
+                                    } else {
+                                        if (tableItems[i].CHAR_NUM === tableItems[i + 1].CHAR_NUM) {
+                                            tempData.push(tableItems[i]);
+                                            // i++;
+                                            count = 1;
+                                        } else {
+                                            count = 0;
+                                            tempData.push(tableItems[i]);
+                                        }
+                                    }
+                                    if (count === 0) {
+                                        // tempData.push(tableItems[i]);
+                                        var data = [];
+                                        //     if (array.length === 0) {
+                                        //         tempData.forEach(ele => {
+                                        //             var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                        //             data = data.concat(char);
+                                        //         });
+                                        //         // Extract the 'id' values from array1
+                                        //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                                        //         // Filter array2 to include only items with 'id' present in array1
+                                        //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                                        //         count = 0;
+                                        //         tempData = [];
+                                        //     } else {
+                                        //         tempData.forEach(ele => {
+                                        //             var char = array.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                        //             data = data.concat(char);
+
+                                        //         });
+
+                                        //         // Extract the 'id' values from array1
+                                        //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
+                                        //         // Filter array2 to include only items with 'id' present in array1
+                                        //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
+                                        //         count = 0;
+                                        //         tempData = [];
+                                        //     }
+
+                                        }
+                                    }
+                                        tempData.forEach(ele => {
+                                            var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
+                                            data = data.concat(char);
+                                        });
+                                        data = data.map(item => item.UIDS);
+                                        data.forEach(ele => {
+                                            ele.sort((a, b) => a.UNIQUE_ID - b.UNIQUE_ID)
+                                        })
+                                        // Step 1: Get arrays of UNIQUE_IDs from each set
+                                        var uniqueIdSets = data.map(set => set.map(item => item.UNIQUE_ID));
+                                        // Step 2: Find common UNIQUE_IDs across all sets
+                                        // var repeatedIdsInAllSets = uniqueIdSets.reduce((a, b) => a.filter(c => b.includes(c)));
+                                        var repeatedIdsInAllSets = uniqueIdSets.reduce((common, currentSet) => {
+                                            return common.filter(item =>
+                                              currentSet.some(element => element === item)
+                                            );
+                                          });
+
+                                        // Step 3: Filter objects with those common UNIQUE_IDs
+                                        var repeatedObjectsInAllSets = data.flat().filter(
+                                            item => repeatedIdsInAllSets.includes(item.UNIQUE_ID)
+                                        );
+                                        // Step 4: Remove duplicates in the result
+                                        var finalRepeatedObjects = repeatedObjectsInAllSets.filter(
+                                            (item, index, array) => array.findIndex(obj => obj.UNIQUE_ID === item.UNIQUE_ID) === index
+                                        );
+                                        var filterData = that.removeDuplicates(finalRepeatedObjects, 'UNIQUE_ID');
+                                        that.newUniqueMode.setData({ uniqueDetails: filterData });
+                                        that.byId("idUniqueDetails").setModel(that.newUniqueMode);
+                                        that.byId("idInput").setText(filterData.length);
+                                        if (filterData.length === 0) {
+                                            //   MessageToast.show("No combination of Unique Id's available for selections");
+                                            that.byId("idGenSeedOrder").setEnabled(false);
+                                        } else {
+                                            that.byId("idGenSeedOrder").setEnabled(true);
+                                        }
+                                   
+                                    if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
+                                        that.byId("idGenSeedOrder").setEnabled(true);
+                                    } else if (filterData.length === 0) {
+                                        that.byId("idGenSeedOrder").setEnabled(false);
+                                    }
+                                    else {
+                                        var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
+                                        
+                                        var idBox = that.byId("idVBox").getItems();
+                                        var hideButton = "";
+                                        for (var k = 0; k < idBox.length; k++) {
+                                            var content = idBox[k].getContent()[0].getItems();
+                                            var countfull = content[content.length - 1].getCells()[1].getValue();
+
+                                            if (parseInt(countfull) !== 100) {
+                                                hideButton = "X";
+                                                break;
+                                            }
+                                        }
+                                        if (hideButton === "X") {
+                                            that.byId("idGenSeedOrder").setEnabled(false);
+                                            MessageToast.show("Total Percentage not equal to 100 in step2");
+                                        }
+                                        else {
+                                            that.byId("idGenSeedOrder").setEnabled(true);
+                                        }
+                                    }
+                                    sap.ui.core.BusyIndicator.hide()
+                                }
+                            else {
+                                sap.ui.core.BusyIndicator.hide()
+                                MessageToast.show("No data available for selected partial product");
+                            }
+                        }
+                    },
+                    error: function () {
+                        sap.ui.core.BusyIndicator.hide();
+                        MessageToast.show("Failed to get Partial Products");
+                    }
+                });
             }
+
             /**On press of panel expand in step-2 */
             //     onPanelExpand:function(oEvent){
             //         if(oEvent.getParameters().expand){
