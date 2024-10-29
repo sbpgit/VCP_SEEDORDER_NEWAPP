@@ -4,23 +4,26 @@
 	xmlns:u="sap.ui.unified" xmlns:f="sap.f" height="100%">
 	<Page id="idPage" showFooter="true" showHeader="false">
 		<ux:ObjectPageLayout id="ObjectPageLayout" showFooter="true" headerContentPinnable="true">
-			<!-- <ux:headerTitle>
+			<ux:headerTitle>
 				<ux:ObjectPageDynamicHeaderTitle>
 					<ux:expandedHeading>
-						<HBox>
-							<HBox/>
-						</HBox>
+						<!-- <HBox>
+							<VariantManagement id="idMatList123" select="onSelect" save="onSave"	manage="onManage" supportFavorites="false" 
+							showFooter="true"	popoverTitle="my Favorites" items="{path: '/items1'}"
+							supportPublic="false" supportApplyAutomatically="false">
+							<items>
+							<VariantItem key="{VARIANTID}" title="{VARIANTNAME}" author="{USER}" visible="true" remove="true"/>
+								</items>
+						</VariantManagement> -->
+						<!-- </HBox> -->
 					</ux:expandedHeading>
 					<ux:snappedHeading>
-						<HBox fitContainer="true" alignItems="Center">
-							<Title text="{i18n>title}" wrapping="true"/>
-						</HBox>
 					</ux:snappedHeading>
 					<ux:navigationActions>
 						<Button class="classHdr" icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document"/>
 					</ux:navigationActions>
 				</ux:ObjectPageDynamicHeaderTitle>
-			</ux:headerTitle> -->
+			</ux:headerTitle>
 			<ux:headerContent>
 				<FlexBox wrap="Wrap" fitContainer="true">
 					<l:Grid defaultSpan="XL3 L3 M6 S12">
@@ -50,7 +53,7 @@
 								<HBox  class="buttonClass1">
 									<Button text="Go" type="Emphasized" press="onGetData" tooltip="Get data based on filters" class="sapUiTinyMarginEnd"/>
 									<Button text="Reset" type="Transparent" press="onResetDate" tooltip="Reset all Filters" class="sapUiTinyMarginEnd"/>
-									<Button  icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document" />
+									<!-- <Button  icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document" /> -->
 								</HBox>
 							</VBox>
 						</HBox>

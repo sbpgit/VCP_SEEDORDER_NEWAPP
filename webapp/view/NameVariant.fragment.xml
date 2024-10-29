@@ -5,7 +5,7 @@
                 <VBox id="_IDGenVBox123">
                     <VBox id="_IDGenVBox2">
                         <Label id="_IDGenLabel1" text="View:" required="true"/>
-                        <Input value="" id="idInput" liveChange="checkName" valueStateText="The view name already exists.Please enter a different name."/>
+                        <Input value="" id="idInput1" liveChange="checkName" valueStateText="The view name already exists.Please enter a different name."/>
                     </VBox>
                     <CheckBox id="_IDGenCheckBox1" text="Set as Default" />
                     <!-- <CheckBox id="_IDGenCheckBox2" text="Public" /> -->
@@ -14,7 +14,7 @@
             </f:content>
         </f:SimpleForm>
         <buttons>
-            <Button id="idSaveBtn" text="Save" press="onCreate" type="Emphasized"/>
+            <Button id="idSaveBtn1" text="Save" press="onCreate" type="Emphasized"/>
             <Button id="idCanBtn"  text="Close" press="onSaveClose" />
         </buttons>
     </Dialog>

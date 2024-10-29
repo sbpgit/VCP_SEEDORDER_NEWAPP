@@ -199,6 +199,7 @@ sap.ui.define([
                 //         MessageToast.show("Failed to get configurable products");
                 //     },
                 // });
+                // that.getVariantData();
             },
             /**Removing duplicates */
             removeDuplicate(array, key1, key2) {
@@ -1726,107 +1727,6 @@ sap.ui.define([
                 // Concatenate the components in yyyy-MM-dd format
                 return `${year}-${month}-${day}`;
             },
-            // getVariantsData: function () {
-            //     var aData = [];
-            //     var dData = [];
-            //     var details = {};
-            //     var defaultDetails = [];
-            //     var uniqueName = [];
-            //     that.variantLength = 0;
-            //     var variantUser = this.getUser();
-            //     that.oGModel.setProperty("/UserId", variantUser);
-            //     //Calling variant header data
-            //     this.getOwnerComponent().getModel("BModel").read("/getVariantHeader", {
-            //         success: function (oData) {
-            //             if (oData.results.length > 0) {
-            //                 that.variantLength = oData.results.length - 1;
-            //                 for (var i = 0; i < oData.results.length; i++) {
-            //                     if (oData.results[i].DEFAULT === "Y"
-            //                         && oData.results[i].APPLICATION_NAME === "Seed Order Creation") {
-            //                         dData.push(oData.results[i]);
-            //                     }
-            //                 }
-            //                 if (dData.length > 0) {
-            //                     that.oGModel.setProperty("/defaultVariant", dData);
-            //                 }
-            //                 else {
-            //                     that.oGModel.setProperty("/defaultVariant", "");
-            //                 }
-            //             }
-            //         },
-            //         error: function (oData, error) {
-            //             MessageToast.show("error while loading variant details");
-            //         },
-            //     });
-
-            //     //calling variant main data
-            //     this.getOwnerComponent().getModel("BModel").read("/getVariant", {
-            //         filters: [new Filter("USER", FilterOperator.EQ, variantUser)],
-            //         success: function (oData) {
-            //             var IDlength = oData.results.length;
-            //             if (IDlength === 0) {
-            //                 that.oGModel.setProperty("/Id", that.variantLength);
-            //                 that.oGModel.setProperty("/variantDetails", "");
-            //                 that.oGModel.setProperty("/fromFunction", "X");
-            //                 uniqueName.unshift({
-            //                     "VARIANTNAME": "Standard",
-            //                     "VARIANTID": "0",
-            //                     "DEFAULT": "Y"
-            //                 })
-            //                 that.oGModel.setProperty("/viewNames", uniqueName);
-            //                 that.oGModel.setProperty("/defaultDetails", "");
-            //                 that.viewDetails.setData({
-            //                     items1: uniqueName
-            //                 });
-            //                 that.varianNames = uniqueName;
-            //                 sap.ui.getCore().byId("idMatList").setModel(that.viewDetails);
-            //                 sap.ui.getCore().byId("idMatList").removeSelections(true);
-            //                 sap.ui.getCore().byId("varNameList").setModel(that.viewDetails);
-
-            //                 Default = "Standard";
-            //                 if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
-            //                     var newVariant = that.oGModel.getProperty("/newVariant");
-            //                     that.handleSelectPress(newVariant[0].VARIANTNAME);
-            //                     that.oGModel.setProperty("/newVaraintFlag", "");
-            //                 }
-            //                 else {
-            //                     that.handleSelectPress(Default);
-            //                 }
-            //             }
-            //             else {
-            //                 that.oGModel.setProperty("/Id", that.variantLength);
-            //                 that.oGModel.setProperty("/variantDetails", oData.results);
-            //                 var filteredData = oData.results.filter(a => a.APPLICATION_NAME === "Seed Order Creation");
-            //                 aData = filteredData;
-            //                 if (aData.length > 0) {
-            //                     uniqueName = aData.filter((obj, pos, arr) => {
-            //                         return (
-            //                             arr.map((mapObj) => mapObj.VARIANTNAME).indexOf(obj.VARIANTNAME) == pos
-            //                         );
-            //                     });
-            //                     that.oGModel.setProperty("/saveBtn", "");
-            //                     for (var k = 0; k < uniqueName.length; k++) {
-            //                         if (uniqueName[k].DEFAULT === "Y") {
-            //                             var Default = uniqueName[k].VARIANTNAME;
-            //                             details = {
-            //                                 "VARIANTNAME": uniqueName[k].VARIANTNAME,
-            //                                 "VARIANTID": uniqueName[k].VARIANTID,
-            //                                 "USER": uniqueName[k].USER,
-            //                                 "DEFAULT": "N"
-            //                             };
-            //                             defaultDetails.push(details);
-            //                             details = {};
-            //                         }
-            //                     }
-            //                 }
-            //             }
-
-            //         },
-            //         error: function (oData, error) {
-            //             MessageToast.show("error while loading variant details");
-            //         },
-            //     });
-            // },
             onNavPress: function () {
                 if (sap.ushell && sap.ushell.Container && sap.ushell.Container.getService) {
                     var oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
@@ -2542,9 +2442,9 @@ sap.ui.define([
                             that.allData = [];
                             if (oData.results.length > 0) {
                                 for (var i = 0; i < oData.results.length; i++) {
-                                    // if (prodItem !== oData.results[i].PRODUCT_ID) {
+                                    if (prodItem !== oData.results[i].PRODUCT_ID) {
                                         that.partProdItems.push(oData.results[i])
-                                    // }
+                                    }
                                 }
                                 if (that.partProdItems.length > 0) {
                                     that.partModel.setData({ partDetails: that.partProdItems });
@@ -2557,7 +2457,7 @@ sap.ui.define([
                                 }
                             }
                             else {
-                                MessageToast.show("No Partial products available for selected Config Product/Location");
+                                // MessageToast.show("No Partial products available for selected Config Product/Location");
                                 that.byId("idPartProd").setEnabled(false);
                             }
                         }
@@ -2734,7 +2634,7 @@ sap.ui.define([
                         MessageToast.show("Failed to get Partial Products");
                     }
                 });
-            }
+            },
 
             /**On press of panel expand in step-2 */
             //     onPanelExpand:function(oEvent){
@@ -2757,5 +2657,180 @@ sap.ui.define([
             //         }
             //     }
             // }
+            /*Getting variant view data*/
+      getVariantData: function () {
+        var ndData = [];
+        var dData = [], uniqueName = [];
+        that.uniqueName = [];
+        var oModel = that.getOwnerComponent().getModel('oModel');
+        sap.ui.core.BusyIndicator.show();
+        // that.oGModel = that.getOwnerComponent().getModel("oGModel");
+        // var variantUser = this.getUser();
+        var variantUser = 'pradeepkumardaka@sbpcorp.in';
+        that.oGModel.setProperty("/UserId", variantUser);
+        this.getView().getModel("BModel").read("/getVariantHeader", {
+          filters: [
+            new Filter(
+              "USER",
+              FilterOperator.EQ,
+              variantUser
+            ),
+            new Filter(
+              "APPLICATION_NAME",
+              FilterOperator.EQ,
+              "Seed Order Creation"
+            ),
+          ],
+          success: function (oData) {
+            if (oData.results.length === 0) {
+              that.oGModel.setProperty("/variantDetails", "");
+              that.oGModel.setProperty("/fromFunction", "X");
+              uniqueName.unshift({
+                "VARIANTNAME": "Standard",
+                "VARIANTID": "Standard",
+                "DEFAULT": "Y"
+              })
+              that.oGModel.setProperty("/viewNames", uniqueName);
+              that.oGModel.setProperty("/defaultDetails", "");
+              that.viewDetails.setData({
+                items1: uniqueName
+              });
+              that.varianNames = uniqueName;
+              that.byId("idMatList").setModel(that.viewDetails);
+              that.byId("idMatList").setDefaultKey(uniqueName[0].VARIANTID);
+              that.byId("idMatList").setSelectedKey(uniqueName[0].VARIANTID);
+              var Default = "Standard";
+              if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
+                var newVariant = that.oGModel.getProperty("/newVariant");
+                that.handleSelectPress(newVariant[0].VARIANTNAME);
+                that.oGModel.setProperty("/newVaraintFlag", "");
+              } else {
+                // that.handleSelectPress(Default);
+              }
+              sap.ui.getCore().byId("idSave").setVisible(false);
+            }
+            else {
+              for (var i = 0; i < oData.results.length; i++) {
+                if (oData.results[i].DEFAULT === "Y") {
+                  dData.push(oData.results[i]);
+                  that.byId("idMatList").setDefaultKey((oData.results[i].VARIANTID))
+                }
+                ndData.push(oData.results[i]);
+              }
+
+              if (dData.length > 0) {
+                that.oGModel.setProperty("/defaultVariant", dData);
+              }
+              that.oGModel.setProperty("/VariantData", ndData);
+
+              that.getTotalVariantDetails();
+            }
+          },
+          error: function (oData, error) {
+            sap.ui.core.BusyIndicator.hide();
+            MessageToast.show("error while loading variant details");
+          },
+        });
+      },
+      getTotalVariantDetails: function () {
+        var aData = [], uniqueName = [], details = {}, defaultDetails = [], oFilters = [];
+        var headerData = that.oGModel.getProperty("/VariantData");
+        if (headerData.length > 0) {
+          for (var i = 0; i < headerData.length; i++) {
+            oFilters.push(new Filter("VARIANTID", FilterOperator.EQ, headerData[i].VARIANTID));
+          }
+        }
+        this.getOwnerComponent().getModel("BModel").read("/getVariant", {
+          filters: [oFilters],
+          success: function (oData) {
+            var variantNewData = oData.results;
+            aData = variantNewData.map(item1 => {
+              const item2 = headerData.find(item2 => item2.VARIANTID === item1.VARIANTID);
+              return item2 ? { ...item1, ...item2 } : { ...item1 };
+            });
+            that.oGModel.setProperty("/variantDetails", aData);
+            if (aData.length > 0) {
+              uniqueName = that.removeDuplicate(aData, "VARIANTNAME");
+              that.oGModel.setProperty("/saveBtn", "");
+              for (var k = 0; k < uniqueName.length; k++) {
+                if (uniqueName[k].DEFAULT === "Y") {
+                  var Default = uniqueName[k].VARIANTNAME;
+                  details = {
+                    "VARIANTNAME": uniqueName[k].VARIANTNAME,
+                    "VARIANTID": uniqueName[k].VARIANTID,
+                    "USER": uniqueName[k].USER,
+                    "DEFAULT": "N"
+                  };
+                  defaultDetails.push(details);
+                  details = {};
+                }
+              }
+            }
+
+            that.oGModel.setProperty("/fromFunction", "X");
+            if (Default) {
+              uniqueName.unshift({
+                "VARIANTNAME": "Standard",
+                "VARIANTID": "0",
+                "DEFAULT": "N"
+              })
+              that.oGModel.setProperty("/viewNames", uniqueName);
+              that.variantModel.setData({
+                items1: uniqueName
+              });
+              that.varianNames = uniqueName;
+              that.oGModel.setProperty("/defaultDetails", defaultDetails);
+              that.byId("idMatList").setModel(that.variantModel);
+            //   that.byId("idMatList").removeSelections(true);
+              if (sap.ui.getCore().byId("varNameList")) {
+                sap.ui.getCore().byId("varNameList").setModel(that.variantModel);
+              }
+              if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
+                var newVariant = that.oGModel.getProperty("/newVariant");
+                that.handleSelectPress(newVariant[0].VARIANTNAME);
+                that.oGModel.setProperty("/newVaraintFlag", "");
+              } else {
+                that.handleSelectPress(Default);
+              }
+            } else {
+              uniqueName.unshift({
+                "VARIANTNAME": "Standard",
+                "VARIANTID": "0",
+                "DEFAULT": "Y"
+              })
+              that.oGModel.setProperty("/viewNames", uniqueName);
+              that.oGModel.setProperty("/defaultDetails", "");
+
+              that.viewDetails.setData({
+                items1: uniqueName
+              });
+              that.varianNames = uniqueName;
+              that.byId("idMatList").setModel(that.viewDetails);
+            //   that.byId("idMatList").removeSelections(true);
+              if (sap.ui.getCore().byId("varNameList")) {
+                sap.ui.getCore().byId("varNameList").setModel(that.viewDetails);
+              }
+              var Default = "Standard";
+              if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
+                var newVariant = that.oGModel.getProperty("/newVariant");
+                that.handleSelectPress(newVariant[0].VARIANTNAME);
+                that.oGModel.setProperty("/newVaraintFlag", "");
+              } else {
+                that.handleSelectPress(Default);
+              }
+            }
+            sap.ui.getCore().byId("idSave").setVisible(false);
+
+          },
+          error: function (oData, error) {
+            sap.ui.core.BusyIndicator.hide()
+            MessageToast.show("error while loading variant details");
+          },
+        });
+      },
+      removeDuplicate: function (array, key) {
+        var check = new Set();
+        return array.filter(obj => !check.has(obj[key]) && check.add(obj[key]));
+      },
         });
     });
