@@ -14,6 +14,22 @@ sap.ui.define([], function () {
             }
             
         },
+        formatRemove: function (iValue) {
+            if(iValue === undefined){
+                return true;
+            }
+            else if(iValue === false){
+                return false;
+            }            
+        },
+        formatChange: function (iValue) {
+            if(iValue === undefined){
+                return true;
+            }
+            else if(iValue === false){
+                return false;
+            }            
+        },
 
     }   
 

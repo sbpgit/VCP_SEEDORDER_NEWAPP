@@ -7,15 +7,15 @@
 			<ux:headerTitle>
 				<ux:ObjectPageDynamicHeaderTitle>
 					<ux:expandedHeading>
-						<!-- <HBox>
-							<VariantManagement id="idMatList123" select="onSelect" save="onSave"	manage="onManage" supportFavorites="false" 
-							showFooter="true"	popoverTitle="my Favorites" items="{path: '/items1'}"
-							supportPublic="false" supportApplyAutomatically="false">
+						<HBox>
+							<VariantManagement id="idMatList123" select="handleSelectPress" save="onCreate"	manage="onManage" supportFavorites="false" 
+							showFooter="true"	popoverTitle="My Views" items="{path: '/items1'}" creationAllowed="true" 
+							supportPublic="true" supportApplyAutomatically="false" manageCancel="onManageCancel" cancel="onNameCancel">
 							<items>
-							<VariantItem key="{VARIANTID}" title="{VARIANTNAME}" author="{USER}" visible="true" remove="true"/>
+							<VariantItem key="{VARIANTID}" title="{VARIANTNAME}" author="{USER}" visible="true" remove="{path:'REMOVE', formatter:'.formatter.formatRemove'}" changeable="{path:'CHANGE', formatter:'.formatter.formatChange'}" rename="false"/>
 								</items>
-						</VariantManagement> -->
-						<!-- </HBox> -->
+						</VariantManagement>
+						</HBox>
 					</ux:expandedHeading>
 					<ux:snappedHeading>
 					</ux:snappedHeading>
