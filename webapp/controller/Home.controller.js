@@ -2828,8 +2828,8 @@ sap.ui.define([
                 that.finaloTokens = [];
                 var oTableItems = that.oGModel.getProperty("/variantDetails");
                 that.oGModel.setProperty("/setCust", []);
-                that.oGModel.setProperty("/setLoc", '');
-                that.oGModel.setProperty("/setProd", '');
+                that.oGModel.setProperty("/setLocation", '');
+                that.oGModel.setProperty("/setProduct", '');
                 that.oGModel.setProperty("/defaultLocation", "");
                 that.oGModel.setProperty("/defaultProduct", "");
                 that.oGModel.setProperty("/defaultCustomer", []);
@@ -2902,6 +2902,7 @@ sap.ui.define([
                         that.oGModel.setProperty("/setProduct", oProd);
                         that.getAllLocProd(oProd);
                         that.getAllCustGrp();
+                        that.oLoc1.setValue();
                     }
                     if (oLoc) {
                         that.oLoc1.setValue(oLoc);
@@ -3080,6 +3081,8 @@ sap.ui.define([
             /**ON Press of cancle in Manage Fragment */
             onManageCancel:function(oEvent){
                 var canceled = oEvent;
+               
+
             },
             /**On press of save in manage fragment */
             onManage:function(oEvent){
