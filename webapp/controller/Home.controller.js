@@ -3081,7 +3081,11 @@ sap.ui.define([
             /**ON Press of cancle in Manage Fragment */
             onManageCancel:function(oEvent){
                 var canceled = oEvent;
-               
+                var data = that.byId("idMatList123").getModel().oData.items1;
+                that.viewDetails.setData({
+                    items1: data
+                });
+                that.byId("idMatList123").setModel(that.viewDetails);
 
             },
             /**On press of save in manage fragment */
