@@ -151,8 +151,8 @@ sap.ui.define([
                 return vUser;
             },
             onAfterRendering: function () {
-                // if(that.oGModel.getProperty("/skipOnAfter") === "X"){
                 that.skip = 0
+                that.finaloTokens = [];
                 that.allData = []
                 that.oGModel.setProperty("/resetFlag", "");
                 that.selectedChars = [], that.loadArray = [],
@@ -320,7 +320,7 @@ sap.ui.define([
                 var sProduct = that.byId("prodInput").getValue();
                 var selectedLocItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("idloc").setValue(selectedLocItem);
-                if(that.oGModel.getProperty("/defaultLocation")!==selectedLocItem){
+                if (that.oGModel.getProperty("/defaultLocation") !== selectedLocItem) {
                     that.byId("idMatList123").setModified(true);
                 }
                 that.oGModel.setProperty("/setLocation", selectedLocItem);
@@ -339,7 +339,8 @@ sap.ui.define([
                             (childItems[k].getCells()[1].setValue() === "")
                     }
                 }
-                that.oGModel.setProperty("/resetFlag", "X");
+                that.oGModel.setProperty("/fromFunction", "X");
+                that.oGModel.setProperty("/saveFunction", "X"); 
                 that.byId("prodInput").setValue();
                 that.byId("idloc").setValue();
                 that.byId("idCustGrp").removeAllTokens();
@@ -597,7 +598,7 @@ sap.ui.define([
                                 that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
                                 that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                                 sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
-                                var filteredProdData = that.removeDuplicate(that.loadArray, "CHAR_NAME", "CHAR_VALUE");
+                                var filteredProdData = that.removeDuplicate(that.loadArray,"CHAR_VALUE");
                                 that.charsProd = filteredProdData;
                                 that.newClassModel.setData({ items1: filteredProdData });
                                 tableData.setModel(that.newClassModel);
@@ -1132,10 +1133,12 @@ sap.ui.define([
                 });
                 sap.ui.getCore().byId("custGrpList").getBinding("items").filter([]);
                 newToken = newToken.sort(that.dynamicSortMultiple("VALUE"));
+                if(that.finaloTokens.length>0){
                 that.finaloTokens = that.finaloTokens.sort(that.dynamicSortMultiple("VALUE"));
                 if (JSON.stringify(newToken) !== JSON.stringify(that.finaloTokens)) {
                     that.byId("idMatList123").setModified(true);
-                } 
+                }
+            }
             },
             /**
             * On press of generate seed order in home view 
@@ -2314,7 +2317,7 @@ sap.ui.define([
                 });
             },
             getAllLocProd: function (selectedProdItem) {
-                var selectedProdItem = that.byId("prodInput").getValue(selectedProdItem);
+                var selectedProdItem = that.byId("prodInput").getValue();
                 var topCount = that.oGModel.getProperty("/MaxCount")
                 this.getOwnerComponent().getModel("BModel").read("/getfactorylocdesc", {
                     filters: [
@@ -2640,25 +2643,36 @@ sap.ui.define([
                 var ndData = [];
                 var dData = [], uniqueName = [];
                 that.uniqueName = [];
-                var oModel = that.getOwnerComponent().getModel('oModel');
                 sap.ui.core.BusyIndicator.show();
-                // that.oGModel = that.getOwnerComponent().getModel("oGModel");
                 // var variantUser = this.getUser();
                 var variantUser = 'pradeepkumardaka@sbpcorp.in';
+                var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 that.oGModel.setProperty("/UserId", variantUser);
+                // Define the filters
+                var filters = [
+                    new sap.ui.model.Filter({
+                        filters: [
+                            new sap.ui.model.Filter("APPLICATION_NAME", sap.ui.model.FilterOperator.EQ, appName),
+                            new sap.ui.model.Filter("USER", sap.ui.model.FilterOperator.EQ, variantUser)
+                        ],
+                        and: true
+                    }),
+                    // new sap.ui.model.Filter({
+                    //     filters: [
+                    //         new sap.ui.model.Filter("APPLICATION_NAME", sap.ui.model.FilterOperator.EQ, appName),
+                    //         new sap.ui.model.Filter("SCOPE", sap.ui.model.FilterOperator.EQ, "PUBLIC")
+                    //     ],
+                    //     and: true
+                    // })
+                ];
+
+                // Combine the filters with an OR condition
+                var filter = new sap.ui.model.Filter({
+                    filters: filters,
+                    and: false
+                });
                 this.getView().getModel("BModel").read("/getVariantHeader", {
-                    filters: [
-                        new Filter(
-                            "USER",
-                            FilterOperator.EQ,
-                            variantUser
-                        ),
-                        new Filter(
-                            "APPLICATION_NAME",
-                            FilterOperator.EQ,
-                            "Seed Order Creation"
-                        ),
-                    ],
+                    filters: [filter],
                     success: function (oData) {
                         if (oData.results.length === 0) {
                             that.oGModel.setProperty("/variantDetails", "");
@@ -2667,9 +2681,10 @@ sap.ui.define([
                                 "VARIANTNAME": "Standard",
                                 "VARIANTID": "0",
                                 "DEFAULT": "Y",
-                                "REMOVE":false,
-                                "CHANGE":false,
-                                "USER":"SAP"
+                                "REMOVE": false,
+                                "CHANGE": false,
+                                "USER": "SAP",
+                                "SCOPE": "PUBLIC"
                             })
                             that.oGModel.setProperty("/viewNames", uniqueName);
                             that.oGModel.setProperty("/defaultDetails", "");
@@ -2691,7 +2706,7 @@ sap.ui.define([
                         }
                         else {
                             for (var i = 0; i < oData.results.length; i++) {
-                                if (oData.results[i].DEFAULT === "Y") {
+                                if (oData.results[i].DEFAULT === "Y" && oData.results[i].USER === variantUser) {
                                     dData.push(oData.results[i]);
                                     that.byId("idMatList123").setDefaultKey((oData.results[i].VARIANTID));
                                     that.byId("idMatList123").setSelectedKey((oData.results[i].VARIANTID))
@@ -2721,6 +2736,7 @@ sap.ui.define([
                         oFilters.push(new Filter("VARIANTID", FilterOperator.EQ, headerData[i].VARIANTID));
                     }
                 }
+                var userVariant = that.oGModel.getProperty("/UserId");
                 this.getOwnerComponent().getModel("BModel").read("/getVariant", {
                     filters: [oFilters],
                     success: function (oData) {
@@ -2734,7 +2750,7 @@ sap.ui.define([
                             uniqueName = that.removeDuplicate(aData, "VARIANTNAME");
                             that.oGModel.setProperty("/saveBtn", "");
                             for (var k = 0; k < uniqueName.length; k++) {
-                                if (uniqueName[k].DEFAULT === "Y") {
+                                if (uniqueName[k].DEFAULT === "Y" && uniqueName[k].USER === userVariant ) {
                                     var Default = uniqueName[k].VARIANTNAME;
                                     details = {
                                         "VARIANTNAME": uniqueName[k].VARIANTNAME,
@@ -2754,9 +2770,10 @@ sap.ui.define([
                                 "VARIANTNAME": "Standard",
                                 "VARIANTID": "0",
                                 "DEFAULT": "N",
-                                "REMOVE":false,
-                                "CHANGE":false,
-                                "USER":"SAP"
+                                "REMOVE": false,
+                                "CHANGE": false,
+                                "USER": "SAP",
+                                "SCOPE": "PUBLIC"
                             })
                             that.oGModel.setProperty("/viewNames", uniqueName);
                             that.variantModel.setData({
@@ -2768,7 +2785,7 @@ sap.ui.define([
                             if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
                                 var newVariant = that.oGModel.getProperty("/newVariant");
                                 that.handleSelectPress(newVariant[0].VARIANTNAME);
-                                if(newVariant[0].DEFAULT === "Y"){
+                                if (newVariant[0].DEFAULT === "Y") {
                                     that.byId("idMatList123").setDefaultKey((newVariant[0].VARIANTID));
                                 }
                                 that.byId("idMatList123").setSelectedKey((newVariant[0].VARIANTID))
@@ -2781,9 +2798,10 @@ sap.ui.define([
                                 "VARIANTNAME": "Standard",
                                 "VARIANTID": "0",
                                 "DEFAULT": "Y",
-                                "REMOVE":false,
-                                "CHANGE":false,
-                                "USER":"SAP"
+                                "REMOVE": false,
+                                "CHANGE": false,
+                                "USER": "SAP",
+                                "SCOPE": "PUBLIC"
                             })
                             that.oGModel.setProperty("/viewNames", uniqueName);
                             that.oGModel.setProperty("/defaultDetails", "");
@@ -2797,7 +2815,7 @@ sap.ui.define([
                             if (that.oGModel.getProperty("/newVaraintFlag") === "X") {
                                 var newVariant = that.oGModel.getProperty("/newVariant");
                                 that.handleSelectPress(newVariant[0].VARIANTNAME);
-                                if(newVariant[0].DEFAULT === "Y"){
+                                if (newVariant[0].DEFAULT === "Y") {
                                     that.byId("idMatList123").setDefaultKey((newVariant[0].VARIANTID));
                                 }
                                 that.byId("idMatList123").setSelectedKey((newVariant[0].VARIANTID))
@@ -2827,6 +2845,8 @@ sap.ui.define([
                 that.locProdFilters = [];
                 that.finaloTokens = [];
                 var oTableItems = that.oGModel.getProperty("/variantDetails");
+                that.byId("idMatList123").setModified(false);
+                var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 that.oGModel.setProperty("/setCust", []);
                 that.oGModel.setProperty("/setLocation", '');
                 that.oGModel.setProperty("/setProduct", '');
@@ -2844,7 +2864,7 @@ sap.ui.define([
                 }
                 if (that.selectedApp !== "Standard") {
                     for (var i = 0; i < oTableItems.length; i++) {
-                        if (that.selectedApp === oTableItems[i].VARIANTNAME && oTableItems[i].APPLICATION_NAME === "Seed Order Creation") {
+                        if (that.selectedApp === oTableItems[i].VARIANTNAME && oTableItems[i].APPLICATION_NAME === appName) {
                             if (oTableItems[i].FIELD.includes("Loc")) {
                                 oLoc = oTableItems[i].VALUE;
                                 that.oGModel.setProperty("/defaultLocation", oLoc);
@@ -2973,11 +2993,12 @@ sap.ui.define([
                 var Field3 = that.byId("idCustGrp").getParent().getItems()[0].getText();
                 var varName = oEvent.getParameters().name;
                 var sDefault = oEvent.getParameters().def;
+                var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 if (!sLocation && !sProduct && sCust.length === 0) {
                     sap.ui.core.BusyIndicator.hide();
                     return MessageToast.show("No values selected in filters Configurable Product,Demand Location & Customer Group")
                 }
-                
+
                 if (varName) {
                     if (sDefault && that.oGModel.getProperty("/defaultDetails").length > 0) {
                         var defaultChecked = "Y";
@@ -3000,18 +3021,17 @@ sap.ui.define([
                     else {
                         var defaultChecked = "N";
                     }
-                    if (that.oGModel.getProperty("/Favourite") === "X") {
-                        var Favourite = "Y";
+                    if (oEvent.getParameters().public) {
+                        var Scope = "PUBLIC";
                     }
                     else {
-                        var Favourite = "N";
+                        var Scope = "PRIVATE";
                     }
                     if (sLocation) {
                         details = {
                             Field: Field1,
                             FieldCenter: (1).toString(),
                             Value: sLocation,
-                            Favourite: 'N',
                             Default: defaultChecked
                         }
                         array.push(details);
@@ -3021,7 +3041,6 @@ sap.ui.define([
                             Field: Field2,
                             FieldCenter: (1).toString(),
                             Value: sProduct,
-                            Favourite: 'N',
                             Default: defaultChecked
                         }
                         array.push(details);
@@ -3031,28 +3050,27 @@ sap.ui.define([
                             Field: Field3,
                             FieldCenter: sCust[s].getKey(),
                             Value: sCust[s].getText(),
-                            Favourite: 'N',
                             Default: defaultChecked
                         }
                         array.push(details);
                     }
-                    if(!oEvent.getParameters().overwrite){
-                    for (var j = 0; j < array.length; j++) {
-                        array[j].IDNAME = varName;
-                        array[j].App_Name = "Seed Order Creation";
-                        array[j].FAVOURITE = Favourite;
+                    if (!oEvent.getParameters().overwrite) {
+                        for (var j = 0; j < array.length; j++) {
+                            array[j].IDNAME = varName;
+                            array[j].App_Name = appName;
+                            array[j].SCOPE = Scope;
+                        }
+                        var flag = "X";
                     }
-                    var flag="X";
-                }
-                else{
-                    var flag="E"; 
-                    for (var j = 0; j < array.length; j++) {
-                        array[j].ID = oEvent.getParameters().key;
-                        array[j].IDNAME = varName;
-                        array[j].App_Name = "Seed Order Creation";
-                        array[j].FAVOURITE = Favourite;
-                      } 
-                }
+                    else {
+                        var flag = "E";
+                        for (var j = 0; j < array.length; j++) {
+                            array[j].ID = oEvent.getParameters().key;
+                            array[j].IDNAME = varName;
+                            array[j].App_Name = appName;
+                            array[j].SCOPE = Scope;
+                        }
+                    }
                     //    console.log(JSON.stringify(array));
                     this.getOwnerComponent().getModel("BModel").callFunction("/createVariant", {
                         method: "GET",
@@ -3078,20 +3096,17 @@ sap.ui.define([
                     MessageToast.show("Please fill View Name");
                 }
             },
-            /**ON Press of cancle in Manage Fragment */
-            onManageCancel:function(oEvent){
-            },
             /**On press of save in manage fragment */
-            onManage:function(oEvent){
+            onManage: function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
-                var oDelted={}, deletedArray=[], newSelection={},newItems=[];
+                var oDelted = {}, deletedArray = [], newSelection = {}, newItems = [];
                 var totalVariantData = that.oGModel.getProperty("/VariantData");
                 var selected = oEvent.getParameters();
                 //Delete the selected variant names
-                if(selected.deleted){
-                    selected.deleted.forEach(item1=>{
-                        totalVariantData.forEach(item2=>{
-                            if(JSON.parse(item1) === item2.VARIANTID){
+                if (selected.deleted) {
+                    selected.deleted.forEach(item1 => {
+                        totalVariantData.forEach(item2 => {
+                            if (JSON.parse(item1) === item2.VARIANTID) {
                                 oDelted = {
                                     ID: item2.VARIANTID,
                                     NAME: item2.VARIANTNAME
@@ -3100,84 +3115,87 @@ sap.ui.define([
                             }
                         })
                     });
-                   if(deletedArray.length>0){
-                    that.deleteVariant(deletedArray)
-                   } 
+                    if (deletedArray.length > 0) {
+                        that.deleteVariant(deletedArray)
+                    }
                 }
                 //Updating the default variants
-                if(selected.def){
+                if (selected.def) {
                     //If selected default is not standard
-                if(JSON.parse(selected.def)!==0){
-                    //Update the existing default to a new default
-                var defaultVariant = totalVariantData.filter(item=> item.DEFAULT ==="Y");
-                if(defaultVariant.length>0){
-                    defaultVariant[0].DEFAULT="N";
-                    that.getView().getModel("BModel").callFunction("/updateVariant", {
-                        method: "GET",
-                        urlParameters: {
-                            VARDATA: JSON.stringify(defaultVariant)
-                        },
-                        success: function (oData) {
-                            var newDefault = totalVariantData.filter(item=> item.VARIANTID ===JSON.parse(selected.def));
-                            newDefault[0].DEFAULT="Y";
+                    if (JSON.parse(selected.def) !== 0) {
+                        //Update the existing default to a new default
+                        var defaultVariant = totalVariantData.filter(item => item.DEFAULT === "Y");
+                        if (defaultVariant.length > 0) {
+                            defaultVariant[0].DEFAULT = "N";
                             that.getView().getModel("BModel").callFunction("/updateVariant", {
                                 method: "GET",
                                 urlParameters: {
-                                    VARDATA: JSON.stringify(newDefault)
+                                    VARDATA: JSON.stringify(defaultVariant)
                                 },
                                 success: function (oData) {
-                                    that.onAfterRendering();
+                                    var newDefault = totalVariantData.filter(item => item.VARIANTID === JSON.parse(selected.def));
+                                    newDefault[0].DEFAULT = "Y";
+                                    that.getView().getModel("BModel").callFunction("/updateVariant", {
+                                        method: "GET",
+                                        urlParameters: {
+                                            VARDATA: JSON.stringify(newDefault)
+                                        },
+                                        success: function (oData) {
+                                            that.onAfterRendering();
+                                            sap.ui.core.BusyIndicator.hide();
+                                        },
+                                        error: function (error) {
+                                            MessageToast.show("Failed to update variant");
+                                        },
+                                    });
                                 },
                                 error: function (error) {
+                                    sap.ui.core.BusyIndicator.hide();
                                     MessageToast.show("Failed to update variant");
                                 },
                             });
-                        },
-                        error: function (error) {
-                            sap.ui.core.BusyIndicator.hide();
-                            MessageToast.show("Failed to update variant");
-                        },
-                    });
-               
-            }
-            else{
-                var selectedVariant = totalVariantData.filter(item=> item.VARIANTID ===JSON.parse(selected.def));
-                selectedVariant[0].DEFAULT="Y";
-                that.getView().getModel("BModel").callFunction("/updateVariant", {
-                    method: "GET",
-                    urlParameters: {
-                        VARDATA: JSON.stringify(selectedVariant)
-                    },
-                    success: function (oData) {
-                        that.onAfterRendering();
-                    },
-                    error: function (error) {
-                        sap.ui.core.BusyIndicator.hide();
-                        MessageToast.show("Failed to update variant");
-                    },
-                });
-            }
-            }
-            //If selected default is standard then remove the existing default variant
-            else{
-                var defaultItem = totalVariantData.filter(item=> item.DEFAULT ==="Y");
-                defaultItem[0].DEFAULT="N";
-                that.getView().getModel("BModel").callFunction("/updateVariant", {
-                    method: "GET",
-                    urlParameters: {
-                        VARDATA: JSON.stringify(defaultItem)
-                    },
-                    success: function (oData) {
-                        that.onAfterRendering();
-                    },
-                    error: function (error) {
-                        sap.ui.core.BusyIndicator.hide();
-                        MessageToast.show("Failed to update variant");
-                    },
-                });
-            }
-        }
-        sap.ui.core.BusyIndicator.hide();
+
+                        }
+                        else {
+                            var selectedVariant = totalVariantData.filter(item => item.VARIANTID === JSON.parse(selected.def));
+                            selectedVariant[0].DEFAULT = "Y";
+                            that.getView().getModel("BModel").callFunction("/updateVariant", {
+                                method: "GET",
+                                urlParameters: {
+                                    VARDATA: JSON.stringify(selectedVariant)
+                                },
+                                success: function (oData) {
+                                    that.onAfterRendering();
+                                    sap.ui.core.BusyIndicator.hide();
+                                },
+                                error: function (error) {
+                                    sap.ui.core.BusyIndicator.hide();
+                                    MessageToast.show("Failed to update variant");
+                                },
+                            });
+                        }
+                    }
+                    //If selected default is standard then remove the existing default variant
+                    else {
+                        var defaultItem = totalVariantData.filter(item => item.DEFAULT === "Y");
+                        defaultItem[0].DEFAULT = "N";
+                        that.getView().getModel("BModel").callFunction("/updateVariant", {
+                            method: "GET",
+                            urlParameters: {
+                                VARDATA: JSON.stringify(defaultItem)
+                            },
+                            success: function (oData) {
+                                that.onAfterRendering();
+                                sap.ui.core.BusyIndicator.hide();
+                            },
+                            error: function (error) {
+                                sap.ui.core.BusyIndicator.hide();
+                                MessageToast.show("Failed to update variant");
+                            },
+                        });
+                    }
+                }
+                sap.ui.core.BusyIndicator.hide();
             },
             deleteVariant: function (oEvent) {
                 var deletedItems = JSON.stringify(oEvent);
