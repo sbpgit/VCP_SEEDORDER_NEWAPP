@@ -594,6 +594,9 @@ sap.ui.define([
                                     that.newUniqueMode.setData({ uniqueDetails: [] });
                                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     MessageToast.show("No Unique Id's available to show for the selection");
+                                    that.emptyModel.setData({ items1: [] });
+                                    tableData.setModel(that.emptyModel); 
+                                    sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel);
                                 }
                                 that.loadArray = that.totalUniqueIds;
                                 that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
@@ -611,6 +614,9 @@ sap.ui.define([
                                 that.newUniqueMode.setData({ uniqueDetails: [] });
                                 that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                 MessageToast.show("No Unique Id's available to show for the selection");
+                                that.emptyModel.setData({ items1: [] });
+                                    tableData.setModel(that.emptyModel); 
+                                    sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel);
                                 sap.ui.core.BusyIndicator.hide();
                             }
                         },
@@ -2432,15 +2438,15 @@ sap.ui.define([
                                     that.partModel.setData({ partDetails: that.partProdItems });
                                     sap.ui.getCore().byId("partProdSlct").clearSelection();
                                     sap.ui.getCore().byId("partProdSlct").setModel(that.partModel);
-                                    that.byId("idPartProd").setEnabled(true);
+                                    that.byId("idPartProd").setVisible(true);
                                 }
                                 else {
-                                    that.byId("idPartProd").setEnabled(false);
+                                    that.byId("idPartProd").setVisible(false);
                                 }
                             }
                             else {
                                 // MessageToast.show("No Partial products available for selected Config Product/Location");
-                                that.byId("idPartProd").setEnabled(false);
+                                that.byId("idPartProd").setVisible(false);
                             }
                         }
                     },
