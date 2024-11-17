@@ -565,8 +565,7 @@ sap.ui.define([
                         method: "GET",
                         urlParameters: {
                             PRODUCT_ID: prodItem,
-                            UID_TYPE: "U",                            
-                            LOCATION_ID: locItem
+                            UID_TYPE: "U"
                         },
                         success: function (oData) {
                             that.count1 = 0;
