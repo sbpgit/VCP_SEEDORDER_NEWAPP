@@ -1141,10 +1141,11 @@ sap.ui.define([
                 newToken = newToken.sort(that.dynamicSortMultiple("VALUE"));
                 if(that.finaloTokens.length>0){
                 that.finaloTokens = that.finaloTokens.sort(that.dynamicSortMultiple("VALUE"));
+            }
                 if (JSON.stringify(newToken) !== JSON.stringify(that.finaloTokens)) {
                     that.byId("idMatList123").setModified(true);
                 }
-            }
+            
             },
             /**
             * On press of generate seed order in home view 
