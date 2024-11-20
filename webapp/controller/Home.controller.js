@@ -340,7 +340,7 @@ sap.ui.define([
                     }
                 }
                 that.oGModel.setProperty("/fromFunction", "X");
-                that.oGModel.setProperty("/saveFunction", "X"); 
+                that.oGModel.setProperty("/saveFunction", "X");
                 that.byId("prodInput").setValue();
                 that.byId("idloc").setValue();
                 that.byId("idCustGrp").removeAllTokens();
@@ -594,14 +594,14 @@ sap.ui.define([
                                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                     MessageToast.show("No Unique Id's available to show for the selection");
                                     that.emptyModel.setData({ items1: [] });
-                                    tableData.setModel(that.emptyModel); 
+                                    tableData.setModel(that.emptyModel);
                                     sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel);
                                 }
                                 that.loadArray = that.totalUniqueIds;
                                 that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
                                 that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                                 sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
-                                var filteredProdData = that.removeDuplicate(that.loadArray,"CHAR_VALUE");
+                                var filteredProdData = that.removeDuplicate(that.loadArray, "CHAR_VALUE");
                                 that.charsProd = filteredProdData;
                                 that.newClassModel.setData({ items1: filteredProdData });
                                 tableData.setModel(that.newClassModel);
@@ -614,8 +614,8 @@ sap.ui.define([
                                 that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                 MessageToast.show("No Unique Id's available to show for the selection");
                                 that.emptyModel.setData({ items1: [] });
-                                    tableData.setModel(that.emptyModel); 
-                                    sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel);
+                                tableData.setModel(that.emptyModel);
+                                sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel);
                                 sap.ui.core.BusyIndicator.hide();
                             }
                         },
@@ -1139,13 +1139,13 @@ sap.ui.define([
                 });
                 sap.ui.getCore().byId("custGrpList").getBinding("items").filter([]);
                 newToken = newToken.sort(that.dynamicSortMultiple("VALUE"));
-                if(that.finaloTokens.length>0){
-                that.finaloTokens = that.finaloTokens.sort(that.dynamicSortMultiple("VALUE"));
-            }
+                if (that.finaloTokens.length > 0) {
+                    that.finaloTokens = that.finaloTokens.sort(that.dynamicSortMultiple("VALUE"));
+                }
                 if (JSON.stringify(newToken) !== JSON.stringify(that.finaloTokens)) {
                     that.byId("idMatList123").setModified(true);
                 }
-            
+
             },
             /**
             * On press of generate seed order in home view 
@@ -2757,7 +2757,7 @@ sap.ui.define([
                             uniqueName = that.removeDuplicate(aData, "VARIANTNAME");
                             that.oGModel.setProperty("/saveBtn", "");
                             for (var k = 0; k < uniqueName.length; k++) {
-                                if (uniqueName[k].DEFAULT === "Y" && uniqueName[k].USER === userVariant ) {
+                                if (uniqueName[k].DEFAULT === "Y" && uniqueName[k].USER === userVariant) {
                                     var Default = uniqueName[k].VARIANTNAME;
                                     details = {
                                         "VARIANTNAME": uniqueName[k].VARIANTNAME,
