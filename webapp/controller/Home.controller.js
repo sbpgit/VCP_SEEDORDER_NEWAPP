@@ -1036,7 +1036,7 @@ sap.ui.define([
                             objectData = {
                                 PRODUCT_ID: that.byId("prodInput").getValue(),
                                 CHAR_NUM: aChild[j].CHAR_NUM,
-                                CHARVAL_NUM: aChild[j].CHARVAL_NUM,
+                                CHARVAL_NUM: aChild[j].CHAR_VALUE,
                                 OPT_PERCENT: aChild[j].OPT_PERCENT
                             }
                             objectArray.push(objectData);
@@ -1059,7 +1059,7 @@ sap.ui.define([
                                 objectData = {
                                     PRODUCT_ID: that.byId("prodInput").getValue(),
                                     CHAR_NUM: childItems[k].getBindingContext().getObject().CHAR_NUM,
-                                    CHARVAL_NUM: childItems[k].getBindingContext().getObject().CHARVAL_NUM,
+                                    CHARVAL_NUM: childItems[k].getBindingContext().getObject().CHAR_VALUE,
                                     OPT_PERCENT: opt_percent
                                 }
                                 objectArray.push(objectData);
@@ -1146,7 +1146,7 @@ sap.ui.define([
                         charItems.CHAR_DESC = that.selectedChars[i].CHAR_DESC;
                         charItems.CHAR_VALUE = that.selectedChars[i].CHAR_VALUE;
                         charItems.CHARVAL_DESC = that.selectedChars[i].CHARVAL_DESC;
-                        charItems.CHARVAL_NUM = that.selectedChars[i].CHARVAL_NUM;
+                        charItems.CHARVAL_NUM = that.selectedChars[i].CHAR_VALUE;
                         charArray.push(charItems);
                         charItems = {};
                     }
@@ -1160,7 +1160,7 @@ sap.ui.define([
                         charItems.CHAR_DESC = charAllData[i].CHAR_DESC;
                         charItems.CHAR_VALUE = charAllData[i].CHAR_VALUE;
                         charItems.CHARVAL_DESC = charAllData[i].CHARVAL_DESC;
-                        charItems.CHARVAL_NUM = charAllData[i].CHARVAL_NUM;
+                        charItems.CHARVAL_NUM = charAllData[i].CHAR_VALUE;
                         charArray.push(charItems);
                         charItems = {};
                     }
@@ -1189,7 +1189,7 @@ sap.ui.define([
                             CHAR_DESC: that.allCharacterstics1[i].CHAR_DESC,
                             CHARVAL_DESC: that.allCharacterstics1[i].CHARVAL_DESC,
                             CHAR_VALUE: that.allCharacterstics1[i].CHAR_VALUE,
-                            CHARVAL_NUM: that.allCharacterstics1[i].CHARVAL_NUM
+                            CHARVAL_NUM: that.allCharacterstics1[i].CHAR_VALUE
                         }
                         that.selectedChars.push(oEntry);
                         // that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
@@ -1223,7 +1223,7 @@ sap.ui.define([
                                 CHAR_DESC: totalData.CHAR_DESC,
                                 CHARVAL_DESC: totalData.CHARVAL_DESC,
                                 CHAR_VALUE: totalData.CHAR_VALUE,
-                                CHARVAL_NUM: totalData.CHARVAL_NUM
+                                CHARVAL_NUM: totalData.CHAR_VALUE
                             }
                             that.selectedChars.push(oEntry);
                         }
@@ -1707,7 +1707,7 @@ sap.ui.define([
                         for (let k = 0; k < that.loadArray.length; k++) {
                             if (that.loadArray[k].CHAR_NAME == array[i].Characteristic_Name
                                 && that.loadArray[k].CHAR_VALUE == array[i].Characteristic_Value) {
-                                array[i].CHARVAL_NUM = that.loadArray[k].CHARVAL_NUM
+                                array[i].CHARVAL_NUM = that.loadArray[k].Characteristic_Value
                                 array[i].CHAR_NUM = that.loadArray[k].CHAR_NUM
                             }
                             // }
@@ -1723,7 +1723,7 @@ sap.ui.define([
                 var filteredLoadArray1 = that.loadArray1.filter(item => targetNames.includes(item.CHAR_NAME));
                 var resultArray = filteredLoadArray1.map(item => ({
                     CHAR_NAME: item.CHAR_NAME,
-                    CHARVAL_NUM: item.CHARVAL_NUM,
+                    CHARVAL_NUM: item.CHAR_VALUE,
                     CHAR_NUM: item.CHAR_NUM,
                 }));
                 if (resultArray.length <= 0) {
@@ -1764,7 +1764,7 @@ sap.ui.define([
                             children: [{
                                 CHAR_VALUE: SubResults[i].Characteristic_Value,
                                 CHARVAL_DESC: SubResults[i].Characteristic_Value_Desc,
-                                CHARVAL_NUM: SubResults[i].CHARVAL_NUM,
+                                CHARVAL_NUM: SubResults[i].Characteristic_Value,
                                 CHAR_NUM: SubResults[i].CHAR_NUM,
                                 OPT_PERCENT: (SubResults[i].Option_Percentage),
 
@@ -1779,7 +1779,7 @@ sap.ui.define([
                         var oChd = {
                             CHAR_VALUE: SubResults[i].Characteristic_Value,
                             CHARVAL_DESC: SubResults[i].Characteristic_Value_Desc,
-                            CHARVAL_NUM: SubResults[i].CHARVAL_NUM,
+                            CHARVAL_NUM: SubResults[i].Characteristic_Value,
                             CHAR_NUM: SubResults[i].CHAR_NUM,
                             OPT_PERCENT: (SubResults[i].Option_Percentage),
 
