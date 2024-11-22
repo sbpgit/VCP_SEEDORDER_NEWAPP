@@ -184,7 +184,7 @@ sap.ui.define([
                 //         MessageToast.show("Failed to get configurable products");
                 //     },
                 // });
-                that.getVariantData();
+                // that.getVariantData();
             },
             /**Removing duplicates */
             removeDuplicate(array, key1, key2) {
@@ -1390,9 +1390,12 @@ sap.ui.define([
                 that.byId("idCharTable").getBinding("items").filter(oFilters);
             },
             generateSeedOrder: function () {
-                sap.ui.core.BusyIndicator.show()
+                sap.ui.core.BusyIndicator.show();
+                var aTreeBoxItems=[];
                 var tableSelected = that.byId("idCharTable").getSelectedItems();
-                var aTreeBoxItems = that.byId("LogList").getModel().getData().res
+                if(that.byId("LogList").getModel()){
+                 aTreeBoxItems = that.byId("LogList").getModel().getData().res
+                }
                 var vBoxItems = that.byId("idVBox").getItems();
                 if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
                     that.oGModel.setProperty("/CharOptFlag", "X");

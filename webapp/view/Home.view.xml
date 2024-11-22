@@ -10,7 +10,7 @@
 						<HBox>
 							<VariantManagement id="idMatList123" select="handleSelectPress" save="onCreate"	manage="onManage" supportFavorites="false" 
 							showFooter="true"	popoverTitle="My Views" items="{path: '/items1'}" creationAllowed="true" 
-							supportPublic="true" supportApplyAutomatically="false" manageCancel="onManageCancel" cancel="onNameCancel" visible="true">
+							supportPublic="true" supportApplyAutomatically="false" manageCancel="onManageCancel" cancel="onNameCancel" visible="false">
 							<items>
 							<VariantItem key="{VARIANTID}" text="{VARIANTNAME}"  author="{USER}" visible="true" 
 							remove="{path:'REMOVE', formatter:'.formatter.formatRemove'}" sharing="{SCOPE}"
@@ -103,7 +103,7 @@
 																	<ColumnListItem id="_IDGenColumnListItem11">
 																		<cells>
 																			<ObjectIdentifier title="{CHAR_DESC}" text="{CHAR_NUM}"/>
-																			<ObjectIdentifier title="{CHAR_VALUE}" text="{CHAR_VALUE}"/>
+																			<ObjectIdentifier title="{CHARVAL_DESC}" text="{CHAR_VALUE}"/>
 																			<ObjectIdentifier text="{CHARVAL_NUM}"/>
 																		</cells>
 																	</ColumnListItem>
