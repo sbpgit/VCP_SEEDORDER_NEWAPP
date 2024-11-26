@@ -587,7 +587,6 @@ sap.ui.define([
                                 if (that.count1 !== 0) {
                                     that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
                                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-
                                 }
                                 else {
                                     that.newUniqueMode.setData({ uniqueDetails: [] });
@@ -658,11 +657,6 @@ sap.ui.define([
                 }
                 if (selectedPartial.length > 0) {
                     for (var i = 0; i < selectedPartial.length; i++) {
-                        var oManLocTemplate = new sap.m.Token({
-                            key: selectedPartial[i].getDescription(),
-                            text: selectedPartial[i].getTitle(),
-                            editable: false
-                        });
                         oProdFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, selectedPartial[i].getTitle()));
                     }
                     oProdFilters.push(new Filter("LOCATION_ID", FilterOperator.EQ, locationId));
@@ -727,7 +721,7 @@ sap.ui.define([
                             that.byId("idInput").setText(that.uniqueIds.length);
                             that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
                             that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                            // MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
+
                             if (that.byId("idVBox").getItems().length === 0) {
                                 that.byId("idGenSeedOrder").setEnabled(true);
                             }
@@ -756,7 +750,6 @@ sap.ui.define([
                         that.byId("idInput").setText(that.uniqueIds.length);
                         that.newUniqueMode.setData({ uniqueDetails: that.uniqueIds });
                         that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                        // MessageToast.show("Selection(s) have " + that.uniqueIds.length + " combination unique id's");
                     }
                     sap.ui.core.BusyIndicator.hide()
                 }
@@ -1179,7 +1172,6 @@ sap.ui.define([
                 sap.ui.core.BusyIndicator.show();
                 if (oEvent.getParameter("selectAll")) {
                     that.selectedChars = [], that.uniqueIds = [];
-
                     var filterData = that.oGModel.getProperty("/distUID");
                     for (var i = 0; i < that.allCharacterstics1.length; i++) {
                         oEntry = {
@@ -1192,23 +1184,19 @@ sap.ui.define([
                             CHARVAL_NUM: that.allCharacterstics1[i].CHAR_VALUE
                         }
                         that.selectedChars.push(oEntry);
-                        // that.selectedChars = that.selectedChars.sort((a, b) => a.CHAR_NUM - b.CHAR_NUM);
                     }
 
                     that.newUniqueMode.setData({ uniqueDetails: filterData });
                     that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                    that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
+                    that.byId("idInput").setText(filterData.length);
                     unselectFlag = "X";
-                    sap.ui.core.BusyIndicator.hide();
-                    if (that.oGModel.getProperty("/distUID").length === 0) {
-                        MessageToast.show("No combination of Unique Id's available for selections");
-                        that.byId("idGenSeedOrder").setEnabled(false);
-                    } else {
-                        that.byId("idGenSeedOrder").setEnabled(true);
-                    }
+                    // if (filterData.length === 0) {                        
+                    //     that.byId("idGenSeedOrder").setEnabled(false);
+                    // } else {
+                    //     that.byId("idGenSeedOrder").setEnabled(true);
+                    // }
                 }
                 else {
-
                     var selected = oEvent.getParameters().selected;
                     var unselectFlag = "";
                     if (selected) {
@@ -1227,22 +1215,23 @@ sap.ui.define([
                             }
                             that.selectedChars.push(oEntry);
                         }
-                    } else {
-
+                    }
+                    else {
                         if (oEvent.getParameters().listItems.length > 1) {
                             that.selectedChars = [];
                             var filterData = that.oGModel.getProperty("/distUID");
                             that.newUniqueMode.setData({ uniqueDetails: filterData });
                             that.byId("idUniqueDetails").setModel(that.newUniqueMode);
-                            that.byId("idInput").setText(that.oGModel.getProperty("/distUID").length);
+                            that.byId("idInput").setText(filterData.length);
                             unselectFlag = "X";
-                            if (that.oGModel.getProperty("/distUID").length === 0) {
+                            if (filterData.length === 0) {
                                 MessageToast.show("No combination of Unique Id's available for selections");
                                 that.byId("idGenSeedOrder").setEnabled(false);
                             } else {
                                 that.byId("idGenSeedOrder").setEnabled(true);
                             }
-                        } else {
+                        }
+                        else {
                             var Charnum = oEvent.getParameters().listItem.getCells()[0].getText();
                             var Charvalue = oEvent.getParameters().listItem.getCells()[1].getText();
                             var index = that.selectedChars.findIndex(el => el.CHAR_NUM === Charnum && el.CHAR_VALUE === Charvalue);
@@ -1255,7 +1244,6 @@ sap.ui.define([
                                 unselectFlag = "X";
                             }
                         }
-
                     }
                     if (unselectFlag === "") {
                         var tableItems = that.selectedChars, object = {}, array = [];
@@ -1314,30 +1302,46 @@ sap.ui.define([
                         that.newUniqueMode.setData({ uniqueDetails: filterData });
                         that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                         that.byId("idInput").setText(filterData.length);
-                        if (filterData.length === 0) {
-                            MessageToast.show("No combination of Unique Id's available for selections");
-                            that.byId("idGenSeedOrder").setEnabled(false);
-                        } else {
-                            that.byId("idGenSeedOrder").setEnabled(true);
-                        }
                     }
                 }
-                sap.ui.core.BusyIndicator.hide();
                 var hideButton = "";
-                if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
+                if (filterData.length > 0) {
                     that.byId("idGenSeedOrder").setEnabled(true);
+                    that.byId("idHBox100").setVisible(true);
+                    var newEmptyModel = new JSONModel();
+                    newEmptyModel.setData({ setCharacteristics: [] });
+                    sap.ui.getCore().byId("idCharSelect").setModel(newEmptyModel);
+                    newEmptyModel.setData({ setPanel: [] });
+                    that.byId("idVBox").setModel(newEmptyModel);
+                    that.byId("idCharName").removeAllTokens();
+                    // Extract the UNIQUE_ID values from the objects in uniqueIdsToFind
+                    const uniqueIds = filterData.map(idObj => idObj.UNIQUE_ID);
+                    var uniqueData = UID.filter(data => data.UIDS.some(uid => uniqueIds.includes(uid.UNIQUE_ID)))
+                        .map(data => ({
+                            CHAR_NAME: data.CHAR_NAME,
+                            CHAR_DESC: data.CHAR_DESC,
+                            CHAR_VALUE: data.CHAR_VALUE,
+                            CHAR_NUM: data.CHAR_NUM
+                        }));
+                    uniqueData = that.removeDuplicates(uniqueData, "CHAR_VALUE");
+                    that.oNewModel.setData({ setCharacteristics: uniqueData });
+                    sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
                 } else if (filterData.length === 0) {
+                    MessageToast.show("No combination of Unique Id's available for selections");
                     that.byId("idGenSeedOrder").setEnabled(false);
+                    var newEmptyModel = new JSONModel();
+                    newEmptyModel.setData({ setCharacteristics: [] });
+                    sap.ui.getCore().byId("idCharSelect").setModel(newEmptyModel);
+                    newEmptyModel.setData({ setPanel: [] });
+                    that.byId("idVBox").setModel(newEmptyModel);
+                    that.byId("idCharName").removeAllTokens();
+                    that.byId("idHBox100").setVisible(false);
                 }
                 else {
-                    var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
-
                     var idBox = that.byId("idVBox").getItems();
-
                     for (var k = 0; k < idBox.length; k++) {
                         var content = idBox[k].getContent()[0].getItems();
                         var countfull = content[content.length - 1].getCells()[1].getValue();
-
                         if (parseInt(countfull) !== 100) {
                             hideButton = "X";
                             break;
@@ -1351,6 +1355,7 @@ sap.ui.define([
                         that.byId("idGenSeedOrder").setEnabled(true);
                     }
                 }
+                sap.ui.core.BusyIndicator.hide();
             },
             /**For getting combination of unique ids */
             getMatchingUIDs: function (arrays) {
@@ -1391,10 +1396,10 @@ sap.ui.define([
             },
             generateSeedOrder: function () {
                 sap.ui.core.BusyIndicator.show();
-                var aTreeBoxItems=[];
+                var aTreeBoxItems = [];
                 var tableSelected = that.byId("idCharTable").getSelectedItems();
-                if(that.byId("LogList").getModel()){
-                 aTreeBoxItems = that.byId("LogList").getModel().getData().res
+                if (that.byId("LogList").getModel()) {
+                    aTreeBoxItems = that.byId("LogList").getModel().getData().res
                 }
                 var vBoxItems = that.byId("idVBox").getItems();
                 if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
@@ -2327,34 +2332,7 @@ sap.ui.define([
                                         }
                                     }
                                     if (count === 0) {
-                                        // tempData.push(tableItems[i]);
                                         var data = [];
-                                        //     if (array.length === 0) {
-                                        //         tempData.forEach(ele => {
-                                        //             var char = UID.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                        //             data = data.concat(char);
-                                        //         });
-                                        //         // Extract the 'id' values from array1
-                                        //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                                        //         // Filter array2 to include only items with 'id' present in array1
-                                        //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                                        //         count = 0;
-                                        //         tempData = [];
-                                        //     } else {
-                                        //         tempData.forEach(ele => {
-                                        //             var char = array.filter(el => el.CHAR_NUM === ele.CHAR_NUM && el.CHAR_VALUE === ele.CHAR_VALUE);
-                                        //             data = data.concat(char);
-
-                                        //         });
-
-                                        //         // Extract the 'id' values from array1
-                                        //         var idsInArray1 = data.map(item => item.UNIQUE_ID);
-                                        //         // Filter array2 to include only items with 'id' present in array1
-                                        //         array = UID.filter(item => idsInArray1.includes(item.UNIQUE_ID));
-                                        //         count = 0;
-                                        //         tempData = [];
-                                        //     }
-
                                     }
                                 }
                                 tempData.forEach(ele => {
@@ -2383,44 +2361,70 @@ sap.ui.define([
                                 var finalRepeatedObjects = repeatedObjectsInAllSets.filter(
                                     (item, index, array) => array.findIndex(obj => obj.UNIQUE_ID === item.UNIQUE_ID) === index
                                 );
+
                                 var filterData = that.removeDuplicates(finalRepeatedObjects, 'UNIQUE_ID');
                                 that.newUniqueMode.setData({ uniqueDetails: filterData });
                                 that.byId("idUniqueDetails").setModel(that.newUniqueMode);
                                 that.byId("idInput").setText(filterData.length);
                                 if (filterData.length === 0) {
-                                    //   MessageToast.show("No combination of Unique Id's available for selections");
                                     that.byId("idGenSeedOrder").setEnabled(false);
+                                    var newEmptyModel = new JSONModel();
+                                    newEmptyModel.setData({ setCharacteristics: [] });
+                                    sap.ui.getCore().byId("idCharSelect").setModel(newEmptyModel);
+                                    newEmptyModel.setData({ setPanel: [] });
+                                    that.byId("idVBox").setModel(newEmptyModel);
+                                    that.byId("idCharName").removeAllTokens();
+                                    that.byId("idHBox100").setVisible(false);
                                 } else {
+                                    that.byId("idHBox100").setVisible(true);
                                     that.byId("idGenSeedOrder").setEnabled(true);
+                                    var newEmptyModel = new JSONModel();
+                                    newEmptyModel.setData({ setCharacteristics: [] });
+                                    sap.ui.getCore().byId("idCharSelect").setModel(newEmptyModel);
+                                    newEmptyModel.setData({ setPanel: [] });
+                                    that.byId("idVBox").setModel(newEmptyModel);
+                                    that.byId("idCharName").removeAllTokens();
+                                    // Extract the UNIQUE_ID values from the objects in uniqueIdsToFind
+                                    const uniqueIds = filterData.map(idObj => idObj.UNIQUE_ID);
+                                    var uniqueData = UID.filter(data => data.UIDS.some(uid => uniqueIds.includes(uid.UNIQUE_ID)))
+                                        .map(data => ({
+                                            CHAR_NAME: data.CHAR_NAME,
+                                            CHAR_DESC: data.CHAR_DESC,
+                                            CHAR_VALUE: data.CHAR_VALUE,
+                                            CHAR_NUM: data.CHAR_NUM
+                                        }));
+                                    uniqueData = that.removeDuplicates(uniqueData, "CHAR_VALUE");
+                                    that.oNewModel.setData({ setCharacteristics: uniqueData });
+                                    sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
                                 }
 
-                                if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
-                                    that.byId("idGenSeedOrder").setEnabled(true);
-                                } else if (filterData.length === 0) {
-                                    that.byId("idGenSeedOrder").setEnabled(false);
-                                }
-                                else {
-                                    var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
+                                // if (that.byId("idVBox").getItems().length === 0 && filterData.length > 0) {
+                                //     that.byId("idGenSeedOrder").setEnabled(true);
+                                // } else if (filterData.length === 0) {
+                                //     that.byId("idGenSeedOrder").setEnabled(false);
+                                // }
+                                // else {
+                                //     var oDataSet = that.byId("idVBox").getModel().oData.setPanel, count = 0;
 
-                                    var idBox = that.byId("idVBox").getItems();
-                                    var hideButton = "";
-                                    for (var k = 0; k < idBox.length; k++) {
-                                        var content = idBox[k].getContent()[0].getItems();
-                                        var countfull = content[content.length - 1].getCells()[1].getValue();
+                                //     var idBox = that.byId("idVBox").getItems();
+                                //     var hideButton = "";
+                                //     for (var k = 0; k < idBox.length; k++) {
+                                //         var content = idBox[k].getContent()[0].getItems();
+                                //         var countfull = content[content.length - 1].getCells()[1].getValue();
 
-                                        if (parseInt(countfull) !== 100) {
-                                            hideButton = "X";
-                                            break;
-                                        }
-                                    }
-                                    if (hideButton === "X") {
-                                        that.byId("idGenSeedOrder").setEnabled(false);
-                                        MessageToast.show("Total Percentage not equal to 100 in step2");
-                                    }
-                                    else {
-                                        that.byId("idGenSeedOrder").setEnabled(true);
-                                    }
-                                }
+                                //         if (parseInt(countfull) !== 100) {
+                                //             hideButton = "X";
+                                //             break;
+                                //         }
+                                //     }
+                                //     if (hideButton === "X") {
+                                //         that.byId("idGenSeedOrder").setEnabled(false);
+                                //         MessageToast.show("Total Percentage not equal to 100 in step2");
+                                //     }
+                                //     else {
+                                //         that.byId("idGenSeedOrder").setEnabled(true);
+                                //     }
+                                // }
                                 sap.ui.core.BusyIndicator.hide()
                             }
                             else {
@@ -2435,28 +2439,6 @@ sap.ui.define([
                     }
                 });
             },
-
-            /**On press of panel expand in step-2 */
-            //     onPanelExpand:function(oEvent){
-            //         if(oEvent.getParameters().expand){
-            //         var selectedItemLength = oEvent.getSource().getBindingContext().getObject().LENGTH;
-            //         var selectedItem = oEvent.getSource().getBindingContext().getObject().CHAR_NAME;
-            //         if(selectedItemLength === 1){
-            //             var oData = oEvent.getSource().getModel().oData.setPanel;
-            //             for(var i=0;i<oData.length;i++){
-            //                 if(selectedItem === oData[i].CHAR_NAME){
-            //                     oData[i].child[0].CHARVAL_INPUT = "100";
-            //                     break;
-            //                 }
-            //             }
-            //             that.oAlgoListModel.setData({ setPanel: [] });
-            //         that.oAlgoListModel.setData({ setPanel:oData });
-            //         that.byId("idVBox").setModel(that.oAlgoListModel);
-            //         that.byId("_IDGenPanelNew").setExpanded(true);
-            //         // that.byId("idVBox").getModel().refresh(true)
-            //         }
-            //     }
-            // }
             /*Getting variant view data*/
             getVariantData: function () {
                 var ndData = [];
@@ -2476,13 +2458,6 @@ sap.ui.define([
                         ],
                         and: true
                     }),
-                    // new sap.ui.model.Filter({
-                    //     filters: [
-                    //         new sap.ui.model.Filter("APPLICATION_NAME", sap.ui.model.FilterOperator.EQ, appName),
-                    //         new sap.ui.model.Filter("SCOPE", sap.ui.model.FilterOperator.EQ, "PUBLIC")
-                    //     ],
-                    //     and: true
-                    // })
                 ];
 
                 // Combine the filters with an OR condition

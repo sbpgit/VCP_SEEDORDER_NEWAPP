@@ -55,7 +55,6 @@
 								<HBox  class="buttonClass1">
 									<Button text="Go" type="Emphasized" press="onGetData" tooltip="Get data based on filters" class="sapUiTinyMarginEnd"/>
 									<Button text="Reset" type="Transparent" press="onResetDate" tooltip="Reset all Filters" class="sapUiTinyMarginEnd"/>
-									<!-- <Button  icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document" /> -->
 								</HBox>
 							</VBox>
 						</HBox>
@@ -70,8 +69,6 @@
 								<Wizard id="CreateProductWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content" complete="wizardCompletedHandler"
 									visible="false">
 									<WizardStep id="idUniqueChar" title="Filter Characteristics" validated="true">
-										<!-- <m:Panel id="step2Panel" expand="false" headerText="Filter Characteristics" expandable="true"> -->
-										<!-- <content> -->
 									<l:ResponsiveSplitter defaultPane="default">
 		<l:PaneContainer resize=".onRootContainerResize">
 			<l:SplitPane requiredParentWidth="400" id="default" >
@@ -146,74 +143,6 @@
 			</l:PaneContainer>
 		</l:PaneContainer>
 	</l:ResponsiveSplitter>
-											<!-- <ScrollContainer horizontal="false" vertical="true" height="100%" width="100%">
-												<l:Splitter id="homeScrSplitter" orientation="Horizontal" height="500px" width="100%">
-													<Page showHeader="false">
-														<layoutData>
-															<l:SplitterLayoutData resizable="false" size="65%"/>
-														</layoutData>
-														<content>
-															<Table id="idCharTable" items="{path: '/items1', sorter:{path:'CHAR_NUM'}}" visible="false" sticky="ColumnHeaders" growingThreshold="1000"
-																growingScrollToLoad="true" growing="true" selectionChange="onTableItemsSelect" mode="MultiSelect" updateFinished="">
-																<headerToolbar>
-																	<OverflowToolbar >
-																		<Button id="idPartProd" text="Partial Product" press="handleValueHelp2" type="Emphasized"/>
-																		<ToolbarSpacer/>
-																		<SearchField id="idCharSearch" liveChange="handleSearch1" placeholder="Char Num/Char Value" width="auto"/>
-																	</OverflowToolbar>
-																</headerToolbar>
-																<columns>
-																	<Column id="_IDGenColumn11" hAlign="Center" vAlign="Middle">
-																		<Text id="_IDGenText11" text="Characteristic Name"/>
-																	</Column>
-																	<Column id="_IDGenColumn22" hAlign="Center" vAlign="Middle">
-																		<Text id="_IDGenText22" text="Characteristic Value"/>
-																	</Column>
-																	<Column id="_IDGenColumn23" hAlign="Center" vAlign="Middle" visible="false">
-																		<Text id="_IDGenText23" text="Characteristic Value Number"/>
-																	</Column>
-																</columns>
-																<items>
-																	<ColumnListItem id="_IDGenColumnListItem11">
-																		<cells>
-																			<ObjectIdentifier title="{CHAR_DESC}" text="{CHAR_NUM}"/>
-																			<ObjectIdentifier title="{CHAR_VALUE}" text="{CHARVAL_DESC}"/>
-																			<ObjectIdentifier text="{CHARVAL_NUM}"/>
-																		</cells>
-																	</ColumnListItem>
-																</items>
-															</Table>
-														</content>
-													</Page>
-													<Page showHeader="false" showFooter="true">
-														<layoutData>
-															<l:SplitterLayoutData resizable="false" size="35%"/>
-														</layoutData>
-														<Table id="idUniqueDetails" items="{path: '/uniqueDetails', sorter:{path:'UNIQUE_ID'}}" rememberSelections="false" sticky="ColumnHeaders">
-															<headerToolbar>
-																<OverflowToolbar >
-																	<Label text="Count of Unique ID:" labelFor="idInput" class="newclass"/>
-																	<Text id="idInput" text="" class="inputClass"/>
-																	<ToolbarSpacer/>
-																	<SearchField id="idUniqueSearch" liveChange="handleSearch" change="handleSearch" width="auto" placeholder="Unqiue Id"/>
-																</OverflowToolbar>
-															</headerToolbar>
-															<columns>
-																<Column hAlign="Center">
-																	<Text text=""/>
-																</Column>
-															</columns>
-															<ColumnListItem>
-																<cells>
-																	<Link text="{UNIQUE_ID}" press="onUniqueIdPress"/>
-																</cells>
-															</ColumnListItem>
-														</Table>
-													</Page>
-												</l:Splitter>
-											</ScrollContainer> -->
-										<!-- </content> -->
-										<!-- </m:Panel> -->
 									</WizardStep>
 									<WizardStep id="idCharOptPer" validated="false" activate="optionalStepActivation" title="Characteristic Value Option Percentage">
 										<VBox>
@@ -228,14 +157,9 @@
 													uploadOnChange="true" change="onUpload" visible="true" sameFilenameAllowed="true"/>
 											</items>
 										</HBox>
-										<!-- <m:Button text="Download" type="Emphasized" textDirection="LTR"></m:Button> -->
 										<VBox items="{path:'/setPanel'}" id="idVBox" visible="false">
 											<Panel id="_IDGenPanelNew" expandable="true" expanded="false" expand="onPanelExpand" headerText="{CHAR_NAME}-{LENGTH}">
-											<!-- <headerToolbar>
-												<OverflowToolbar>
-													<m:ObjectIdentifier title="{CHAR_NAME}-{LENGTH}"/>
-												</OverflowToolbar>
-											</headerToolbar> -->
+											
 												<content>
 													<Table id="" items="{path: 'child'}" growingScrollToLoad="true" growingThreshold="1000" growing="true" rememberSelections="false"
 														itemPress="onhandlePress" mode="None" selectionChange="onhandlePress" sticky="ColumnHeaders">
@@ -281,12 +205,6 @@
 																	<m:Text text="{CHAR_NAME}" visible="{parent}"/>
 																</table:template>
 															</table:Column>
-															<!-- <table:Column>
-                <m:Label wrapping="true" text="Total Percentage" />
-                <table:template>
-                    <m:Text text="{TotalPercentage}" visible="{parent}" />
-                </table:template>
-            </table:Column> -->
 															<table:Column>
 																<m:Label wrapping="true" text="Characteristic Value"/>
 																<table:template>
@@ -302,7 +220,6 @@
 															<table:Column>
 																<m:Label wrapping="true" text="Option Percentage"/>
 																<table:template>
-																	<!-- <m:Text text="{OPT_PERCENT}" visible="{child}" /> -->
 																	<m:VBox>
 																		<m:Text text="{TotalPercentage}" visible="{= ${parent} }" />
 																		<m:Text text="{OPT_PERCENT}" visible="{= !${parent} }"/>
