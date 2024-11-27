@@ -1323,7 +1323,7 @@ sap.ui.define([
                             CHAR_VALUE: data.CHAR_VALUE,
                             CHAR_NUM: data.CHAR_NUM
                         }));
-                    uniqueData = that.removeDuplicates(uniqueData, "CHAR_VALUE");
+                    uniqueData = that.removeDuplicates(uniqueData, "CHAR_NAME");
                     that.oNewModel.setData({ setCharacteristics: uniqueData });
                     sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
                 } else if (filterData.length === 0) {
@@ -2393,7 +2393,7 @@ sap.ui.define([
                                             CHAR_VALUE: data.CHAR_VALUE,
                                             CHAR_NUM: data.CHAR_NUM
                                         }));
-                                    uniqueData = that.removeDuplicates(uniqueData, "CHAR_VALUE");
+                                    uniqueData = that.removeDuplicates(uniqueData, "CHAR_NAME");
                                     that.oNewModel.setData({ setCharacteristics: uniqueData });
                                     sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
                                 }
