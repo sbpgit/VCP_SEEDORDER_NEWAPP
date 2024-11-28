@@ -6,7 +6,7 @@
 
 	<TableSelectDialog id="idCharSelect" title="" search="handleSearch" liveChange="handleSearch" rememberSelections="false"
 		confirm="handleCharSelection" cancel="handleClose"
-		items="{path: '/setCharacteristics', sorter:{path:'CHAR_NUM'}}" multiSelect="true" contentWidth="300px">
+		items="{path: '/setCharacteristics', sorter:{path:'CHAR_NUM'}}" multiSelect="true" contentWidth="300px" growing="true" growingThreshold="1000">
 			<columns>
 			<Column width="auto" hAlign="Left">
 				<header>

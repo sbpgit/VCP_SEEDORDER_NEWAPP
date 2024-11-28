@@ -80,7 +80,7 @@
 																growingScrollToLoad="true" growing="true" selectionChange="onTableItemsSelect" mode="MultiSelect" >
 																<headerToolbar>
 																	<OverflowToolbar >
-																		<Button id="idPartProd" text="Partial Product" press="handleValueHelp2" type="Emphasized" visible="true"/>
+																		<Button id="idPartProd" text="Partial Product" press="handleValueHelp2" type="Emphasized" visible="false"/>
 																		<ToolbarSpacer/>
 																		<SearchField id="idCharSearch" liveChange="handleSearch1" placeholder="Char Num/Char Value" width="600px"/>
 																	</OverflowToolbar>

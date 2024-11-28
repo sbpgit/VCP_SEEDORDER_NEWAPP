@@ -155,7 +155,7 @@ sap.ui.define([
                 that.finaloTokens = [];
                 that.allData = []
                 that.oGModel.setProperty("/resetFlag", "");
-                that.selectedChars = [], that.loadArray = [],
+                that.selectedChars = [], that.loadArray = [], that.uniqueArray = [],
                     that.totalChars = [], that.uniqueIds = [];
                 that.charsProd = [];
                 sap.ui.core.BusyIndicator.show()
@@ -546,6 +546,13 @@ sap.ui.define([
                 sap.ui.core.BusyIndicator.show()
                 that.partProdItems = [];
                 that.initialSelectedChars = [], that.selectedChars = [];
+                var newEmptyModel = new JSONModel();
+                newEmptyModel.setData({ setCharacteristics: [] });
+                sap.ui.getCore().byId("idCharSelect").setModel(newEmptyModel);
+                newEmptyModel.setData({ setPanel: [] });
+                that.byId("idVBox").setModel(newEmptyModel);
+                that.byId("idCharName").removeAllTokens();
+                // that.byId("idHBox100").setVisible(false);
                 var prodItem = that.byId("prodInput").getValue();
                 var locItem = that.byId("idloc").getValue();
                 var dateRange = that.byId("idDateRange").getValue();
@@ -597,6 +604,7 @@ sap.ui.define([
                                     sap.ui.getCore().byId("idCharSelect").setModel(that.emptyModel);
                                 }
                                 that.loadArray = that.totalUniqueIds;
+                                that.uniqueArray = that.loadArray;
                                 that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
                                 that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                                 sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
@@ -604,10 +612,13 @@ sap.ui.define([
                                 that.charsProd = filteredProdData;
                                 that.newClassModel.setData({ items1: filteredProdData });
                                 tableData.setModel(that.newClassModel);
+                                //adding skip and top for genPartialProd
+                                that.getAllGenParProd();
                                 sap.ui.core.BusyIndicator.hide();
                             }
                             else {
                                 that.byId("idInput").setText(that.count1);
+                                that.byId("idPartProd").setVisible(false);
                                 that.byId("idGenSeedOrder").setEnabled(false);
                                 that.newUniqueMode.setData({ uniqueDetails: [] });
                                 that.byId("idUniqueDetails").setModel(that.newUniqueMode);
@@ -624,9 +635,6 @@ sap.ui.define([
                         },
                     });
                     that.byId("CreateProductWizard").setVisible(true);
-
-                    //adding skip and top for genPartialProd
-                    that.getAllGenParProd();
                     tableData.setVisible(true);
                     that.byId("idCharSearch").setVisible(true);
                     that.byId("idGenSeedOrder").setEnabled(true);
@@ -1021,7 +1029,8 @@ sap.ui.define([
             onCharSave: function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
                 var objectData = {}, objectArray = [], count = 0;
-                var aTreeBoxItems = that.byId("LogList").getModel().getData().res
+                var aTreeBoxItems = that.byId("LogList").getModel().getData().res;
+                var vBoxItems = that.byId("idVBox").getItems();
                 if (aTreeBoxItems.length > 0) {
                     for (let i = 0; i < aTreeBoxItems.length; i++) {
                         var aChild = aTreeBoxItems[i].children
@@ -1037,8 +1046,7 @@ sap.ui.define([
                         }
                     }
                 }
-                else {
-                    var vBoxItems = that.byId("idVBox").getItems();
+                else if (vBoxItems.length > 0) {
                     for (var i = 0; i < vBoxItems.length; i++) {
                         var childItems = vBoxItems[i].getContent()[0].getItems();
                         if (childItems[childItems.length - 1].getCells()[1].getValue() === "100") {
@@ -1060,7 +1068,35 @@ sap.ui.define([
                             }
                         }
                     }
+                }
+                else {
+                    that.uniqueArray = that.uniqueArray.sort((a, b) => a.CHAR_NUM.localeCompare(b.CHAR_NUM, undefined, { numeric: true }));
+                    const groupedData = that.uniqueArray.reduce((acc, item) => {
+                        // Check if the CHAR_NUM already exists in the accumulator
+                        if (!acc[item.CHAR_NUM]) {
+                            acc[item.CHAR_NUM] = [];
+                        }
 
+                        // Add the item to the respective CHAR_NUM group
+                        acc[item.CHAR_NUM].push(item);
+
+                        return acc;
+                    }, {});
+
+                    // Calculate OPT_PERCENT and construct the final array
+                    Object.keys(groupedData).forEach(key => {
+                        const group = groupedData[key];
+                        const optPercent = parseFloat((100 / group.length).toFixed(2));
+
+                        group.forEach(item => {
+                            objectArray.push({
+                                OPT_PERCENT: optPercent,
+                                PRODUCT_ID: that.byId("prodInput").getValue(),
+                                CHARVAL_NUM: item.CHAR_VALUE,
+                                CHAR_NUM: item.CHAR_NUM
+                            });
+                        });
+                    });
                 }
                 if (count === 0) {
                     this.getOwnerComponent().getModel("BModel").callFunction("/postCharOptionPercent", {
@@ -1323,6 +1359,7 @@ sap.ui.define([
                             CHAR_VALUE: data.CHAR_VALUE,
                             CHAR_NUM: data.CHAR_NUM
                         }));
+                    that.uniqueArray = uniqueData;
                     uniqueData = that.removeDuplicates(uniqueData, "CHAR_NAME");
                     that.oNewModel.setData({ setCharacteristics: uniqueData });
                     sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
@@ -1396,20 +1433,8 @@ sap.ui.define([
             },
             generateSeedOrder: function () {
                 sap.ui.core.BusyIndicator.show();
-                var aTreeBoxItems = [];
-                var tableSelected = that.byId("idCharTable").getSelectedItems();
-                if (that.byId("LogList").getModel()) {
-                    aTreeBoxItems = that.byId("LogList").getModel().getData().res
-                }
-                var vBoxItems = that.byId("idVBox").getItems();
-                if (aTreeBoxItems.length > 0 || vBoxItems.length > 0) {
-                    that.oGModel.setProperty("/CharOptFlag", "X");
-                    that.onCharSave();
-                }
-                else {
-                    that.newGenSeedOrder();
-                }
-
+                that.oGModel.setProperty("/CharOptFlag", "X");
+                that.onCharSave();
             },
             newGenSeedOrder: function () {
                 var count = 0, newArray = [], charItems = {}, charArray = [];
@@ -1605,11 +1630,11 @@ sap.ui.define([
                 // + new Date().getTime();
                 if (that.byId("idCharName").getTokens().length <= 0) {
                     var oTableBind = []
-                    for (var i = 0; i < that.loadArray1.length; i++) {
+                    for (var i = 0; i < that.uniqueArray.length; i++) {
                         oTableBind.push({
                             PRODUCT_ID: that.byId("prodInput").getValue(),
-                            CHAR_NAME: that.loadArray1[i].CHAR_NAME,
-                            child: that.newChildArray(that.loadArray1[i].CHAR_NUM)
+                            CHAR_NAME: that.uniqueArray[i].CHAR_NAME,
+                            child: that.newChildArray(that.uniqueArray[i].CHAR_NUM)
                         });
                         var length = oTableBind[i].child.length;
                         oTableBind[i].LENGTH = length;
@@ -1712,11 +1737,11 @@ sap.ui.define([
                     && item.hasOwnProperty('Characteristic_Value_Desc'))) {
                     for (let i = 0; i < array.length; i++) {
                         // if(array[i].some(item => item.hasOwnProperty('Characteristic_value'))){
-                        for (let k = 0; k < that.loadArray.length; k++) {
-                            if (that.loadArray[k].CHAR_NAME == array[i].Characteristic_Name
-                                && that.loadArray[k].CHAR_VALUE == array[i].Characteristic_Value) {
-                                array[i].CHARVAL_NUM = that.loadArray[k].Characteristic_Value
-                                array[i].CHAR_NUM = that.loadArray[k].CHAR_NUM
+                        for (let k = 0; k < that.uniqueArray.length; k++) {
+                            if (that.uniqueArray[k].CHAR_NAME == array[i].Characteristic_Name
+                                && that.uniqueArray[k].CHAR_VALUE == array[i].Characteristic_Value) {
+                                array[i].CHARVAL_NUM = that.uniqueArray[k].Characteristic_Value
+                                array[i].CHAR_NUM = that.uniqueArray[k].CHAR_NUM
                             }
                             // }
                         }
@@ -2060,7 +2085,7 @@ sap.ui.define([
             newChildArray: function (CHAR_NUM) {
                 that.newTotalCharValues = [];
                 var selectedCharNum = CHAR_NUM;
-                var totalCharValues = that.removeDuplicates(that.loadArray.filter(a => a.CHAR_NUM === selectedCharNum), 'CHAR_VALUE');
+                var totalCharValues = that.removeDuplicates(that.uniqueArray.filter(a => a.CHAR_NUM === selectedCharNum), 'CHAR_VALUE');
                 that.newTotalCharValues = totalCharValues;
                 for (var j = 0; j < totalCharValues.length; j++) {
                     var availableUniqueId = that.totalUniqueIds.filter(a => a.CHAR_VALUE === totalCharValues[j].CHAR_VALUE && a.CHAR_NUM === selectedCharNum);
@@ -2393,6 +2418,7 @@ sap.ui.define([
                                             CHAR_VALUE: data.CHAR_VALUE,
                                             CHAR_NUM: data.CHAR_NUM
                                         }));
+                                    that.uniqueArray = uniqueData;
                                     uniqueData = that.removeDuplicates(uniqueData, "CHAR_NAME");
                                     that.oNewModel.setData({ setCharacteristics: uniqueData });
                                     sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
