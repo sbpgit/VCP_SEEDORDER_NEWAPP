@@ -184,7 +184,7 @@ sap.ui.define([
                 //         MessageToast.show("Failed to get configurable products");
                 //     },
                 // });
-                // that.getVariantData();
+                that.getVariantData();
             },
             /**Removing duplicates */
             removeDuplicate(array, key1, key2) {
@@ -2471,8 +2471,8 @@ sap.ui.define([
                 var dData = [], uniqueName = [];
                 that.uniqueName = [];
                 sap.ui.core.BusyIndicator.show();
-                // var variantUser = this.getUser();
-                var variantUser = 'pradeepkumardaka@sbpcorp.in';
+                var variantUser = this.getUser();
+                // var variantUser = 'pradeepkumardaka@sbpcorp.in';
                 var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 that.oGModel.setProperty("/UserId", variantUser);
                 // Define the filters
