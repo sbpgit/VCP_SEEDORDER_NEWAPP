@@ -164,6 +164,6 @@
     "oAuthScopes": [
       "$XSAPPNAME.User"
     ],
-    "ui5VersionNumber": "1.117.1"
+    "ui5VersionNumber": "1.120.24"
   }
 }
