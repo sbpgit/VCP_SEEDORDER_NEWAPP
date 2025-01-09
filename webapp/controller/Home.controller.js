@@ -2471,28 +2471,33 @@ sap.ui.define([
                 var dData = [], uniqueName = [];
                 that.uniqueName = [];
                 sap.ui.core.BusyIndicator.show();
-                var variantUser = this.getUser();
-                // var variantUser = 'pradeepkumardaka@sbpcorp.in';
+                // var variantUser = this.getUser();
+                var variantUser = 'pradeepkumardaka@sbpcorp.in';
                 var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 that.oGModel.setProperty("/UserId", variantUser);
                 // Define the filters
-                var filters = [
-                    new sap.ui.model.Filter({
-                        filters: [
-                            new sap.ui.model.Filter("APPLICATION_NAME", sap.ui.model.FilterOperator.EQ, appName),
-                            new sap.ui.model.Filter("USER", sap.ui.model.FilterOperator.EQ, variantUser)
-                        ],
-                        and: true
-                    }),
-                ];
+                var oFilterAppName1 = new sap.ui.model.Filter("APPLICATION_NAME", sap.ui.model.FilterOperator.EQ, appName);
+                var oFilterUser = new sap.ui.model.Filter("USER", sap.ui.model.FilterOperator.EQ, variantUser);
 
-                // Combine the filters with an OR condition
-                var filter = new sap.ui.model.Filter({
-                    filters: filters,
-                    and: false
+                var oFilterAppName2 = new sap.ui.model.Filter("APPLICATION_NAME", sap.ui.model.FilterOperator.EQ, appName);
+                var oFilterScope = new sap.ui.model.Filter("SCOPE", sap.ui.model.FilterOperator.EQ, "Public");
+                
+                var oFilterCondition1 = new sap.ui.model.Filter({
+                    filters: [oFilterAppName1, oFilterUser],
+                    and: true // Combine with AND
                 });
+
+                var oFilterCondition2 = new sap.ui.model.Filter({
+                    filters: [oFilterAppName2, oFilterScope],
+                    and: true // Combine with AND
+                });
+                var oFinalFilter = new sap.ui.model.Filter({
+                    filters: [oFilterCondition1, oFilterCondition2],
+                    and: false // Combine with OR
+                });
+
                 this.getView().getModel("BModel").read("/getVariantHeader", {
-                    filters: [filter],
+                    filters: [oFinalFilter],
                     success: function (oData) {
                         if (oData.results.length === 0) {
                             that.oGModel.setProperty("/variantDetails", "");
