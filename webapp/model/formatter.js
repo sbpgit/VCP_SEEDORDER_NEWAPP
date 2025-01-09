@@ -30,7 +30,13 @@ sap.ui.define([], function () {
                 return false;
             }            
         },
-
-    }   
-
+        formatScope: function (iValue) {
+            if(iValue === "Public"){
+                return sap.m.SharingMode.Public;
+            }
+            else if(iValue === "Private"){
+                return sap.m.SharingMode.Private;
+            }            
+        }
+    }  
 });

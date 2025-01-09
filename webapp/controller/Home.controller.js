@@ -2504,12 +2504,12 @@ sap.ui.define([
                                 "REMOVE": false,
                                 "CHANGE": false,
                                 "USER": "SAP",
-                                "SCOPE": "PUBLIC"
+                                "SCOPE": "Public"
                             })
                             that.oGModel.setProperty("/viewNames", uniqueName);
                             that.oGModel.setProperty("/defaultDetails", "");
                             that.viewDetails.setData({
-                                items1: uniqueName
+                                items12: uniqueName
                             });
                             that.varianNames = uniqueName;
                             that.byId("idMatList123").setModel(that.viewDetails);
@@ -2521,7 +2521,7 @@ sap.ui.define([
                                 that.handleSelectPress(newVariant[0].VARIANTNAME);
                                 that.oGModel.setProperty("/newVaraintFlag", "");
                             } else {
-                                // that.handleSelectPress(Default);
+                                that.handleSelectPress(Default);
                             }
                         }
                         else {
@@ -2593,11 +2593,11 @@ sap.ui.define([
                                 "REMOVE": false,
                                 "CHANGE": false,
                                 "USER": "SAP",
-                                "SCOPE": "PUBLIC"
+                                "SCOPE": "Public"
                             })
                             that.oGModel.setProperty("/viewNames", uniqueName);
                             that.variantModel.setData({
-                                items1: uniqueName
+                                items12: uniqueName
                             });
                             that.varianNames = uniqueName;
                             that.oGModel.setProperty("/defaultDetails", defaultDetails);
@@ -2621,13 +2621,13 @@ sap.ui.define([
                                 "REMOVE": false,
                                 "CHANGE": false,
                                 "USER": "SAP",
-                                "SCOPE": "PUBLIC"
+                                "SCOPE": "Public"
                             })
                             that.oGModel.setProperty("/viewNames", uniqueName);
                             that.oGModel.setProperty("/defaultDetails", "");
 
                             that.viewDetails.setData({
-                                items1: uniqueName
+                                items12: uniqueName
                             });
                             that.varianNames = uniqueName;
                             that.byId("idMatList123").setModel(that.viewDetails);
@@ -2842,10 +2842,10 @@ sap.ui.define([
                         var defaultChecked = "N";
                     }
                     if (oEvent.getParameters().public) {
-                        var Scope = "PUBLIC";
+                        var Scope = "Public";
                     }
                     else {
-                        var Scope = "PRIVATE";
+                        var Scope = "Private";
                     }
                     if (sLocation) {
                         details = {
@@ -2962,7 +2962,7 @@ sap.ui.define([
                                         },
                                         success: function (oData) {
                                             that.onAfterRendering();
-                                            sap.ui.core.BusyIndicator.hide();
+                                            // sap.ui.core.BusyIndicator.hide();
                                         },
                                         error: function (error) {
                                             MessageToast.show("Failed to update variant");
@@ -2986,7 +2986,7 @@ sap.ui.define([
                                 },
                                 success: function (oData) {
                                     that.onAfterRendering();
-                                    sap.ui.core.BusyIndicator.hide();
+                                    // sap.ui.core.BusyIndicator.hide();
                                 },
                                 error: function (error) {
                                     sap.ui.core.BusyIndicator.hide();
@@ -3006,7 +3006,7 @@ sap.ui.define([
                             },
                             success: function (oData) {
                                 that.onAfterRendering();
-                                sap.ui.core.BusyIndicator.hide();
+                                // sap.ui.core.BusyIndicator.hide();
                             },
                             error: function (error) {
                                 sap.ui.core.BusyIndicator.hide();

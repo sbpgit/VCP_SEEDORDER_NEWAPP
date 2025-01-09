@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "2407.04.01"
+      "version": "2407.04.02"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -164,6 +164,6 @@
     "oAuthScopes": [
       "$XSAPPNAME.User"
     ],
-    "ui5VersionNumber": "1.120.24"
+    "ui5VersionNumber": "1.122.2"
   }
 }
