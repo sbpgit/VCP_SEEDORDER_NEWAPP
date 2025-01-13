@@ -329,7 +329,7 @@ sap.ui.define([
             /**
              * On Press of reset button on header filters
              */
-            onResetDate: function () {
+            onResetDate: function () {          
                 that.selectedChars = []
                 var vBoxItems = that.byId("idVBox").getItems();
                 for (var i = 0; i < vBoxItems.length; i++) {
@@ -339,7 +339,7 @@ sap.ui.define([
                             (childItems[k].getCells()[1].setValue() === "")
                     }
                 }
-                that.oGModel.setProperty("/fromFunction", "X");
+                // that.oGModel.setProperty("/fromFunction", "X");
                 that.oGModel.setProperty("/saveFunction", "X");
                 that.byId("prodInput").setValue();
                 that.byId("idloc").setValue();
@@ -2536,6 +2536,11 @@ sap.ui.define([
                                     that.byId("idMatList123").setDefaultKey((oData.results[i].VARIANTID));
                                     that.byId("idMatList123").setSelectedKey((oData.results[i].VARIANTID))
                                 }
+                                if(oData.results[i].USER !== variantUser){
+                                    oData.results[i].CHANGE = false;
+                                    oData.results[i].REMOVE = false;
+                                    oData.results[i].ENABLE = false;
+                                }
                                 ndData.push(oData.results[i]);
                             }
 
@@ -2924,9 +2929,26 @@ sap.ui.define([
             /**On press of save in manage fragment */
             onManage: function (oEvent) {
                 sap.ui.core.BusyIndicator.show();
-                var oDelted = {}, deletedArray = [], newSelection = {}, newItems = [];
+                var oDelted = {}, deletedArray = [], count=0;
                 var totalVariantData = that.oGModel.getProperty("/VariantData");
                 var selected = oEvent.getParameters();
+                var variantUser = this.getUser();
+                // var variantUser = 'pradeepkumardaka@sbpcorp.in';
+                if(selected.def){
+                    totalVariantData.filter(item1=>{
+                        if(JSON.parse(selected.def) === item1.VARIANTID && item1.USER !== variantUser){
+                            count++
+                        }
+                    })
+                }
+                if(count>0){
+                    sap.ui.core.BusyIndicator.hide();
+                    that.viewDetails.setData({
+                        items12: that.varianNames
+                    });
+                    that.byId("idMatList123").setModel(that.viewDetails);
+                    return MessageToast.show("Variant doesn't belong to logged in user. Cannot make changes to this Variant");
+                }
                 //Delete the selected variant names
                 if (selected.deleted) {
                     selected.deleted.forEach(item1 => {

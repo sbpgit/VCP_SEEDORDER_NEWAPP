@@ -37,6 +37,14 @@ sap.ui.define([], function () {
             else if(iValue === "Private"){
                 return sap.m.SharingMode.Private;
             }            
+        },
+        formatEnable: function (iValue) {
+            if(iValue === undefined){
+                return true;
+            }
+            else if(iValue === false){
+                return false;
+            }            
         }
     }  
 });
