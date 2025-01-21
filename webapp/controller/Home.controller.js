@@ -1655,6 +1655,7 @@ sap.ui.define([
                 else {
                     var oTableBind = that.byId("idVBox").getItems()[0].oBindingContexts.undefined.oModel.oData.setPanel
                 }
+                oTableBind = that.removeDuplicate(oTableBind,"CHAR_NAME");
                 for (let i = 0; i < oTableBind.length; i++) {
                     if (oTableBind[i].CHAR_NAME !== "") {
                         if (oTableBind[i].child.length > 0) {
@@ -1858,7 +1859,6 @@ sap.ui.define([
                                         aNonValid.push(Array1[i]);
                                     }
                                 }
-
                             }
                             break;
                         }
