@@ -1817,7 +1817,6 @@ sap.ui.define([
                             CHARVAL_NUM: SubResults[i].Characteristic_Value,
                             CHAR_NUM: SubResults[i].CHAR_NUM,
                             OPT_PERCENT: (SubResults[i].Option_Percentage),
-
                             child: true,
                             parent: false,
                         }
