@@ -1779,6 +1779,7 @@ sap.ui.define([
                         CHARVAL_DESC: "(Sum value to be equal to 100)"
                     });
                 }
+                oTableBind = that.removeDuplicate(oTableBind,"CHAR_NAME");
                 var UniWeek = {};
                 //NOC is removed Duplicates of oTableBind
                 var NOC = oTableBind.filter(function (obj) {
@@ -1831,8 +1832,9 @@ sap.ui.define([
                         if (Array1[i].CHAR_NAME === NOC[y].CHAR_NAME) {
                             matched = true;
 
-                            for (let k = 0; k < Array1[i].children.length; k++) {
+                            for (let k = 0; k < Array1[i].children.length-1; k++) {
                                 // Check corresponding child in NOC
+                                if(NOC[y].child[k].CHARVAL_INPUT !== undefined){
                                 if (NOC[y].child[k].CHARVAL_INPUT === "") {
                                     // Condition where CHARVAL_INPUT is ""
                                     // Array1.OPT_PERCENT should be a number
@@ -1860,6 +1862,7 @@ sap.ui.define([
                                     }
                                 }
                             }
+                        }
                             break;
                         }
                     }
