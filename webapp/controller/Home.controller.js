@@ -1357,7 +1357,8 @@ sap.ui.define([
                             CHAR_NAME: data.CHAR_NAME,
                             CHAR_DESC: data.CHAR_DESC,
                             CHAR_VALUE: data.CHAR_VALUE,
-                            CHAR_NUM: data.CHAR_NUM
+                            CHAR_NUM: data.CHAR_NUM,
+                            CHARVAL_DESC:data.CHARVAL_DESC
                         }));
                     that.uniqueArray = uniqueData;
                     uniqueData = that.removeDuplicates(uniqueData, "CHAR_NAME");
@@ -1630,11 +1631,12 @@ sap.ui.define([
                 // + new Date().getTime();
                 if (that.byId("idCharName").getTokens().length <= 0) {
                     var oTableBind = []
-                    for (var i = 0; i < that.uniqueArray.length; i++) {
+                    var uniqueChars = that.removeDuplicate(that.uniqueArray,'CHAR_NUM')
+                    for (var i = 0; i < uniqueChars.length; i++) {
                         oTableBind.push({
                             PRODUCT_ID: that.byId("prodInput").getValue(),
-                            CHAR_NAME: that.uniqueArray[i].CHAR_NAME,
-                            child: that.newChildArray(that.uniqueArray[i].CHAR_NUM)
+                            CHAR_NAME: uniqueChars[i].CHAR_NAME,
+                            child: that.newChildArray(uniqueChars[i].CHAR_NUM)
                         });
                         var length = oTableBind[i].child.length;
                         oTableBind[i].LENGTH = length;
@@ -1655,7 +1657,7 @@ sap.ui.define([
                 else {
                     var oTableBind = that.byId("idVBox").getItems()[0].oBindingContexts.undefined.oModel.oData.setPanel
                 }
-                oTableBind = that.removeDuplicate(oTableBind,"CHAR_NAME");
+                // oTableBind = that.removeDuplicate(oTableBind,"CHAR_NAME");
                 for (let i = 0; i < oTableBind.length; i++) {
                     if (oTableBind[i].CHAR_NAME !== "") {
                         if (oTableBind[i].child.length > 0) {
@@ -1831,7 +1833,7 @@ sap.ui.define([
                         if (Array1[i].CHAR_NAME === NOC[y].CHAR_NAME) {
                             matched = true;
 
-                            for (let k = 0; k < Array1[i].children.length-1; k++) {
+                            for (let k = 0; k < Array1[i].children.length; k++) {
                                 // Check corresponding child in NOC
                                 if(NOC[y].child[k].CHARVAL_INPUT !== undefined){
                                 if (NOC[y].child[k].CHARVAL_INPUT === "") {
@@ -1921,7 +1923,7 @@ sap.ui.define([
                 // let duplicates = new Set(that.aErrorLog.map(item => item.CHAR_NAME));
                 // var aTotalError = that.aErrorLog.filter(item => !duplicates.has(item.CHAR_NAME));
                 var aTotalError = [...new Set(that.aErrorLog)];
-
+                
                 that.aErrorLog = aTotalError
                 if (that.aSucces.length == 0 && that.aErrorLog.length == 0) {
                     MessageToast.show("All the values contains 0  ")
@@ -2520,6 +2522,7 @@ sap.ui.define([
                             });
                             that.varianNames = uniqueName;
                             that.byId("idMatList123").setModel(that.viewDetails);
+                            that.UniqueDefKey = uniqueName[0].VARIANTID;
                             that.byId("idMatList123").setDefaultKey(uniqueName[0].VARIANTID);
                             that.byId("idMatList123").setSelectedKey(uniqueName[0].VARIANTID);
                             var Default = "Standard";
@@ -2535,6 +2538,7 @@ sap.ui.define([
                             for (var i = 0; i < oData.results.length; i++) {
                                 if (oData.results[i].DEFAULT === "Y" && oData.results[i].USER === variantUser) {
                                     dData.push(oData.results[i]);
+                                    that.UniqueDefKey = oData.results[i].VARIANTID;
                                     that.byId("idMatList123").setDefaultKey((oData.results[i].VARIANTID));
                                     that.byId("idMatList123").setSelectedKey((oData.results[i].VARIANTID))
                                 }
@@ -2618,6 +2622,7 @@ sap.ui.define([
                                 var newVariant = that.oGModel.getProperty("/newVariant");
                                 that.handleSelectPress(newVariant[0].VARIANTNAME);
                                 if (newVariant[0].DEFAULT === "Y") {
+                                    that.UniqueDefKey = newVariant[0].VARIANTID;
                                     that.byId("idMatList123").setDefaultKey((newVariant[0].VARIANTID));
                                 }
                                 that.byId("idMatList123").setSelectedKey((newVariant[0].VARIANTID))
@@ -2648,11 +2653,13 @@ sap.ui.define([
                                 var newVariant = that.oGModel.getProperty("/newVariant");
                                 that.handleSelectPress(newVariant[0].VARIANTNAME);
                                 if (newVariant[0].DEFAULT === "Y") {
+                                    that.UniqueDefKey = newVariant[0].VARIANTID;
                                     that.byId("idMatList123").setDefaultKey((newVariant[0].VARIANTID));
                                 }
                                 that.byId("idMatList123").setSelectedKey((newVariant[0].VARIANTID))
                                 that.oGModel.setProperty("/newVaraintFlag", "");
                             } else {
+                                that.UniqueDefKey = uniqueName[0].VARIANTID;
                                 that.byId("idMatList123").setDefaultKey((uniqueName[0].VARIANTID));
                                 that.byId("idMatList123").setSelectedKey((uniqueName[0].VARIANTID));
                                 that.handleSelectPress(Default);
@@ -2949,6 +2956,7 @@ sap.ui.define([
                         items12: that.varianNames
                     });
                     that.byId("idMatList123").setModel(that.viewDetails);
+                    that.byId("idMatList123").setDefaultKey(that.UniqueDefKey);
                     return MessageToast.show("Variant doesn't belong to logged in user. Cannot make changes to this Variant");
                 }
                 //Delete the selected variant names

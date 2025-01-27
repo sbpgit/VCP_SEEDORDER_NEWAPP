@@ -99,7 +99,7 @@
 																<items>
 																	<ColumnListItem id="_IDGenColumnListItem11">
 																		<cells>
-																			<ObjectIdentifier title="{CHAR_DESC}" text="{CHAR_NUM}"/>
+																			<ObjectIdentifier title="{CHAR_DESC}" />
 																			<ObjectIdentifier title="{CHARVAL_DESC}" text="{CHAR_VALUE}"/>
 																			<ObjectIdentifier text="{CHARVAL_NUM}"/>
 																		</cells>
