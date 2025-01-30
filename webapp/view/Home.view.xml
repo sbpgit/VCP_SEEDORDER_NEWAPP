@@ -28,7 +28,7 @@
 			</ux:headerTitle>
 			<ux:headerContent>
 				<FlexBox wrap="Wrap" fitContainer="true">
-					<l:Grid defaultSpan="XL3 L3 M6 S12">
+					<l:Grid defaultSpan="XL4 L3 M4 S12">
 						<VBox>
 							<Label text="Configurable Product" required="true"/>
 							<Input id="prodInput" placeholder="Configurable Product" value="" showValueHelp="true" valueHelpOnly="true"
@@ -44,10 +44,10 @@
 								change="handleDateChange" maxDate="" class="disabledInput"/>
 						</VBox>
 						<!-- <HBox> -->
-						<HBox>
+						<!-- <HBox> -->
 							<VBox>
 								<Label text="Customer Group" required="true"/>
-								<MultiInput id="idCustGrp" placeholder="Customer Group" value="" showValueHelp="true" width="250px" valueHelpOnly="true"
+								<MultiInput id="idCustGrp" placeholder="Customer Group" value="" showValueHelp="true"  valueHelpOnly="true"
 									valueHelpRequest="handleValueHelp2"/>
 							</VBox>
 							<VBox class="idVBox1">
@@ -57,7 +57,7 @@
 									<Button text="Reset" type="Transparent" press="onResetDate" tooltip="Reset all Filters" class="sapUiTinyMarginEnd"/>
 								</HBox>
 							</VBox>
-						</HBox>
+						<!-- </HBox> -->
 					</l:Grid>
 				</FlexBox>
 			</ux:headerContent>
