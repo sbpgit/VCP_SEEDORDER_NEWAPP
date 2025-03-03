@@ -1735,6 +1735,7 @@ sap.ui.define([
                 var otreemodel = that.getOwnerComponent().getModel("oGModel");
                 // debugger;
                 // var aValidArray= []
+                array = array.filter(id=>id.Characteristic_Name !== 'ZZZZ'); 
                 if (array.every(item => item.hasOwnProperty('Characteristic_Value')
                     && item.hasOwnProperty('Characteristic_Name')
                     && item.hasOwnProperty('Characteristic_Value_Desc'))) {
