@@ -2326,7 +2326,7 @@ sap.ui.define([
                                 sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
                                 for (var k = 0; k < tableItemsFull.length; k++) {
                                     for (var s = 0; s < partProdDetails.length; s++) {
-                                        if (partProdDetails[s].CHAR_NUM === tableItemsFull[k].getCells()[0].getText()
+                                        if (partProdDetails[s].CHAR_NAME=== tableItemsFull[k].getCells()[0].getText()
                                             && partProdDetails[s].CHAR_VALUE === tableItemsFull[k].getCells()[1].getText()
                                             && partProdDetails[s].CHARVAL_DESC === tableItemsFull[k].getCells()[1].getTitle()
                                         ) {
