@@ -2466,7 +2466,7 @@ sap.ui.define([
                     },
                     error: function () {
                         sap.ui.core.BusyIndicator.hide();
-                        MessageToast.show("Failed to get Partial Products");
+                        MessageToast.show("Failed to get characteristics data");
                     }
                 });
             },
