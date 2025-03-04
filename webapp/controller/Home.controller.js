@@ -664,13 +664,17 @@ sap.ui.define([
                     }
                 }
                 if (selectedPartial.length > 0) {
+                    var object={},newLoadArray=[];
+                    object.LOCATION_ID=locationId;
                     for (var i = 0; i < selectedPartial.length; i++) {
-                        oProdFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, selectedPartial[i].getTitle()));
+                        // oProdFilters.push(new Filter("PRODUCT_ID", FilterOperator.EQ, selectedPartial[i].getTitle()));
+                        object.PRODUCT_ID=selectedPartial[i].getTitle();
                     }
-                    oProdFilters.push(new Filter("LOCATION_ID", FilterOperator.EQ, locationId));
+                    newLoadArray.push(object)
+                    // oProdFilters.push(new Filter("LOCATION_ID", FilterOperator.EQ, locationId));
                     that.byId("idCharTable").removeSelections();
                     that.selectedChars = [], that.newpartprodChars = [];
-                    that.getAllParChar(oProdFilters, tableItemsFull);
+                    that.getAllParChar(newLoadArray, tableItemsFull);
                 } else {
                     that.byId("idCharTable").removeSelections();
                     that.selectedChars = that.selectedChars.filter(item2 =>
@@ -2305,24 +2309,30 @@ sap.ui.define([
             },
             getAllParChar: function (oProdFilters, tableItemsFull) {
                 var topCount = that.oGModel.getProperty("/MaxCount")
-                this.getOwnerComponent().getModel("BModel").read("/getPartialChar", {
-                    filters: [oProdFilters],
+                // this.getOwnerComponent().getModel("BModel").read("/getPartialChar", {
+                //     filters: [oProdFilters],
+                //     urlParameters: {
+                //         "$skip": that.skip,
+                //         "$top": topCount
+                //     },
+                this.getOwnerComponent().getModel("BModel").callFunction("/getPartialProdChars", {
+                    method: "GET",
                     urlParameters: {
-                        "$skip": that.skip,
-                        "$top": topCount
+                        ProdLocData: JSON.stringify(oProdFilters)
                     },
                     success: function (oData) {
-                        if (topCount == oData.results.length) {
-                            that.skip += topCount;
-                            that.allData = that.allData.concat(oData.results);
-                            that.getAllParChar();
-                        } else {
+                        // if (topCount == oData.results.length) {
+                        //     that.skip += topCount;
+                        //     that.allData = that.allData.concat(oData.results);
+                        //     that.getAllParChar();
+                        // } else {
                             that.skip = 0;
-                            that.allData = that.allData.concat(oData.results);
-                            oData.results = that.allData;
-                            that.allData = [];
-                            if (oData.results.length > 0) {
-                                var partProdDetails = oData.results;
+                            oData.getPartialProdChars= JSON.parse(oData.getPartialProdChars);
+                            if (oData.getPartialProdChars.length > 0) {
+                            that.allData = that.allData.concat(oData.getPartialProdChars);
+                            var partProdDetails = that.allData;
+                            that.allData = [];                            
+                                // var partProdDetails = oData.results;
                                 sap.ui.getCore().byId("partProdSlct").getBinding("items").filter([]);
                                 for (var k = 0; k < tableItemsFull.length; k++) {
                                     for (var s = 0; s < partProdDetails.length; s++) {
@@ -2462,7 +2472,7 @@ sap.ui.define([
                                 sap.ui.core.BusyIndicator.hide()
                                 MessageToast.show("No data available for selected partial product");
                             }
-                        }
+                        // }
                     },
                     error: function () {
                         sap.ui.core.BusyIndicator.hide();
