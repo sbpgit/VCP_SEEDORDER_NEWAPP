@@ -605,10 +605,26 @@ sap.ui.define([
                                 }
                                 that.loadArray = that.totalUniqueIds;
                                 that.uniqueArray = that.loadArray;
-                                that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
+                                // that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
+                                that.loadArray1 = Array.from(
+                                    new Map(
+                                        that.loadArray.map(item => [
+                                        `${item.CHAR_NAME}_${item.CHAR_NUM}_${item.CHAR_VALUE}`, // Create a unique key based on 3 keys
+                                        item
+                                      ])
+                                    ).values()
+                                  );
                                 that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                                 sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
-                                var filteredProdData = that.removeDuplicate(that.loadArray, "CHAR_VALUE");
+                                // var filteredProdData = that.removeDuplicate(that.loadArray, "CHAR_VALUE");
+                                var filteredProdData= Array.from(
+                                    new Map(
+                                        that.loadArray.map(item => [
+                                        `${item.CHAR_NAME}_${item.CHAR_NUM}_${item.CHAR_VALUE}`, // Create a unique key based on 3 keys
+                                        item
+                                      ])
+                                    ).values()
+                                  );
                                 that.charsProd = filteredProdData;
                                 that.newClassModel.setData({ items1: filteredProdData });
                                 tableData.setModel(that.newClassModel);
@@ -2327,8 +2343,8 @@ sap.ui.define([
                         //     that.getAllParChar();
                         // } else {
                             that.skip = 0;
-                            oData.getPartialProdChars= JSON.parse(oData.getPartialProdChars);
-                            if (oData.getPartialProdChars.length > 0) {
+                            if (JSON.stringify(oData) !=='{}' && JSON.parse(oData.getPartialProdChars).length > 0) {
+                            oData.getPartialProdChars= JSON.parse(oData.getPartialProdChars);                           
                             that.allData = that.allData.concat(oData.getPartialProdChars);
                             var partProdDetails = that.allData;
                             that.allData = [];                            
