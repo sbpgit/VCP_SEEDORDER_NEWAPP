@@ -277,6 +277,9 @@ sap.ui.define([
                 sap.ui.core.BusyIndicator.show()
                 var selectedProdItem = oEvent.getParameters().selectedItem.getTitle();
                 that.byId("prodInput").setValue(selectedProdItem);
+                if (that.oGModel.getProperty("/defaultProduct") !== selectedProdItem) {
+                    that.byId("idMatList123").setModified(true);
+                }
                 that.oGModel.setProperty("/setProduct", selectedProdItem);
                 that.getAllLocProd();
                 that.byId("idMatList123").setModified(true);
@@ -3078,6 +3081,9 @@ sap.ui.define([
                             },
                         });
                     }
+                }
+                else{
+                    that.onAfterRendering();
                 }
                 sap.ui.core.BusyIndicator.hide();
             },
