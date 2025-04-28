@@ -608,7 +608,7 @@ sap.ui.define([
                                 }
                                 that.loadArray = that.totalUniqueIds;
                                 that.uniqueArray = that.loadArray;
-                                // that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
+                                that.loadArray1 = that.removeDuplicates(that.loadArray, "CHAR_NAME");
                                 that.loadArray1 = Array.from(
                                     new Map(
                                         that.loadArray.map(item => [
@@ -617,6 +617,7 @@ sap.ui.define([
                                       ])
                                     ).values()
                                   );
+                                  that.loadArray1 = that.removeDuplicates(that.loadArray1, "CHAR_NAME");  
                                 that.oNewModel.setData({ setCharacteristics: that.loadArray1 });
                                 sap.ui.getCore().byId("idCharSelect").setModel(that.oNewModel);
                                 // var filteredProdData = that.removeDuplicate(that.loadArray, "CHAR_VALUE");
