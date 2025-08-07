@@ -2509,8 +2509,8 @@ sap.ui.define([
                 var dData = [], uniqueName = [];
                 that.uniqueName = [];
                 sap.ui.core.BusyIndicator.show();
-                // var variantUser = this.getUser();
-                var variantUser = 'naveenkukudala@sbpcorp.in';
+                var variantUser = this.getUser();
+                // var variantUser = 'naveenkukudala@sbpcorp.in';
                 var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 that.oGModel.setProperty("/UserId", variantUser);
                 // Define the filters
@@ -3069,8 +3069,8 @@ sap.ui.define([
                 var oDelted = {}, deletedArray = [], count=0;
                 var totalVariantData = that.oGModel.getProperty("/VariantData");
                 var selected = oEvent.getParameters();
-                // var variantUser = this.getUser();
-                var variantUser = 'naveenkukudala@sbpcorp.in';
+                var variantUser = this.getUser();
+                // var variantUser = 'naveenkukudala@sbpcorp.in';
                 if(selected.def){
                     totalVariantData.filter(item1=>{
                         if(JSON.parse(selected.def) === item1.VARIANTID && item1.USER !== variantUser){
