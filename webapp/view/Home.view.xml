@@ -2,13 +2,13 @@
 	xmlns:smarttable="sap.ui.comp.smarttable" xmlns:m="sap.m" xmlns:smartfilterbar="sap.ui.comp.smartfilterbar" displayBlock="true"
 	xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:ux="sap.uxap" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns:u="sap.ui.unified" xmlns:f="sap.f" height="100%">
-	<Page id="idPage" showFooter="true" showHeader="false">
-		<ux:ObjectPageLayout id="ObjectPageLayout" showFooter="true" headerContentPinnable="true" alwaysShowContentHeader="true">
+	<Page id="idPageSON" showFooter="true" showHeader="false">
+		<ux:ObjectPageLayout id="ObjectPageLayoutSON" showFooter="true" headerContentPinnable="true" alwaysShowContentHeader="true">
 			<ux:headerTitle>
 				<ux:ObjectPageDynamicHeaderTitle>
 					<ux:expandedHeading>
 						<HBox>
-							<m:VariantManagement id="idMatList123" select="handleSelectPress" save="onCreate"	manage="onManage" supportFavorites="false" 
+							<m:VariantManagement id="idMatList123SON" select="handleSelectPress" save="onCreate"	manage="onManage" supportFavorites="false" 
 							showFooter="true"	popoverTitle="My Views" items="{path: '/items12'}" creationAllowed="true" 
 							supportPublic="true" supportApplyAutomatically="false" manageCancel="onManageCancel" cancel="onNameCancel" visible="true" >
 							<items>
@@ -22,7 +22,7 @@
 					<ux:snappedHeading>
 					</ux:snappedHeading>
 					<ux:navigationActions>
-						<Button class="classHdr" icon="sap-icon://sys-help" id="idNav3" press="onNavPress" type="Emphasized" tooltip="Help Document"/>
+						<Button class="classHdr" icon="sap-icon://sys-help" id="idNav3SON" press="onNavPress" type="Emphasized" tooltip="Help Document"/>
 					</ux:navigationActions>
 				</ux:ObjectPageDynamicHeaderTitle>
 			</ux:headerTitle>
@@ -31,23 +31,23 @@
 					<l:Grid defaultSpan="XL4 L3 M4 S12">
 						<VBox>
 							<Label text="Configurable Product" required="true"/>
-							<Input id="prodInput" placeholder="Configurable Product" value="" showValueHelp="true" valueHelpOnly="true"
+							<Input id="prodInputSON" placeholder="Configurable Product" value="" showValueHelp="true" valueHelpOnly="true"
 								valueHelpRequest="handleValueHelp2"/>
 						</VBox>
 						<VBox>
 							<Label text="Demand Location" required="true"/>
-							<Input id="idloc" value="" placeholder="Demand Location" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp2"/>
+							<Input id="idlocSON" value="" placeholder="Demand Location" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="handleValueHelp2"/>
 						</VBox>
 						<VBox>
 							<Label text="Date Range" required="true"/>
-							<DateRangeSelection id="idDateRange" delimiter="To" dateValue="" secondDateValue="" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd"
+							<DateRangeSelection id="idDateRangeSON" delimiter="To" dateValue="" secondDateValue="" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd"
 								change="handleDateChange" maxDate="" class="disabledInput"/>
 						</VBox>
 						<!-- <HBox> -->
 						<!-- <HBox> -->
 							<VBox>
 								<Label text="Customer Group" required="true"/>
-								<MultiInput id="idCustGrp" placeholder="Customer Group" value="" showValueHelp="true"  valueHelpOnly="true"
+								<MultiInput id="idCustGrpSON" placeholder="Customer Group" value="" showValueHelp="true"  valueHelpOnly="true"
 									valueHelpRequest="handleValueHelp2"/>
 							</VBox>
 							<VBox class="idVBox1">
@@ -66,9 +66,9 @@
 					<ux:subSections>
 						<ux:ObjectPageSubSection>
 							<ux:blocks>
-								<Wizard id="CreateProductWizard" class="sapUiResponsivePadding--header sapUiResponsivePadding--content" complete="wizardCompletedHandler"
+								<Wizard id="CreateProductWizardSON" class="sapUiResponsivePadding--header sapUiResponsivePadding--content" complete="wizardCompletedHandler"
 									visible="false">
-									<WizardStep id="idUniqueChar" title="Filter Characteristics" validated="true">
+									<WizardStep id="idUniqueCharSON" title="Filter Characteristics" validated="true">
 									<l:ResponsiveSplitter defaultPane="default">
 		<l:PaneContainer resize=".onRootContainerResize">
 			<l:SplitPane requiredParentWidth="400" id="default" >
@@ -76,28 +76,28 @@
 					<l:SplitterLayoutData size="70%"  />
 				</l:layoutData>
 				<Panel showHeader="false" class="panelsettings"  height="500px">
-					<Table id="idCharTable" sticky="ColumnHeaders,HeaderToolbar" items="{path: '/items1', sorter:{path:'CHAR_NUM'}}" visible="false"  growingThreshold="1000"
+					<Table id="idCharTableSON" sticky="ColumnHeaders,HeaderToolbar" items="{path: '/items1', sorter:{path:'CHAR_NUM'}}" visible="false"  growingThreshold="1000"
 																growingScrollToLoad="true" growing="true" selectionChange="onTableItemsSelect" mode="MultiSelect" >
 																<headerToolbar>
 																	<OverflowToolbar >
-																		<Button id="idPartProd" text="Partial Product" press="handleValueHelp2" type="Emphasized" visible="false"/>
+																		<Button id="idPartProdSON" text="Partial Product" press="handleValueHelp2" type="Emphasized" visible="false"/>
 																		<ToolbarSpacer/>
-																		<SearchField id="idCharSearch" liveChange="handleSearch1" placeholder="Char Num/Char Value" width="600px"/>
+																		<SearchField id="idCharSearchSON" liveChange="handleSearch1" placeholder="Char Num/Char Value" width="600px"/>
 																	</OverflowToolbar>
 																</headerToolbar>
 																<columns>
-																	<Column id="_IDGenColumn11" hAlign="Center" vAlign="Middle">
-																		<Text id="_IDGenText11" text="Characteristic Name"/>
+																	<Column id="_IDGenColumn11SON" hAlign="Center" vAlign="Middle">
+																		<Text id="_IDGenText11SON" text="Characteristic Name"/>
 																	</Column>
-																	<Column id="_IDGenColumn22" hAlign="Center" vAlign="Middle">
-																		<Text id="_IDGenText22" text="Characteristic Value"/>
+																	<Column id="_IDGenColumn22SON" hAlign="Center" vAlign="Middle">
+																		<Text id="_IDGenText22SON" text="Characteristic Value"/>
 																	</Column>
-																	<Column id="_IDGenColumn23" hAlign="Center" vAlign="Middle" visible="false">
-																		<Text id="_IDGenText23" text="Characteristic Value Number"/>
+																	<Column id="_IDGenColumn23SON" hAlign="Center" vAlign="Middle" visible="false">
+																		<Text id="_IDGenText23SON" text="Characteristic Value Number"/>
 																	</Column>
 																</columns>
 																<items>
-																	<ColumnListItem id="_IDGenColumnListItem11">
+																	<ColumnListItem id="_IDGenColumnListItem11SON">
 																		<cells>
 																			<ObjectIdentifier title="{CHAR_DESC}" text="{CHAR_NAME}" />
 																			<ObjectIdentifier title="{CHARVAL_DESC}" text="{CHAR_VALUE}"/>
@@ -114,13 +114,13 @@
 						<l:SplitterLayoutData  />
 					</l:layoutData>
 					<Panel height="500px" class="panelsettings">
-						<Table id="idUniqueDetails" sticky="ColumnHeaders,HeaderToolbar" items="{path: '/uniqueDetails', sorter:{path:'UNIQUE_ID'}}" rememberSelections="false" >
+						<Table id="idUniqueDetailsSON" sticky="ColumnHeaders,HeaderToolbar" items="{path: '/uniqueDetails', sorter:{path:'UNIQUE_ID'}}" rememberSelections="false" >
 															<headerToolbar>
 																<OverflowToolbar >
-																	<Label text="Count of Unique ID:" labelFor="idInput" class="newclass"/>
-																	<Text id="idInput" text="" class="inputClass"/>
+																	<Label text="Count of Unique ID:" labelFor="idInputSON" class="newclass"/>
+																	<Text id="idInputSON" text="" class="inputClass"/>
 																	<ToolbarSpacer/>
-																	<SearchField id="idUniqueSearch" liveChange="handleSearch" change="handleSearch" width="200px" placeholder="Unqiue Id"/>
+																	<SearchField id="idUniqueSearchSON" liveChange="handleSearch" change="handleSearch" width="200px" placeholder="Unqiue Id"/>
 																</OverflowToolbar>
 															</headerToolbar>
 															<columns>
@@ -144,21 +144,21 @@
 		</l:PaneContainer>
 	</l:ResponsiveSplitter>
 									</WizardStep>
-									<WizardStep id="idCharOptPer" validated="false" activate="optionalStepActivation" title="Characteristic Value Option Percentage">
+									<WizardStep id="idCharOptPerSON" validated="false" activate="optionalStepActivation" title="Characteristic Value Option Percentage">
 										<VBox>
-											<Label text="Characteristic Name" labelFor="idCharName" id="idLabelText" required="false"/>
-											<MultiInput id="idCharName" value="" width="400px" valueHelpOnly="true" placeholder="Characteristic Name" showValueHelp="true"
+											<Label text="Characteristic Name" labelFor="idCharNameSON" id="idLabelTextSON" required="false"/>
+											<MultiInput id="idCharNameSON" value="" width="400px" valueHelpOnly="true" placeholder="Characteristic Name" showValueHelp="true"
 												valueHelpRequest="handleValueHelp2" class="inputClass"/>
 										</VBox>
-										<HBox id="idHBox100" alignItems="End" justifyContent="End" width="100%" visible="true">
+										<HBox id="idHBox100SON" alignItems="End" justifyContent="End" width="100%" visible="true">
 											<items>
-												<m:Button type="Emphasized" id="idDownLd" text="Download" press="onDownLoad" visible="true"/>
-												<u:FileUploader id="FileUploader" fileType="XLSX,xlsx" buttonOnly="true" class="Emp" buttonText="Upload" icon="sap-icon://arrow-top"
+												<m:Button type="Emphasized" id="idDownLdSON" text="Download" press="onDownLoad" visible="true"/>
+												<u:FileUploader id="FileUploaderSON" fileType="XLSX,xlsx" buttonOnly="true" class="Emp" buttonText="Upload" icon="sap-icon://arrow-top"
 													uploadOnChange="true" change="onUpload" visible="true" sameFilenameAllowed="true"/>
 											</items>
 										</HBox>
-										<VBox items="{path:'/setPanel'}" id="idVBox" visible="false">
-											<Panel id="_IDGenPanelNew" expandable="true" expanded="false" expand="onPanelExpand" headerText="{CHAR_NAME}-{LENGTH}">
+										<VBox items="{path:'/setPanel'}" id="idVBoxSON" visible="false">
+											<Panel id="_IDGenPanelNewSON" expandable="true" expanded="false" expand="onPanelExpand" headerText="{CHAR_NAME}-{LENGTH}">
 											
 												<content>
 													<Table id="" items="{path: 'child'}" growingScrollToLoad="true" growingThreshold="1000" growing="true" rememberSelections="false"
@@ -190,14 +190,14 @@
 											</Panel>
 										</VBox>
 										<m:VBox>
-											<m:IconTabBar id="idIconTabBar" select="onTabSelect" visible="false">
+											<m:IconTabBar id="idIconTabBarSON" select="onTabSelect" visible="false">
 												<m:items>
 													<m:IconTabFilter text="Valid" iconColor="Positive" key="Success"/>
 													<m:IconTabSeparator/>
 													<m:IconTabFilter text="In-Valid" key="Error" iconColor="Negative"/>
 												</m:items>
 												<m:content>
-													<table:TreeTable id="LogList" visible="false" selectionMode="None" rows="{path:'/res', parameters: {arrayNames:['children']}}">
+													<table:TreeTable id="LogListSON" visible="false" selectionMode="None" rows="{path:'/res', parameters: {arrayNames:['children']}}">
 														<table:columns>
 															<table:Column>
 																<m:Label wrapping="true" text="Characteristic Name"/>
@@ -237,18 +237,18 @@
 															</table:template>
 														</table:Column>
 													</table:TreeTable>
-													<HBox id="idHBox2" alignItems="End" justifyContent="End" width="100%" visible="false">
-														<m:Button id="BulKSave" icon="sap-icon://save" text="Save" visible="false" press="onCharSave"/>
-														<m:Button id="idCanlBtn" icon="sap-icon://cancel" text="Cancel" press="onCharCancel"/>
+													<HBox id="idHBox2SON" alignItems="End" justifyContent="End" width="100%" visible="false">
+														<m:Button id="BulKSaveSON" icon="sap-icon://save" text="Save" visible="false" press="onCharSave"/>
+														<m:Button id="idCanlBtnSON" icon="sap-icon://cancel" text="Cancel" press="onCharCancel"/>
 													</HBox>
 												</m:content>
 											</m:IconTabBar>
 										</m:VBox>
-										<HBox id="idHBox1" alignItems="End" justifyContent="End" width="100%" visible="false">
+										<HBox id="idHBox1SON" alignItems="End" justifyContent="End" width="100%" visible="false">
 											<SegmentedButton width="320px" selectionChange="getCharBtn">
 												<items>
-													<SegmentedButtonItem id="idSaveBtn" icon="sap-icon://save" text="Save" enabled="false" press="onCharSave"/>
-													<SegmentedButtonItem id="idCancelBtn" icon="sap-icon://cancel" text="Cancel" press="onCharCancel"/>
+													<SegmentedButtonItem id="idSaveBtnSON" icon="sap-icon://save" text="Save" enabled="false" press="onCharSave"/>
+													<SegmentedButtonItem id="idCancelBtnSON" icon="sap-icon://cancel" text="Cancel" press="onCharCancel"/>
 												</items>
 											</SegmentedButton>
 										</HBox>
@@ -263,7 +263,7 @@
 		<footer>
 			<OverflowToolbar>
 				<ToolbarSpacer/>
-				<Button id="idGenSeedOrder" text="Generate Seed Order" enabled="false" press="onGenSeedOrder"/>
+				<Button id="idGenSeedOrderSON" text="Generate Seed Order" enabled="false" press="onGenSeedOrder"/>
 				<!-- <Button text="Cancel"/> -->
 			</OverflowToolbar>
 		</footer>
