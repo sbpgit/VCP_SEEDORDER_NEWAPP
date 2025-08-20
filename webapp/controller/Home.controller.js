@@ -2748,7 +2748,7 @@ sap.ui.define([
                 if (that.selectedApp !== "Standard") {
                     for (var i = 0; i < oTableItems.length; i++) {
                         if (that.selectedApp === oTableItems[i].VARIANTNAME && oTableItems[i].APPLICATION_NAME === appName) {
-                            if (oTableItems[i].FIELD.includes("Loc")) {
+                            if (oTableItems[i].FIELD.includes("Demand Location")) {
                                 oLoc = oTableItems[i].VALUE;
                                 that.oGModel.setProperty("/defaultLocation", oLoc);
                                 var sFilter = new sap.ui.model.Filter({
@@ -2759,7 +2759,7 @@ sap.ui.define([
                                 that.locProdFilters.push(sFilter);
 
                             }
-                            else if (oTableItems[i].FIELD.includes("Prod")) {
+                            else if (oTableItems[i].FIELD.includes("Configurable Product")) {
                                 oProd = oTableItems[i].VALUE;
                                 that.oGModel.setProperty("/defaultProduct", oProd);
                                 var sFilter = new sap.ui.model.Filter({
@@ -2770,7 +2770,7 @@ sap.ui.define([
                                 that.locProdFilters.push(sFilter);
 
                             }
-                            else if (oTableItems[i].FIELD.includes("Cust")) {
+                            else if (oTableItems[i].FIELD.includes("Customer Group")) {
                                 var oCustTemplate = new sap.m.Token({
                                     key: oTableItems[i].FIELD_CENTER,
                                     text: oTableItems[i].VALUE
