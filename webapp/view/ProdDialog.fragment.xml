@@ -2,6 +2,6 @@
 	<SelectDialog id="prodSlctListSON" title="Products" rememberSelections="false" search="handleSearch" 
 		confirm="handleProdSelection" cancel="handleClose" multiSelect="false"  contentWidth="320px" items="{/prodDetails}" 
         selectionChange="handleProdChange" growing="false">
-		<StandardListItem title="{PRODUCT_ID}" description="{PROD_DESC}" type="Active"/>
+		<StandardListItem title="{REF_PRODID}" description="{REFPROD_DESC}" type="Active"/>
 	</SelectDialog>
 </core:FragmentDefinition>

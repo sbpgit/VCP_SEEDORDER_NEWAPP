@@ -31,7 +31,7 @@
 					<l:Grid defaultSpan="XL4 L3 M4 S12">
 						<VBox>
 							<Label text="Configurable Product" required="true"/>
-							<Input id="prodInputSON" placeholder="Configurable Product" value="" showValueHelp="true" valueHelpOnly="true"
+							<Input id="prodInputSON" placeholder="Config Product" value="" showValueHelp="true" valueHelpOnly="true"
 								valueHelpRequest="handleValueHelp2"/>
 						</VBox>
 						<VBox>
