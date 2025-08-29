@@ -421,33 +421,33 @@ sap.ui.define([
                     sap.ui.getCore().byId("custGrpListSON").getBinding("items").filter(oFilters);
                     // Product
                 } else if (sId.includes("prod")) {
-                    // if (sQuery !== "") {
-                    //     oFilters.push(
-                    //         new Filter({
-                    //             filters: [
-                    //                 new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery),
-                    //                 new Filter("PROD_DESC", FilterOperator.Contains, sQuery),
-                    //             ],
-                    //             and: false,
-                    //         })
-                    //     );
-                    // }
-                    // sap.ui.getCore().byId("prodSlctListSON").getBinding("items").filter(oFilters);
-                    oFilters.push(new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery.toUpperCase()))
-                    sap.ui.core.BusyIndicator.show()
-                    this.getOwnerComponent().getModel("BModel").read("/getProducts", {
-                        method: "GET",
-                        filters: oFilters,
-                        success: function (oData) {
-                            that.prodModel1.setData({ prodDetails: oData.results });
-                            sap.ui.getCore().byId("prodSlctListSON").setModel(that.prodModel1);
-                            sap.ui.core.BusyIndicator.hide()
-                        },
-                        error: function () {
-                            sap.ui.core.BusyIndicator.hide();
-                            MessageToast.show("Failed to get configurable products");
-                        },
-                    });
+                    if (sQuery !== "") {
+                        oFilters.push(
+                            new Filter({
+                                filters: [
+                                    new Filter("REF_PRODID", FilterOperator.Contains, sQuery),
+                                    new Filter("REFPROD_DESC", FilterOperator.Contains, sQuery),
+                                ],
+                                and: false,
+                            })
+                        );
+                    }
+                    sap.ui.getCore().byId("prodSlctListSON").getBinding("items").filter(oFilters);
+                    // oFilters.push(new Filter("PRODUCT_ID", FilterOperator.Contains, sQuery.toUpperCase()))
+                    // sap.ui.core.BusyIndicator.show()
+                    // this.getOwnerComponent().getModel("BModel").read("/getProducts", {
+                    //     method: "GET",
+                    //     filters: oFilters,
+                    //     success: function (oData) {
+                    //         that.prodModel1.setData({ prodDetails: oData.results });
+                    //         sap.ui.getCore().byId("prodSlctListSON").setModel(that.prodModel1);
+                    //         sap.ui.core.BusyIndicator.hide()
+                    //     },
+                    //     error: function () {
+                    //         sap.ui.core.BusyIndicator.hide();
+                    //         MessageToast.show("Failed to get configurable products");
+                    //     },
+                    // });
                 }
                 //Partial Product
                 else if (sId.includes("partProd")) {
@@ -2768,7 +2768,7 @@ sap.ui.define([
                                 that.locProdFilters.push(sFilter);
 
                             }
-                            else if (oTableItems[i].FIELD.includes("Configurable Product")) {
+                            else if (oTableItems[i].FIELD.includes("Config Product")) {
                                 oProd = oTableItems[i].VALUE;
                                 that.oGModel.setProperty("/defaultProduct", oProd);
                                 var sFilter = new sap.ui.model.Filter({
@@ -2850,7 +2850,7 @@ sap.ui.define([
                                 that.locProdFilters.push(sFilter);
 
                             }
-                            else if (oTableItems[i].FIELD.includes("Configurable Product")) {
+                            else if (oTableItems[i].FIELD.includes("Config Product")) {
                                 oProd = oTableItems[i].VALUE;
                                 that.oGModel.setProperty("/defaultProduct", oProd);
                                 var sFilter = new sap.ui.model.Filter({
