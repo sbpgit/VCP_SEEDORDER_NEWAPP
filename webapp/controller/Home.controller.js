@@ -1595,12 +1595,15 @@ sap.ui.define([
                             action: "Display"
                         }
                     })) || "";
+                    var oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+                    oStorage.put("nodeId", 84);
                     //Generate a  URL for the second application
                     var url = window.location.href.split('#')[0] + hash;
                     //Navigate to second app
                     sap.m.URLHelper.redirect(url, true);
                 }
             },
+
             getScheduleSEDT: function () {
                 var aScheduleSEDT = {};
                 var dDate = new Date();
