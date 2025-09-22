@@ -636,7 +636,7 @@ sap.ui.define([
                                 tableData.setModel(that.newClassModel);
                                 //adding skip and top for genPartialProd
                                 that.getAllGenParProd();
-                                that.saveDefaultVariant()
+                                // that.saveDefaultVariant()
                                 sap.ui.core.BusyIndicator.hide();
                             }
                             else {
@@ -2838,94 +2838,94 @@ sap.ui.define([
                     sap.ui.core.BusyIndicator.hide();
                 }
                 else {
-                    let headerDetails = that.oGModel.getProperty("/headerDetails").filter(id => id.APPLICATION_NAME == "DefaultSingle" && id.VARIANTNAME == "defaultSingle");
-                    if (headerDetails.length) {
-                        var oTableItems = that.oGModel.getProperty("/fieldDetails").filter(id => id.VARIANTID == headerDetails[0].VARIANTID);
-                        for (var i = 0; i < oTableItems.length; i++) {
-                            if (oTableItems[i].FIELD.includes("Demand Location")) {
-                                oLoc = oTableItems[i].VALUE;
-                                that.oGModel.setProperty("/defaultLocation", oLoc);
-                                var sFilter = new sap.ui.model.Filter({
-                                    path: "LOCATION_ID",
-                                    operator: sap.ui.model.FilterOperator.EQ,
-                                    value1: oTableItems[i].VALUE,
-                                });
-                                that.locProdFilters.push(sFilter);
+                    // let headerDetails = that.oGModel.getProperty("/headerDetails").filter(id => id.APPLICATION_NAME == "DefaultSingle" && id.VARIANTNAME == "defaultSingle");
+                    // if (headerDetails.length) {
+                    //     var oTableItems = that.oGModel.getProperty("/fieldDetails").filter(id => id.VARIANTID == headerDetails[0].VARIANTID);
+                    //     for (var i = 0; i < oTableItems.length; i++) {
+                    //         if (oTableItems[i].FIELD.includes("Demand Location")) {
+                    //             oLoc = oTableItems[i].VALUE;
+                    //             that.oGModel.setProperty("/defaultLocation", oLoc);
+                    //             var sFilter = new sap.ui.model.Filter({
+                    //                 path: "LOCATION_ID",
+                    //                 operator: sap.ui.model.FilterOperator.EQ,
+                    //                 value1: oTableItems[i].VALUE,
+                    //             });
+                    //             that.locProdFilters.push(sFilter);
 
-                            }
-                            else if (oTableItems[i].FIELD.includes("Config Product")) {
-                                oProd = oTableItems[i].VALUE;
-                                that.oGModel.setProperty("/defaultProduct", oProd);
-                                var sFilter = new sap.ui.model.Filter({
-                                    path: "PRODUCT_ID",
-                                    operator: sap.ui.model.FilterOperator.EQ,
-                                    value1: oTableItems[i].VALUE,
-                                });
-                                that.locProdFilters.push(sFilter);
+                    //         }
+                    //         else if (oTableItems[i].FIELD.includes("Config Product")) {
+                    //             oProd = oTableItems[i].VALUE;
+                    //             that.oGModel.setProperty("/defaultProduct", oProd);
+                    //             var sFilter = new sap.ui.model.Filter({
+                    //                 path: "PRODUCT_ID",
+                    //                 operator: sap.ui.model.FilterOperator.EQ,
+                    //                 value1: oTableItems[i].VALUE,
+                    //             });
+                    //             that.locProdFilters.push(sFilter);
 
-                            }
-                            else if (oTableItems[i].FIELD.includes("Customer Group")) {
-                                var oCustTemplate = new sap.m.Token({
-                                    key: oTableItems[i].FIELD_CENTER,
-                                    text: oTableItems[i].VALUE
-                                });
-                                custToken.push(oCustTemplate);
-                                oCustTemplate = {};
-                                oTokens = {
-                                    FIELD: oTableItems[i].FIELD,
-                                    VALUE: oTableItems[i].FIELD_CENTER
-                                }
-                                that.finaloTokens.push(oTokens);
-                                that.oGModel.setProperty("/defaultCustomer", custToken);
-                            }
+                    //         }
+                    //         else if (oTableItems[i].FIELD.includes("Customer Group")) {
+                    //             var oCustTemplate = new sap.m.Token({
+                    //                 key: oTableItems[i].FIELD_CENTER,
+                    //                 text: oTableItems[i].VALUE
+                    //             });
+                    //             custToken.push(oCustTemplate);
+                    //             oCustTemplate = {};
+                    //             oTokens = {
+                    //                 FIELD: oTableItems[i].FIELD,
+                    //                 VALUE: oTableItems[i].FIELD_CENTER
+                    //             }
+                    //             that.finaloTokens.push(oTokens);
+                    //             that.oGModel.setProperty("/defaultCustomer", custToken);
+                    //         }
 
 
-                        }
-                        that.oProd.setValue(oProd);
-                        that.oCust.removeAllTokens();
-                        this._valueHelpDialogProd2
-                            .getAggregation("_dialog")
-                            .getContent()[1]
-                            .removeSelections();
-                        this._valueHelpDialogCustomer
-                            .getAggregation("_dialog")
-                            .getContent()[1]
-                            .removeSelections();
-                        this._valueHelpDialogLoc
-                            .getAggregation("_dialog")
-                            .getContent()[1]
-                            .removeSelections();
-                        if (oProd) {
-                            that.oGModel.setProperty("/setProduct", oProd);
-                            that.getAllLocProd(oProd);
-                            that.getAllCustGrp();
-                            that.oLoc1.setValue();
-                        }
-                        if (oLoc) {
-                            that.oLoc1.setValue(oLoc);
-                            that.oGModel.setProperty("/setLocation", oLoc);
-                        }
-                        if (custToken.length > 0) {
-                            custToken.forEach(item => {
-                                that.oCust.addToken(new sap.m.Token({
-                                    key: item.getKey(),
-                                    text: item.getText(),
-                                    editable: false
-                                })
-                                )
-                            })
-                            that.oGModel.setProperty("/setCust", custToken);
+                    //     }
+                    //     that.oProd.setValue(oProd);
+                    //     that.oCust.removeAllTokens();
+                    //     this._valueHelpDialogProd2
+                    //         .getAggregation("_dialog")
+                    //         .getContent()[1]
+                    //         .removeSelections();
+                    //     this._valueHelpDialogCustomer
+                    //         .getAggregation("_dialog")
+                    //         .getContent()[1]
+                    //         .removeSelections();
+                    //     this._valueHelpDialogLoc
+                    //         .getAggregation("_dialog")
+                    //         .getContent()[1]
+                    //         .removeSelections();
+                    //     if (oProd) {
+                    //         that.oGModel.setProperty("/setProduct", oProd);
+                    //         that.getAllLocProd(oProd);
+                    //         that.getAllCustGrp();
+                    //         that.oLoc1.setValue();
+                    //     }
+                    //     if (oLoc) {
+                    //         that.oLoc1.setValue(oLoc);
+                    //         that.oGModel.setProperty("/setLocation", oLoc);
+                    //     }
+                    //     if (custToken.length > 0) {
+                    //         custToken.forEach(item => {
+                    //             that.oCust.addToken(new sap.m.Token({
+                    //                 key: item.getKey(),
+                    //                 text: item.getText(),
+                    //                 editable: false
+                    //             })
+                    //             )
+                    //         })
+                    //         that.oGModel.setProperty("/setCust", custToken);
 
-                        }
+                    //     }
 
-                    }
-                    else {
+                    // }
+                    // else {
                         //do nothing
                         that.byId("prodInputSON").setValue();
                         that.byId("idlocSON").setValue();
                         that.byId("idCustGrpSON").removeAllTokens();
                         that.onResetDate();
-                    }
+                    // }
                     sap.ui.core.BusyIndicator.hide();
 
                 }
