@@ -185,7 +185,7 @@ sap.ui.define([
                 //         MessageToast.show("Failed to get configurable products");
                 //     },
                 // });
-                that.getVariantData();
+                // that.getVariantData();
             },
             /**Removing duplicates */
             removeDuplicate(array, key1, key2) {
