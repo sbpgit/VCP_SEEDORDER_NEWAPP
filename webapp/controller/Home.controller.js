@@ -149,6 +149,10 @@ sap.ui.define([
                     let email = sap.ushell.Container.getService("UserInfo").getUser().getEmail();
                     vUser = (email) ? email : "";
                 }
+                 if(!vUser){
+                vUser='null';
+            }
+
                 return vUser;
             },
             onAfterRendering: function () {
@@ -2172,7 +2176,12 @@ sap.ui.define([
             },
             getAllProds: function () {
                 var topCount = that.oGModel.getProperty("/MaxCount")
-                this.getOwnerComponent().getModel("BModel").read("/getfactorylocdesc", {
+                this.getOwnerComponent().getModel("BModel").read("/getRolesLocProd", {
+                    filters:  [new Filter(
+              "USER",
+              FilterOperator.EQ,
+              that.getUser()
+            )],
                     urlParameters: {
                         "$skip": that.skip,
                         "$top": topCount
@@ -2522,7 +2531,6 @@ sap.ui.define([
                 that.uniqueName = [];
                 sap.ui.core.BusyIndicator.show();
                 var variantUser = this.getUser();
-                // var variantUser = 'naveenkukudala@sbpcorp.in';
                 var appName = this.getOwnerComponent().getManifestEntry("/sap.app/id");
                 that.oGModel.setProperty("/UserId", variantUser);
                 // Define the filters
@@ -3082,7 +3090,6 @@ sap.ui.define([
                 var totalVariantData = that.oGModel.getProperty("/VariantData");
                 var selected = oEvent.getParameters();
                 var variantUser = this.getUser();
-                // var variantUser = 'naveenkukudala@sbpcorp.in';
                 if (selected.def) {
                     totalVariantData.filter(item1 => {
                         if (JSON.parse(selected.def) === item1.VARIANTID && item1.USER !== variantUser) {
