@@ -584,6 +584,20 @@ sap.ui.define([
                         },
                         success: function (oData) {
                             that.count1 = 0;
+                                         that.getOwnerComponent().getModel("BModel").read("/getRolesAccess", {
+                                        filters: [
+                                            new Filter("REF_PRODID", FilterOperator.EQ, prodItem),
+                                             new Filter("DEMAND_LOC", FilterOperator.EQ, locItem),
+                                            new Filter("USER", FilterOperator.EQ, that.getUser()),
+                                        ],
+                                        success: function (oResponse) {
+                                             if(oResponse.results.length>0){
+                                                let bCreate = false;
+                                                if(oResponse.results.findIndex(ind=>ind.CREATE == true) !=-1){//Any of them has CREATE as true
+                                                    bCreate = true;
+                                                }
+                                                that.byId("idGenSeedOrderSON").setVisible(bCreate)
+                                             }
                             if ((JSON.parse(oData.getUniqueIdsNewFun)).length > 0) {
                                 that.totalUniqueIds = [], that.uniqueIds1 = [];
                                 that.totalUniqueIds = JSON.parse(oData.getUniqueIdsNewFun);
@@ -655,6 +669,11 @@ sap.ui.define([
                                 sap.ui.getCore().byId("idCharSelectSON").setModel(that.emptyModel);
                                 sap.ui.core.BusyIndicator.hide();
                             }
+                              },
+                                        error: function (oResponse) {
+                                            sap.ui.core.BusyIndicator.hide();
+                                        },
+                                    });
                         },
                         error: function (oData, error) {
                             sap.ui.core.BusyIndicator.hide();

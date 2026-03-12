@@ -263,7 +263,7 @@
 		<footer>
 			<OverflowToolbar>
 				<ToolbarSpacer/>
-				<Button id="idGenSeedOrderSON" text="Generate Seed Order" enabled="false" press="onGenSeedOrder"/>
+				<Button id="idGenSeedOrderSON" text="Generate Seed Order" enabled="false" press="onGenSeedOrder" visible="false"/>
 				<!-- <Button text="Cancel"/> -->
 			</OverflowToolbar>
 		</footer>
